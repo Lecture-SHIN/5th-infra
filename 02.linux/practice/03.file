@@ -1,0 +1,276 @@
+1. 배포 디렉터리 구성
+# 현재 위치: /home/ubuntu/03.file
+
+# 1. 아래 구조를 mkdir -p 로 한 번에 생성
+#    app/{config,logs,deploy,backup}
+#    app/logs/{app,error,access}
+ubuntu@ubuntu:~/03.file$ mkdir -p app/{config,logs,deploy,backup}
+ubuntu@ubuntu:~/03.file$ mkdir -p app/logs/{app,error,access}
+ubuntu@ubuntu:~/03.file$ tree
+
+# 2. touch로 아래 파일 생성
+#    app/config/application.yml
+#    app/config/application-prod.yml
+#    app/deploy/deploy.sh
+#    app/logs/app/app.log
+touch app/config/application.yml
+touch app/config/application-prod.yml
+touch app/deploy/deploy.sh
+touch app/logs/app/app.log
+
+# 3. tree app/ 로 생성 구조 확인
+ubuntu@ubuntu:~/03.file$ tree app/
+app/
+├── access
+├── app
+├── backup
+├── config
+│   ├── application-prod.yml
+│   └── application.yml
+├── deploy
+│   └── deploy.sh
+├── error
+└── logs
+    ├── access
+    ├── app
+    │   └── app.log
+    └── error
+
+11 directories, 4 files
+
+---
+2. 배포 전 설정 파일 백업 및 교체
+# 현재 위치: /home/ubuntu/03.file
+
+# 사전 준비
+# 주의 : 탭 들여쓰기 환경에서는 <<'EOF' 대신 <<-'EOF' 를 써야 정상 동작
+cat > app/config/application.yml << 'EOF'
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db:3306/appdb
+EOF
+
+# 1. 배포 전 날짜 포함 백업
+#    app/config/application.yml → app/backup/application.yml.bak.$(date +%Y%m%d)
+ubuntu@ubuntu:~/03.file$ cat > app/config/application.yml << 'EOF'
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db:3306/appdb
+EOF
+ubuntu@ubuntu:~/03.file$ cat app/config/application.yml 
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db:3306/appdb
+ubuntu@ubuntu:~/03.file$ cp -p app/config/application.yml app/backup/application.yml.bak.$(date +%Y%m%d)
+ubuntu@ubuntu:~/03.file$ tree app/
+app/
+├── access
+├── app
+├── backup
+│   └── application.yml.bak.20260316
+├── config
+│   ├── application-prod.yml
+│   └── application.yml
+├── deploy
+│   └── deploy.sh
+├── error
+└── logs
+    ├── access
+    ├── app
+    │   └── app.log
+    └── error
+
+11 directories, 5 files
+
+# 2. 신규 설정 파일 생성
+cat > /tmp/application_new.yml << 'EOF'
+server:
+  port: 9090
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db-v2:3306/appdb
+EOF
+
+# 3. 신규 파일을 app/config/application.yml 로 교체 (mv 사용)
+# 4. app/config/application.yml 내용 확인 (cat)
+ubuntu@ubuntu:~/03.file$ tree app/
+app/
+├── access
+├── app
+├── backup
+│   └── application.yml.bak.20260316
+├── config
+│   ├── application-prod.yml
+│   └── application.yml
+├── deploy
+│   └── deploy.sh
+├── error
+└── logs
+    ├── access
+    ├── app
+    │   └── app.log
+    └── error
+
+11 directories, 5 files
+ubuntu@ubuntu:~/03.file$ cat > /tmp/application_new.yml << 'EOF'
+server:
+  port: 9090
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db-v2:3306/appdb
+EOF
+ubuntu@ubuntu:~/03.file$ mv -i /tmp/application_new.yml app/config/applic
+ation.yml 
+mv: overwrite 'app/config/application.yml'? y
+ubuntu@ubuntu:~/03.file$ cat app/config/application.yml 
+server:
+  port: 9090
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db-v2:3306/appdb
+
+# 5. 롤백 — 백업 파일을 app/config/application.yml 로 복원 (cp -p 사용)
+# 6. 복원된 파일 내용 확인
+ubuntu@ubuntu:~/03.file$ tree app/
+app/
+├── access
+├── app
+├── backup
+│   └── application.yml.bak.20260316
+├── config
+│   ├── application-prod.yml
+│   └── application.yml
+├── deploy
+│   └── deploy.sh
+├── error
+└── logs
+    ├── access
+    ├── app
+    │   └── app.log
+    └── error
+
+11 directories, 5 files
+ubuntu@ubuntu:~/03.file$ cp -p ^C
+ubuntu@ubuntu:~/03.file$ cp -p app/backup/application.yml.bak.$(date +%Y%m%d) app/config/application.yml 
+ubuntu@ubuntu:~/03.file$ cat app/config/application.yml 
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db:3306/appdb
+
+
+--- 
+참고
+EOF : End Of File 
+파일의 끝, 입력의 끝
+
+- 정석 : Ctrl + D
+ubuntu@ubuntu:~/03.file$ cat
+Hello
+Hello
+World
+World
+^D
+ubuntu@ubuntu:~/03.file$
+
+- 응용 : Heredoc (EOF)
+ubuntu@ubuntu:~/03.file$ cat << EOF
+> Hello
+> World
+> EOF
+Hello
+World
+
+문제 발생 상황
+if true; then
+    cat <<EOF
+    server:
+        port: 8080
+    host: localhost
+EOF
+fi
+
+문제 출력 상황
+    server:
+      port: 8080
+    host: localhost
+
+알맞은 출력 상황
+server:
+    port: 8080
+host: localhost
+
+---
+3. 오래된 로그 정리
+# 현재 위치: /home/ubuntu/03.file/app/logs/app
+
+# 1. ls -lt 로 파일 목록 수정 시간순 확인
+# 2. archive 디렉터리 생성
+# 3. 30일 초과 .log 파일을 find로 검색하여 목록 확인
+# 4. 해당 파일들을 mv로 archive/ 로 이동
+# 5. archive/ 디렉터리 내용 확인
+# 6. archive/ 디렉터리 전체 삭제 (rm -rf)
+# 7. 현재 디렉터리에 app.log만 남았는지 ls 로 확인
+
+ubuntu@ubuntu:~/03.file$ tree app
+app
+├── access
+├── app
+├── backup
+│   └── application.yml.bak.20260316
+├── config
+│   ├── application-prod.yml
+│   └── application.yml
+├── deploy
+│   └── deploy.sh
+├── error
+└── logs
+    ├── access
+    ├── app
+    │   └── app.log
+    └── error
+
+11 directories, 5 files
+ubuntu@ubuntu:~/03.file$ cd /home/ubuntu/03.file/app/logs/app
+ubuntu@ubuntu:~/03.file/app/logs/app$ pwd
+/home/ubuntu/03.file/app/logs/app
+ubuntu@ubuntu:~/03.file/app/logs/app$ ls -lt
+total 0
+-rw-rw-r-- 1 ubuntu ubuntu 0 Mar 16 16:13 app.log
+ubuntu@ubuntu:~/03.file/app/logs/app$ mkdir archive
+ubuntu@ubuntu:~/03.file/app/logs/app$ find . -name "*.log" -mtime +30 -type f
+ubuntu@ubuntu:~/03.file/app/logs/app$ tree /home/ubuntu/03.file/app
+/home/ubuntu/03.file/app
+├── access
+├── app
+├── backup
+│   └── application.yml.bak.20260316
+├── config
+│   ├── application-prod.yml
+│   └── application.yml
+├── deploy
+│   └── deploy.sh
+├── error
+└── logs
+    ├── access
+    ├── app
+    │   ├── app.log
+    │   └── archive
+    └── error
+
+12 directories, 5 files
+ubuntu@ubuntu:~/03.file/app/logs/app$ find . -name "*.log" -mtime +30 -type f -exec mv {} archive/ \;
+ubuntu@ubuntu:~/03.file/app/logs/app$ ls archive/
+ubuntu@ubuntu:~/03.file/app/logs/app$ rm -rf archive/
+ubuntu@ubuntu:~/03.file/app/logs/app$ tree
+.
+└── app.log
+
+1 directory, 1 file
