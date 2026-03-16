@@ -1,0 +1,45 @@
+1. 서버 접속 후 기본 상태 파악
+# 현재 위치: /home/ubuntu/01.basic
+
+# 1. 현재 접속 사용자명 확인
+whoami
+# 2. 서버 호스트명 확인
+hostname
+# 3. OS 및 커널 버전 확인 (uname -a)
+uname -a
+# 4. 서버 가동 시간 확인
+uptime
+# 5. 현재 날짜/시간 확인 (KST 기준)
+date
+# 6. java 명령어가 설치되어 있는지 which로 확인
+which java
+# 7. bash 셸의 실제 경로 확인 (which bash)
+which bash
+
+---
+2. 명령어 도움말 활용
+# 1. man tar 로 매뉴얼 열기 → /extract 로 추출 관련 옵션 검색 → q 종료
+# 2. tar --help | grep verbose 로 verbose 옵션만 빠르게 확인
+# 3. man ls 에서 -l 옵션 설명 검색 후 종료
+
+---
+3. history 활용 및 alias 설정
+# 1. 아래 명령어들을 순서대로 실행
+echo "테스트1"
+echo "테스트2"
+whoami
+hostname
+date
+
+# 2. history로 최근 10개 명령어 확인
+# 3. !echo 로 echo로 시작하는 가장 최근 명령어 재실행
+# 4. Ctrl+R 로 "hostname" 역방향 검색 후 실행
+# 5. 아래 alias 등록 후 동작 확인
+#    ll → ls -alh
+#    ..  → cd ..
+alias ll='ls -alh'
+alias ..='cd ..'
+# 6. alias 목록 전체 출력
+alias
+alias ll='ls -alF'
+unalias ..
