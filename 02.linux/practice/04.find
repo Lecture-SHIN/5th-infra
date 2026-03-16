@@ -1,0 +1,122 @@
+기본 실습을 위한 사전 설정
+mkdir -p find_test/{java_src,logs,config}
+touch find_test/java_src/Main.java
+touch find_test/java_src/Service.java
+touch find_test/logs/app.log
+touch find_test/logs/error.log
+touch find_test/config/application.yml
+touch -d "40 days ago" find_test/logs/old.log
+chmod 777 find_test/java_src/Main.java
+
+- .yml 검색?
+- .JAVA 검색?
+- .log 파일 검색?
+ubuntu@ubuntu:~/04.find$ tree
+.
+├── backup
+├── find_test
+│   ├── config
+│   │   └── application.yml
+│   ├── java_src
+│   │   ├── Main.java
+│   │   └── Service.java
+│   └── logs
+│       ├── app.log
+│       ├── error.log
+│       └── old.log
+├── logs
+├── project
+└── tmp
+
+9 directories, 6 files
+ubuntu@ubuntu:~/04.find$ find find_test/ -name "*.yml"
+find_test/config/application.yml
+ubuntu@ubuntu:~/04.find$ find find_test/ -name "*.JAVA"
+ubuntu@ubuntu:~/04.find$ find find_test/ -iname "*.JAVA"
+find_test/java_src/Service.java
+find_test/java_src/Main.java
+ubuntu@ubuntu:~/04.find$ find find_test/ -type f -name "*.log"
+find_test/logs/error.log
+find_test/logs/app.log
+find_test/logs/old.log
+
+- 30 일 이전에 수정된 파일?
+- 정확히 1일 이전에 수정된 파일?
+- 7일 이상 접근하지 않은 파일?
+ubuntu@ubuntu:~/04.find$ find find_test/ -mtime +30
+find_test/logs/old.log
+ubuntu@ubuntu:~/04.find$ find find_test/ -mtime 1
+ubuntu@ubuntu:~/04.find$ find find_test/ -atime +7
+find_test/logs/old.log
+
+- 빈 파일?
+- 10kb 미만 파일?
+ubuntu@ubuntu:~/04.find$ find find_test/ -size 0c
+find_test/config/application.yml
+find_test/logs/error.log
+find_test/logs/app.log
+find_test/logs/old.log
+find_test/java_src/Service.java
+find_test/java_src/Main.java
+ubuntu@ubuntu:~/04.find$ find find_test/ -size -10k
+find_test/
+find_test/config
+find_test/config/application.yml
+find_test/logs
+find_test/logs/error.log
+find_test/logs/app.log
+find_test/logs/old.log
+find_test/java_src
+find_test/java_src/Service.java
+find_test/java_src/Main.java
+
+- .java 제외하고 나머지 파일들?
+- .log 또는 .yml 파일?
+ubuntu@ubuntu:~/04.find$ find find_test/ -not -name "*.java"
+find_test/
+find_test/config
+find_test/config/application.yml
+find_test/logs
+find_test/logs/error.log
+find_test/logs/app.log
+find_test/logs/old.log
+find_test/java_src
+ubuntu@ubuntu:~/04.find$ find find_test/ -name "*.log" -o -name "*.yml"
+find_test/config/application.yml
+find_test/logs/error.log
+find_test/logs/app.log
+find_test/logs/old.log
+
+- *.log 파일 검색 -> cat 출력
+ubuntu@ubuntu:~/04.find$ find find_test/ -name "*.log" -exec cat {} \;
+
+- *.log 파일 검색 -> 30 일 이전에 수정된 파일 -> 삭제?
+ubuntu@ubuntu:~/04.find$ find find_test/ -name "*.log" -mtime +30 -exec rm {} +
+ubuntu@ubuntu:~/04.find$ tree
+.
+├── backup
+├── find_test
+│   ├── config
+│   │   └── application.yml
+│   ├── java_src
+│   │   ├── Main.java
+│   │   └── Service.java
+│   └── logs
+│       ├── app.log
+│       └── error.log
+├── logs
+├── project
+└── tmp
+
+9 directories, 5 files
+
+
+
+
+
+
+
+
+
+
+---
