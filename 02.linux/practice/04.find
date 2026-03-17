@@ -110,13 +110,98 @@ ubuntu@ubuntu:~/04.find$ tree
 
 9 directories, 5 files
 
+---
+1. 운영 서버 배포 후 설정 파일 검증
+# 현재 위치: /home/ubuntu/04.find
+
+# [검증 1] 전체 구조 파악
+# 1. project 디렉터리 하위의 모든 .yml 파일 검색
 
 
+# [검증 2] 민감 파일 확인
+# 2. project 하위에서 파일명에 dev가 포함된 파일 검색
 
+# [검증 3] 정리 대상 파악
+# 3. 전체 경로에서 수정한 지 30일 초과된 .bak 파일 검색
+# 4. tmp 디렉터리에서 빈 디렉터리 검색
 
+# [검증 4] 내용 확인
+# 5. project/config 에서 .yml 파일 검색 후 각 파일 내용 출력 (-exec cat 사용)
 
+# [검증 5] 정리 실행
+# 6. tmp 디렉터리에서 .tmp 파일 검색 후 삭제 (-delete 사용)
 
+ubuntu@ubuntu:~/04.find$ tree project/
+project/
+├── config
+│   ├── application-dev.yml
+│   ├── application.yml
+│   └── logback.xml
+├── deploy
+│   └── deploy.sh
+└── src
+    ├── Main.java
+    └── Service.java
 
+4 directories, 6 files
+ubuntu@ubuntu:~/04.find$ find project -name "*.yml"
+project/config/application.yml
+project/config/application-dev.yml
+ubuntu@ubuntu:~/04.find$ find project -name "*dev*"
+project/config/application-dev.yml
+ubuntu@ubuntu:~/04.find$ find . -name "*.bak" -mtime +30
+./backup/db_dump_20240101.sql.bak
+./backup/application.yml.bak
+ubuntu@ubuntu:~/04.find$ find project/config -name "*.yml" -exec cat {} \;
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db.internal:3306/appdb
+    username: prod_user
+    password: prod_pass!@#
+  redis:
+    host: prod-redis.internal
+    port: 6379
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:mysql://dev-db.internal:3306/appdb
+    username: dev_user
+    password: dev_pass123
 
+7 directories, 0 files
+ubuntu@ubuntu:~/04.find$ tree tmp/
+tmp/
+├── cache.tmp
+├── empty_dir1
+├── empty_dir2
+└── temp_upload.tmp
+
+3 directories, 2 files
+ubuntu@ubuntu:~/04.find$ find tmp -name "*.tmp" -delete
+ubuntu@ubuntu:~/04.find$ tree tmp/
+tmp/
+├── empty_dir1
+└── empty_dir2
+
+3 directories, 0 files
 
 ---
+2. 운영 로그 장애 분석 및 오래된 로그 정리
+# 현재 위치: /home/ubuntu/04.find/logs
+
+# 1. logs 디렉터리에서 7일 이내 수정된 .log 파일 검색
+# 2. logs 디렉터리에서 30일 초과된 .log 파일 검색
+# 3. 100KB 이상인 .log 파일 검색
+# 4. 최신 app.log 파일을 less로 열어 ERROR 키워드 검색 (/ 검색 활용)
+# 5. 30일 초과 .log 파일을 한 번에 검색하여 목록 확인 후 삭제
+
+---
+3. 보안 점검 : 위험 권한 파일 탐지
+# 현재 위치: /home/ubuntu/04.find
+
+# 1. 전체 하위에서 권한이 정확히 777인 파일 검색
+# 2. 전체 하위에서 심볼릭 링크 파일 검색
+# 3. project 하위에서 .sh 파일 검색
+# 4. project 하위에서 .sh 파일 검색 후 각 파일의 권한을 ls -l 로 확인 (-exec ls -l 사용)
+# 5. project 하위에서 최근 1일 이내 수정된 파일 검색
