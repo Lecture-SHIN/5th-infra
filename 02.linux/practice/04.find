@@ -195,6 +195,27 @@ tmp/
 # 3. 100KB 이상인 .log 파일 검색
 # 4. 최신 app.log 파일을 less로 열어 ERROR 키워드 검색 (/ 검색 활용)
 # 5. 30일 초과 .log 파일을 한 번에 검색하여 목록 확인 후 삭제
+ubuntu@ubuntu:~/04.find/logs$ pwd
+/home/ubuntu/04.find/logs
+ubuntu@ubuntu:~/04.find/logs$ find . -name "*.log" -mtime -7
+./error.log
+./big_app.log
+./app.log
+ubuntu@ubuntu:~/04.find/logs$ find . -name "*.log" -mtime +30
+./app-20231201.log
+./app-20231115.log
+./app-20231030.log
+ubuntu@ubuntu:~/04.find/logs$ find . -name "*.log" -size +100k
+./big_app.log
+ubuntu@ubuntu:~/04.find/logs$ ls -alh big_app.log 
+-rw-rw-r-- 1 ubuntu ubuntu 102K Mar 17 09:44 big_app.log
+ubuntu@ubuntu:~/04.find/logs$ less app.log 
+ubuntu@ubuntu:~/04.find/logs$ find . -name "*.log" -mtime +30
+./app-20231201.log
+./app-20231115.log
+./app-20231030.log
+ubuntu@ubuntu:~/04.find/logs$ find . -name "*.log" -mtime +30 -exec rm {} +
+ubuntu@ubuntu:~/04.find/logs$ find . -name "*.log" -mtime +30
 
 ---
 3. 보안 점검 : 위험 권한 파일 탐지
@@ -205,3 +226,45 @@ tmp/
 # 3. project 하위에서 .sh 파일 검색
 # 4. project 하위에서 .sh 파일 검색 후 각 파일의 권한을 ls -l 로 확인 (-exec ls -l 사용)
 # 5. project 하위에서 최근 1일 이내 수정된 파일 검색
+ubuntu@ubuntu:~/04.find$ tree project/
+project/
+├── config
+│   ├── application-dev.yml
+│   ├── application.yml
+│   └── logback.xml
+├── deploy
+│   ├── app-config-link.yml -> /home/ubuntu/04.find/project/config/application.yml
+│   ├── deploy_old.sh
+│   ├── deploy.sh
+│   └── new_deploy.sh
+└── src
+    ├── dangerous.sh
+    ├── Main.java
+    └── Service.java
+
+4 directories, 10 files
+ubuntu@ubuntu:~/04.find$ find . -perm 777 -type f
+./project/src/dangerous.sh
+./find_test/java_src/Main.java
+ubuntu@ubuntu:~/04.find$ find . -type l
+./project/deploy/app-config-link.yml
+ubuntu@ubuntu:~/04.find$ find project -name "*.sh" -type f
+project/src/dangerous.sh
+project/deploy/deploy_old.sh
+project/deploy/new_deploy.sh
+project/deploy/deploy.sh
+ubuntu@ubuntu:~/04.find$ find project -name "*.sh" -type f -exec ls -l {} \;
+-rwxrwxrwx 1 ubuntu ubuntu 0 Mar 17 09:52 project/src/dangerous.sh
+-rwxr-xr-x 1 ubuntu ubuntu 0 Mar 17 09:52 project/deploy/deploy_old.sh
+-rw-rw-r-- 1 ubuntu ubuntu 0 Mar 17 09:52 project/deploy/new_deploy.sh
+-rw-rw-r-- 1 ubuntu ubuntu 0 Mar 17 09:32 project/deploy/deploy.sh
+ubuntu@ubuntu:~/04.find$ find project -type f -mtime -1
+project/config/application.yml
+project/config/application-dev.yml
+project/config/logback.xml
+project/src/Service.java
+project/src/Main.java
+project/src/dangerous.sh
+project/deploy/deploy_old.sh
+project/deploy/new_deploy.sh
+project/deploy/deploy.sh
