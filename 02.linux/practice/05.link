@@ -1,0 +1,51 @@
+링크 생성
+---
+심볼릭링크
+[1] 파일
+app-config-link.yml -> application.yml를 참조
+
+# app-config-link.yml의 inode
+454199 lrwxrwxrwx 1 ubuntu ubuntu   47 Mar 17 10:39 app-config-link.yml -> /home/ubuntu/05.link/app/config/application.yml
+
+# app-config-link.yml의 원본의 inode
+ubuntu@ubuntu:~/05.link$ ls -il app/config/application.yml 
+454194 -rw-rw-r-- 1 ubuntu ubuntu 84 Mar 17 10:35 app/config/application.yml
+
+[2] 디렉터리
+currrent -> releases/v2.0.0 참조
+ln -s /home/ubuntu/05.link/releases/v2.0.0/ currents
+
+---
+하드링크
+mkdir -p backup
+backup/application.yml -> app/config/application.yml를 참조
+
+ubuntu@ubuntu:~/05.link$ mkdir -p backup
+ubuntu@ubuntu:~/05.link$ ln app/config/application.yml backup/application.yml.hard
+ubuntu@ubuntu:~/05.link$ tree
+.
+├── app
+│   └── config
+│       └── application.yml
+├── app-config-link.yml -> /home/ubuntu/05.link/app/config/application.yml
+├── backup
+│   └── application.yml.hard
+├── config
+├── current -> /home/ubuntu/05.link/releases/v2.0.0/
+├── logs
+└── releases
+    ├── v1.0.0
+    │   └── app.jar
+    └── v2.0.0
+        └── app.jar
+
+10 directories, 5 files
+
+# application.yml.hard의 inode
+ubuntu@ubuntu:~/05.link$ ls -il backup/application.yml.hard
+454194 -rw-rw-r-- 2 ubuntu ubuntu 84 Mar 17 10:35 backup/application.yml.hard
+
+# application.yml.hard의 원본의 inode
+ubuntu@ubuntu:~/05.link$ ls -il app/config/application.yml 
+454194 -rw-rw-r-- 2 ubuntu ubuntu 84 Mar 17 10:35 app/config/application.yml
+
