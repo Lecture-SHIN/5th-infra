@@ -49,3 +49,236 @@ ubuntu@ubuntu:~/05.link$ ls -il backup/application.yml.hard
 ubuntu@ubuntu:~/05.link$ ls -il app/config/application.yml 
 454194 -rw-rw-r-- 2 ubuntu ubuntu 84 Mar 17 10:35 app/config/application.yml
 
+---
+링크버전 교체
+ubuntu@ubuntu:~/05.link$ tree
+.
+├── app
+│   └── config
+│       └── application.yml
+├── app-config-link.yml -> /home/ubuntu/05.link/app/config/application.yml
+├── backup
+│   └── application.yml.hard
+├── config
+├── current -> /home/ubuntu/05.link/releases/v2.0.0/
+├── logs
+└── releases
+    ├── v1.0.0
+    │   └── app.jar
+    └── v2.0.0
+        └── app.jar
+
+10 directories, 5 files
+ubuntu@ubuntu:~/05.link$ ln -sfn /home/ubuntu/05.link/releases/v1.0.0 current
+ubuntu@ubuntu:~/05.link$ tree
+.
+├── app
+│   └── config
+│       └── application.yml
+├── app-config-link.yml -> /home/ubuntu/05.link/app/config/application.yml
+├── backup
+│   └── application.yml.hard
+├── config
+├── current -> /home/ubuntu/05.link/releases/v1.0.0
+├── logs
+└── releases
+    ├── v1.0.0
+    │   └── app.jar
+    └── v2.0.0
+        └── app.jar
+
+10 directories, 5 files
+ubuntu@ubuntu:~/05.link$ readlink -f current
+/home/ubuntu/05.link/releases/v1.0.0
+
+---
+1. 무중단 배포 : 릴리즈 버전 전환
+# 현재 위치: /home/ubuntu/05.link
+
+# [배포 1] 초기 배포
+# 1. releases/v1.0.0 을 가리키는 심볼릭 링크 current 생성
+# 2. ls -l 로 링크 확인
+# 3. readlink -f 로 current 의 실제 절대 경로 확인
+# 4. current/config/application.yml 내용 cat 으로 확인
+
+# [배포 2] 신규 버전 전환
+# 5. current 링크를 releases/v2.1.0 으로 교체 (ln -sfn 사용)
+# 6. readlink -f current 로 버전 전환 확인
+# 7. current/config/application.yml 내용 확인
+
+# [배포 3] 롤백
+# 8. 장애 발생 — current 를 releases/v2.0.0 으로 롤백
+# 9. 현재 current 가 어떤 버전을 가리키는지 확인
+
+ubuntu@ubuntu:~/05.link$ ln -s releases/v1.0.0 current
+ubuntu@ubuntu:~/05.link$ ls -l
+total 20
+drwxrwxr-x 3 ubuntu ubuntu 4096 Mar 17 10:35 app
+lrwxrwxrwx 1 ubuntu ubuntu   47 Mar 17 10:39 app-config-link.yml -> /home/ubuntu/05.link/app/config/application.yml
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 17 10:49 backup
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 17 10:35 config
+lrwxrwxrwx 1 ubuntu ubuntu   36 Mar 17 11:08 current -> /home/ubuntu/05.link/releases/v1.0.0
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 17 10:35 logs
+drwxrwxr-x 5 ubuntu ubuntu 4096 Mar 17 11:22 releases
+ubuntu@ubuntu:~/05.link$ readlink -f
+readlink: missing operand
+Try 'readlink --help' for more information.
+ubuntu@ubuntu:~/05.link$ readlink -f current
+/home/ubuntu/05.link/releases/v1.0.0
+ubuntu@ubuntu:~/05.link$ cat current/config/application.yml 
+app:
+  version: 1.0.0
+  name: myapp
+server:
+  port: 8080
+ubuntu@ubuntu:~/05.link$ ln -sfn releases/v2.1.0 current
+ubuntu@ubuntu:~/05.link$ readlink -f current
+/home/ubuntu/05.link/releases/v2.1.0
+ubuntu@ubuntu:~/05.link$ cat current/config/application.yml 
+app:
+  version: 2.1.0
+  name: myapp
+server:
+  port: 8080
+logging:
+  level:
+    root: WARN
+ubuntu@ubuntu:~/05.link$ ln -sfn releases/v2.0.0 current
+ubuntu@ubuntu:~/05.link$ readlink -f current
+/home/ubuntu/05.link/releases/v2.0.0
+
+---
+2. 설정 파일 공유 및 깨진 링크 탐지
+# 현재 위치: /home/ubuntu/05.link/config
+
+# 1. find 로 services 하위 심볼릭 링크 전체 검색
+# 2. ls -l services/user-service/ 로 링크 상태 확인
+# 3. readlink -f services/post-service/datasource.yml 로 실제 경로 확인
+# 4. find 로 깨진 심볼릭 링크 탐지
+# 5. 정상 링크를 통해 공통 설정 파일 내용 cat 으로 확인
+
+ubuntu@ubuntu:~/05.link/config$ tree
+.
+├── common-datasource.yml
+└── services
+    ├── comment-service
+    │   └── datasource.yml -> /home/ubuntu/05.link/config/common-datasource.yml
+    ├── post-service
+    │   └── datasource.yml -> /home/ubuntu/05.link/config/common-datasource.yml
+    └── user-service
+        ├── broken-link.yml -> /home/ubuntu/05.link/config/not-exist.yml
+        └── datasource.yml -> /home/ubuntu/05.link/config/common-datasource.yml
+
+5 directories, 5 files
+ubuntu@ubuntu:~/05.link/config$ find services -type l
+services/post-service/datasource.yml
+services/comment-service/datasource.yml
+services/user-service/broken-link.yml
+services/user-service/datasource.yml
+ubuntu@ubuntu:~/05.link/config$ ls -l services/user-service/
+total 0
+lrwxrwxrwx 1 ubuntu ubuntu 41 Mar 17 11:28 broken-link.yml -> /home/ubuntu/05.link/config/not-exist.yml
+lrwxrwxrwx 1 ubuntu ubuntu 49 Mar 17 11:28 datasource.yml -> /home/ubuntu/05.link/config/common-datasource.yml
+ubuntu@ubuntu:~/05.link/config$ readlink -f services/post-service/datasource.yml
+/home/ubuntu/05.link/config/common-datasource.yml
+ubuntu@ubuntu:~/05.link/config$ find services  -type l ! -ex
+ec test -e {} \; -print
+services/user-service/broken-link.yml
+ubuntu@ubuntu:~/05.link/config$ cat services/comment-service/datasource.yml 
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 30000
+
+---
+3. 하드 링크로 중요 설정 파일 보호
+# 현재 위치: /home/ubuntu/05.link
+
+# 1. app/config/application.yml 의 하드 링크를 backup/config/application.yml 로 생성
+# 2. ls -l 로 두 파일의 링크 카운트(2) 확인
+# 3. find . -type f -links +1 로 하드 링크가 걸린 파일 검색
+# 4. 원본(app/config/application.yml) 삭제
+# 5. backup/config/application.yml 내용이 유지되는지 cat 으로 확인 (하드 링크 특성 검증)
+# 6. ls -l backup/config/application.yml 로 링크 카운트가 1로 줄었는지 확인
+
+ubuntu@ubuntu:~/05.link$ tree app
+app
+└── config
+    └── application.yml
+
+2 directories, 1 file
+ubuntu@ubuntu:~/05.link$ tree backup/
+backup/
+├── application.yml.hard
+└── config
+
+2 directories, 1 file
+ubuntu@ubuntu:~/05.link$ ln /home/ubuntu/05.link/app/config/
+application.yml /home/ubuntu/05.link/backup/config/application.yml
+ubuntu@ubuntu:~/05.link$ tree backup
+backup
+├── application.yml.hard
+└── config
+    └── application.yml
+
+2 directories, 2 files
+ubuntu@ubuntu:~/05.link$ ls -ail backup/config/application.y
+ml 
+454194 -rw-rw-r-- 3 ubuntu ubuntu 144 Mar 17 11:34 backup/config/application.yml
+ubuntu@ubuntu:~/05.link$ find . -type f -links +1
+./app/config/application.yml
+./backup/config/application.yml
+./backup/application.yml.hard
+ubuntu@ubuntu:~/05.link$ rm app/config/application.yml 
+ubuntu@ubuntu:~/05.link$ cat backup/config/application.yml 
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db.internal:3306/appdb
+    username: prod_user
+    password: prod_pass!@#
+server:
+  port: 8080
+ubuntu@ubuntu:~/05.link$ ls -ail backup/config/application.yml
+454194 -rw-rw-r-- 2 ubuntu ubuntu 144 Mar 17 11:34 backup/config/application.yml
+
+---
+추가 : 원본 컨텐츠를 변경하면 하드링크의 내용들 동기화 확인
+ubuntu@ubuntu:~/05.link$ find . -type f -links +1
+./backup/config/application.yml
+./backup/application.yml.hard
+ubuntu@ubuntu:~/05.link$ cat backup/application.yml.hard 
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db.internal:3306/appdb
+    username: prod_user
+    password: prod_pass!@#
+server:
+  port: 8080
+ubuntu@ubuntu:~/05.link$ cat backup/config/application.yml 
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db.internal:3306/appdb
+    username: prod_user
+    password: prod_pass!@#
+server:
+  port: 8080
+ubuntu@ubuntu:~/05.link$ vi backup/config/application.yml 
+ubuntu@ubuntu:~/05.link$ cat backup/config/application.yml 
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db.internal:3306/appdb
+    username: prod_user
+    password: prod_pass!@#$
+server:
+  port: 8080
+ubuntu@ubuntu:~/05.link$ cat backup/application.yml.hard 
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db.internal:3306/appdb
+    username: prod_user
+    password: prod_pass!@#$
+server:
+  port: 8080
+
