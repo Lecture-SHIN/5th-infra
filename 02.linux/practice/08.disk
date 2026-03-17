@@ -1,0 +1,81 @@
+1. 디스크 풀(Disk Full) 장애 분석
+# 현재 위치: /home/ubuntu/08.disk
+
+# 1. df -h 로 전체 파일시스템 용량 현황 확인
+# 2. du -sh app/* 로 app 하위 각 디렉터리 용량 확인
+# 3. du -sh app/* | sort -rh 로 용량 큰 순 정렬
+# 4. du -ah app/logs/ 로 로그 파일별 용량 확인
+# 5. 10MB 이상 파일을 find -size +10M 으로 검색
+# 6. app/logs/error.log 를 gzip 압축 후 용량 변화 비교
+
+ubuntu@ubuntu:~/08.disk$ df -h
+Filesystem                         Size  Used Avail Use% Mounted on
+tmpfs                              392M  1.1M  391M   1% /run
+/dev/mapper/ubuntu--vg-ubuntu--lv   12G  5.2G  5.5G  49% /
+tmpfs                              2.0G     0  2.0G   0% /dev/shm
+tmpfs                              5.0M     0  5.0M   0% /run/lock
+/dev/sda2                          2.0G  198M  1.6G  11% /boot
+tmpfs                              392M   12K  392M   1% /run/user/1000
+ubuntu@ubuntu:~/08.disk$ du -sh app/*
+2.1M    app/cache
+5.1M    app/logs
+8.1M    app/upload
+ubuntu@ubuntu:~/08.disk$ du -sh app/* | sort -rh
+8.1M    app/upload
+5.1M    app/logs
+2.1M    app/cache
+ubuntu@ubuntu:~/08.disk$ du -ah app/logs/
+5.0M    app/logs/app.log
+5.1M    app/logs/
+ubuntu@ubuntu:~/08.disk$ find . -type f -size +10M
+
+---
+2.
+
+# 현재 위치: /home/ubuntu/08.disk
+
+# 1. df -h | grep -v tmpfs 로 실제 디스크만 확인
+# 2. du -sh /home/ubuntu/* | sort -rh | head -5 로 상위 5개 용량 항목 확인
+# 3. find /home/ubuntu -type f -size +50M 으로 50MB 초과 파일 전체 검색
+# 4. find /home/ubuntu -name "*.log" -mtime +30 으로 30일 초과 로그 검색
+# 5. lsblk -f 로 파일시스템 구조 확인
+
+ubuntu@ubuntu:~/08.disk$ df -h | grep -v tmpfs
+Filesystem                         Size  Used Avail Use% Mounted on
+/dev/mapper/ubuntu--vg-ubuntu--lv   12G  5.2G  5.5G  49% /
+/dev/sda2                          2.0G  198M  1.6G  11% /boot
+ubuntu@ubuntu:~/08.disk$ du -sh /home/ubuntu/* | sort -rh | head -5
+du: cannot access '/home/ubuntu/07.permission/app/logs/app.log': Permission denied
+16M     /home/ubuntu/08.disk
+1.4M    /home/ubuntu/06.archive
+196K    /home/ubuntu/04.find
+92K     /home/ubuntu/05.link
+68K     /home/ubuntu/03.file
+ubuntu@ubuntu:~/08.disk$ find /home/ubuntu -type f -size +50M
+find: ‘/home/ubuntu/07.permission/app/logs/app.log’: Permission denied
+ubuntu@ubuntu:~/08.disk$ find /home/ubuntu -name "*.log" -mtime +30
+find: ‘/home/ubuntu/07.permission/app/logs/app.log’: Permission denied
+ubuntu@ubuntu:~/08.disk$ lsblk -f
+NAME FSTYPE FSVER LABEL UUID                                   FSAVAIL FSUSE% MOUNTPOINTS
+sda                                                                           
+├─sda1
+│                                                                             
+├─sda2
+│    ext4   1.0         49f212b9-d9ef-4350-97e9-27c639ce182e      1.6G    10% /boot
+└─sda3
+     LVM2_m LVM2        ZBvDgd-EBQ3-5DAb-2jve-d0KB-WO5Z-Rnx88O                
+  └─ubuntu--vg-ubuntu--lv
+     ext4   1.0         d26dffa3-30af-4af2-98aa-58020cf04072      5.4G    46% /
+sr0       
+
+---
+3. 용량 정리 실행
+
+# 현재 위치: /home/ubuntu/08.disk
+
+# 1. app/cache/ 디렉터리 용량 확인 후 전체 삭제
+# 2. app/logs/ 에서 5MB 초과 로그 파일 검색 후 gzip 압축
+# 3. 압축 전후 du -sh app/logs/ 용량 비교
+# 4. df -h 로 정리 후 디스크 현황 재확인
+# 5. /tmp 디렉터리 용량 확인 (du -sh /tmp)
+
