@@ -1,0 +1,201 @@
+아카이브 기본 실습
+tree
+tar -cvf archive.tar project/
+ls
+tar -tvf archive.tar 
+ls
+mkdir -p extract
+clear
+tar -xvf archive.tar -C extract/
+tree
+
+---
+압축 기본 실습
+ubuntu@ubuntu:~/06.archive$ ll project/logs/
+total 8
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 17 13:03 ./
+drwxrwxr-x 6 ubuntu ubuntu 4096 Mar 17 13:03 ../
+-rw-rw-r-- 1 ubuntu ubuntu    0 Mar 17 13:03 app.log
+ubuntu@ubuntu:~/06.archive$ sudo cp /var/log/syslog project/logs/syslog
+[sudo] password for ubuntu: 
+ubuntu@ubuntu:~/06.archive$ ll project/logs/
+total 544
+drwxrwxr-x 2 ubuntu ubuntu   4096 Mar 17 13:18 ./
+drwxrwxr-x 6 ubuntu ubuntu   4096 Mar 17 13:03 ../
+-rw-rw-r-- 1 ubuntu ubuntu      0 Mar 17 13:03 app.log
+-rw-r----- 1 root   root   546703 Mar 17 13:18 syslog
+ubuntu@ubuntu:~/06.archive$ sudo gzip -k project/logs/syslog
+ 
+ubuntu@ubuntu:~/06.archive$ ll project/logs/
+total 652
+drwxrwxr-x 2 ubuntu ubuntu   4096 Mar 17 13:20 ./
+drwxrwxr-x 6 ubuntu ubuntu   4096 Mar 17 13:03 ../
+-rw-rw-r-- 1 ubuntu ubuntu      0 Mar 17 13:03 app.log
+-rw-r----- 1 root   root   546703 Mar 17 13:18 syslog
+-rw-r----- 1 root   root   110488 Mar 17 13:18 syslog.gz
+ubuntu@ubuntu:~/06.archive$ sudo gzip -l project/logs/syslog
+.gz 
+         compressed        uncompressed  ratio uncompressed_name
+             110488              546703  79.8% project/logs/syslog
+ubuntu@ubuntu:~/06.archive$ sudo rm project/logs/syslog
+ubuntu@ubuntu:~/06.archive$ ll project/logs/
+total 116
+drwxrwxr-x 2 ubuntu ubuntu   4096 Mar 17 13:22 ./
+drwxrwxr-x 6 ubuntu ubuntu   4096 Mar 17 13:03 ../
+-rw-rw-r-- 1 ubuntu ubuntu      0 Mar 17 13:03 app.log
+-rw-r----- 1 root   root   110488 Mar 17 13:18 syslog.gz
+ubuntu@ubuntu:~/06.archive$ sudo gzip -d project/logs/syslog.gz
+ubuntu@ubuntu:~/06.archive$ ll project/logs/
+total 544
+drwxrwxr-x 2 ubuntu ubuntu   4096 Mar 17 13:23 ./
+drwxrwxr-x 6 ubuntu ubuntu   4096 Mar 17 13:03 ../
+-rw-rw-r-- 1 ubuntu ubuntu      0 Mar 17 13:03 app.log
+-rw-r----- 1 root   root   546703 Mar 17 13:18 syslog
+
+---
+아카이브 + 압축/해제
+ubuntu@ubuntu:~/06.archive$ tree
+.
+├── archive.tar
+├── extract
+│   └── project
+│       ├── config
+│       │   └── application.yml
+│       ├── deploy
+│       │   └── deploy.sh
+│       ├── logs
+│       │   └── app.log
+│       └── src
+│           ├── Main.java
+│           └── Service.java
+└── project
+    ├── config
+    │   └── application.yml
+    ├── deploy
+    │   └── deploy.sh
+    ├── logs
+    │   ├── app.log
+    │   └── syslog
+    └── src
+        ├── Main.java
+        └── Service.java
+
+12 directories, 12 files
+ubuntu@ubuntu:~/06.archive$ sudo tar -czvf archive.tar.gz project/
+sudo tar -czvf archive.tar.gz project/
+project/
+project/config/
+project/config/application.yml
+project/src/
+project/src/Service.java
+project/src/Main.java
+project/deploy/
+project/deploy/deploy.sh
+project/logs/
+project/logs/syslog
+project/logs/app.log
+
+ubuntu@ubuntu:~/06.archive$ ls
+archive.tar  archive.tar.gz  extract  project
+
+ubuntu@ubuntu:~/06.archive$ mkdir -p archive_zip_extract
+ubuntu@ubuntu:~/06.archive$ tree
+.
+├── archive.tar
+├── archive.tar.gz
+├── archive_zip_extract
+├── extract
+│   └── project
+│       ├── config
+│       │   └── application.yml
+│       ├── deploy
+│       │   └── deploy.sh
+│       ├── logs
+│       │   └── app.log
+│       └── src
+│           ├── Main.java
+│           └── Service.java
+└── project
+    ├── config
+    │   └── application.yml
+    ├── deploy
+    │   └── deploy.sh
+    ├── logs
+    │   ├── app.log
+    │   └── syslog
+    └── src
+        ├── Main.java
+        └── Service.java
+
+13 directories, 13 files
+
+ubuntu@ubuntu:~/06.archive$ tar -xzvf archive.tar.gz -C archive_zip_extract/
+project/
+project/config/
+project/config/application.yml
+project/src/
+project/src/Service.java
+project/src/Main.java
+project/deploy/
+project/deploy/deploy.sh
+project/logs/
+project/logs/syslog
+project/logs/app.log
+
+ubuntu@ubuntu:~/06.archive$ tree archive_zip_extract/
+archive_zip_extract/
+└── project
+    ├── config
+    │   └── application.yml
+    ├── deploy
+    │   └── deploy.sh
+    ├── logs
+    │   ├── app.log
+    │   └── syslog
+    └── src
+        ├── Main.java
+        └── Service.java
+
+6 directories, 6 files
+
+ubuntu@ubuntu:~/06.archive$ tree
+.
+├── archive.tar
+├── archive.tar.gz
+├── archive_zip_extract
+│   └── project
+│       ├── config
+│       │   └── application.yml
+│       ├── deploy
+│       │   └── deploy.sh
+│       ├── logs
+│       │   ├── app.log
+│       │   └── syslog
+│       └── src
+│           ├── Main.java
+│           └── Service.java
+├── extract
+│   └── project
+│       ├── config
+│       │   └── application.yml
+│       ├── deploy
+│       │   └── deploy.sh
+│       ├── logs
+│       │   └── app.log
+│       └── src
+│           ├── Main.java
+│           └── Service.java
+└── project
+    ├── config
+    │   └── application.yml
+    ├── deploy
+    │   └── deploy.sh
+    ├── logs
+    │   ├── app.log
+    │   └── syslog
+    └── src
+        ├── Main.java
+        └── Service.java
+
+18 directories, 19 files
+
