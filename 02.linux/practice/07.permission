@@ -1,0 +1,174 @@
+권한 기본 실습
+ubuntu@ubuntu:~/07.permission$ umask
+0           /   002
+특수권한비트 / 일반 권한
+특수권한비트
+- setuid (4): 파일 적용, 실행시 소유자의 권한으로 실행
+- setgid (2): 파일/디렉토리 적용, 실행시 그룹의 권한으로 실행
+- sticky bit (1): 디렉토리 적용, 본인 파일만 삭제
+
+ubuntu@ubuntu:~/07.permission$ umask
+0002
+ubuntu@ubuntu:~/07.permission$ umask 022
+ubuntu@ubuntu:~/07.permission$ umask
+0022
+ubuntu@ubuntu:~/07.permission$ touch umask_test.txt
+ubuntu@ubuntu:~/07.permission$ ll umask_test.txt 
+-rw-r--r-- 1 ubuntu ubuntu 0 Mar 17 15:15 umask_test.txt
+
+--- chmod
+ubuntu@ubuntu:~/07.permission$ cd app
+ubuntu@ubuntu:~/07.permission/app$ ll
+total 20
+drwxrwxr-x 5 ubuntu ubuntu 4096 Mar 17 15:08 ./
+drwxrwxr-x 3 ubuntu ubuntu 4096 Mar 17 15:15 ../
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 17 15:08 config/
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 17 15:08 deploy/
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 17 15:08 logs/
+ubuntu@ubuntu:~/07.permission/app$ ll deploy/deploy.sh
+-rw-rw-r-- 1 ubuntu ubuntu 0 Mar 17 15:08 deploy/deploy.sh
+ubuntu@ubuntu:~/07.permission/app$ chmod u+x deploy/deploy.sh 
+ubuntu@ubuntu:~/07.permission/app$ ll deploy/deploy.sh
+-rwxrw-r-- 1 ubuntu ubuntu 0 Mar 17 15:08 deploy/deploy.sh*
+ubuntu@ubuntu:~/07.permission/app$ chmod 755 deploy/deploy.sh 
+ubuntu@ubuntu:~/07.permission/app$ ll deploy/deploy.sh
+-rwxr-xr-x 1 ubuntu ubuntu 0 Mar 17 15:08 deploy/deploy.sh*
+ubuntu@ubuntu:~/07.permission/app$ chmod 755 deploy/
+ubuntu@ubuntu:~/07.permission/app$ chmod -R 755 deploy/
+ubuntu@ubuntu:~/07.permission/app$ ll deploy/
+total 8
+drwxr-xr-x 2 ubuntu ubuntu 4096 Mar 17 15:08 ./
+drwxrwxr-x 5 ubuntu ubuntu 4096 Mar 17 15:08 ../
+-rwxr-xr-x 1 ubuntu ubuntu    0 Mar 17 15:08 deploy.sh*
+-rwxr-xr-x 1 ubuntu ubuntu    0 Mar 17 15:08 rollback.sh*
+
+--- chown
+ubuntu@ubuntu:~/07.permission$ ls
+app  umask_test.txt
+ubuntu@ubuntu:~/07.permission$ touch chown_test.txt
+ubuntu@ubuntu:~/07.permission$ ll
+total 12
+drwxrwxr-x  3 ubuntu ubuntu 4096 Mar 17 15:24 ./
+drwxr-x--- 11 ubuntu ubuntu 4096 Mar 17 15:08 ../
+drwxrwxr-x  5 ubuntu ubuntu 4096 Mar 17 15:08 app/
+-rw-r--r--  1 ubuntu ubuntu    0 Mar 17 15:24 chown_test.txt
+-rw-r--r--  1 ubuntu ubuntu    0 Mar 17 15:15 umask_test.txt
+ubuntu@ubuntu:~/07.permission$ chown ubuntu chown_test.txt 
+ubuntu@ubuntu:~/07.permission$ chown ubuntu:ubuntu chown_tes
+t.txt 
+ubuntu@ubuntu:~/07.permission$ chown :ubuntu chown_test.txt 
+
+---
+1. 배포 스크립트 권한 설정
+# 현재 위치: /home/ubuntu/07.permission
+
+# 1. ls -l app/deploy/ 로 현재 권한 확인
+# 2. deploy.sh, rollback.sh 에 실행 권한 추가 (chmod +x)
+# 3. application-prod.yml 을 소유자만 읽기/쓰기 가능하게 (600)
+# 4. app/logs/ 하위 전체를 그룹 읽기 가능하게 재귀 적용 (664)
+# 5. ls -l 로 각 파일 권한 최종 확인
+ubuntu@ubuntu:~/07.permission$ ls -l app/deploy/
+total 0
+-rwxr-xr-x 1 ubuntu ubuntu 0 Mar 17 15:35 deploy.sh
+-rwxr-xr-x 1 ubuntu ubuntu 0 Mar 17 15:35 rollback.sh
+ubuntu@ubuntu:~/07.permission$ chmod +x app/deploy/deploy.sh  app/deploy/rollback.sh 
+ubuntu@ubuntu:~/07.permission$ chmod -x app/deploy/deploy.sh
+  app/deploy/rollback.sh 
+ubuntu@ubuntu:~/07.permission$ ls -l app/deploy/
+total 0
+-rw-r--r-- 1 ubuntu ubuntu 0 Mar 17 15:35 deploy.sh
+-rw-r--r-- 1 ubuntu ubuntu 0 Mar 17 15:35 rollback.sh
+ubuntu@ubuntu:~/07.permission$ chmod +x app/deploy/deploy.sh
+  app/deploy/rollback.sh 
+ubuntu@ubuntu:~/07.permission$ ls -l app/deploy/
+total 0
+-rwxr-xr-x 1 ubuntu ubuntu 0 Mar 17 15:35 deploy.sh
+-rwxr-xr-x 1 ubuntu ubuntu 0 Mar 17 15:35 rollback.sh
+ubuntu@ubuntu:~/07.permission$ chmod 600 app/config/application-prod.yml 
+ubuntu@ubuntu:~/07.permission$ ls -l app/config/application-
+prod.yml 
+-rw------- 1 ubuntu ubuntu 0 Mar 17 15:35 app/config/application-prod.yml
+ubuntu@ubuntu:~/07.permission$ chmod -R 664 app/logs/
+ubuntu@ubuntu:~/07.permission$ sudo ll app/logs/app.log 
+[sudo] password for ubuntu: 
+sudo: ll: command not found
+ubuntu@ubuntu:~/07.permission$ sudo ls -al app/logs/app.log 
+-rw-rw-r-- 1 ubuntu ubuntu 0 Mar 17 15:35 app/logs/app.log
+
+---
+2.서비스 계정 소유권 설정
+# 현재 위치: /home/ubuntu/07.permission
+
+# 1. app/ 디렉터리 전체 소유자를 appuser 로 재귀 변경
+# 2. ls -l app/ 로 소유자 변경 확인
+# 3. app/config/ 소유자를 다시 ubuntu 로 재귀 변경 (설정 파일은 관리자가 수정)
+# 4. ls -l app/config/ 로 확인
+
+ubuntu@ubuntu:~/07.permission$ sudo useradd -r -s /bin/false appuser
+ubuntu@ubuntu:~/07.permission$ ll app/
+total 20
+drwxrwxr-x 5 ubuntu ubuntu 4096 Mar 17 15:08 ./
+drwxrwxr-x 3 ubuntu ubuntu 4096 Mar 17 15:24 ../
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 17 15:08 config/
+drwxr-xr-x 2 ubuntu ubuntu 4096 Mar 17 15:08 deploy/
+drw-rw-r-- 2 ubuntu ubuntu 4096 Mar 17 15:08 logs/
+ubuntu@ubuntu:~/07.permission$ sudo chown -R appuser app/
+ubuntu@ubuntu:~/07.permission$ ll app/
+total 20
+drwxrwxr-x 5 appuser ubuntu 4096 Mar 17 15:08 ./
+drwxrwxr-x 3 ubuntu  ubuntu 4096 Mar 17 15:24 ../
+drwxrwxr-x 2 appuser ubuntu 4096 Mar 17 15:08 config/
+drwxr-xr-x 2 appuser ubuntu 4096 Mar 17 15:08 deploy/
+drw-rw-r-- 2 appuser ubuntu 4096 Mar 17 15:08 logs/
+ubuntu@ubuntu:~/07.permission$ sudo chown -R ubuntu app/conf
+ig/
+ubuntu@ubuntu:~/07.permission$ ll app
+total 20
+drwxrwxr-x 5 appuser ubuntu 4096 Mar 17 15:08 ./
+drwxrwxr-x 3 ubuntu  ubuntu 4096 Mar 17 15:24 ../
+drwxrwxr-x 2 ubuntu  ubuntu 4096 Mar 17 15:08 config/
+drwxr-xr-x 2 appuser ubuntu 4096 Mar 17 15:08 deploy/
+drw-rw-r-- 2 appuser ubuntu 4096 Mar 17 15:08 logs/
+ubuntu@ubuntu:~/07.permission$ ls -l app/config/
+total 0
+-rw------- 1 ubuntu ubuntu 0 Mar 17 15:35 application-prod.yml
+-rw-rw-r-- 1 ubuntu ubuntu 0 Mar 17 15:35 application.yml
+
+---
+3. 보안 점검 : 위험 권한 파일 탐지 및 수정
+# 현재 위치: /home/ubuntu/07.permission
+
+# 1. find로 권한이 정확히 777인 파일 검색
+# 2. secret.key → 600 으로 변경
+# 3. old_deploy.sh → 755 로 변경
+# 4. find로 777 파일이 없어졌는지 재확인
+# 5. umask 확인 후, 새 파일 touch test.txt 생성 → ls -l 로 기본 권한 확인
+ubuntu@ubuntu:~/07.permission$ sudo chown -R ubuntu app/
+ubuntu@ubuntu:~/07.permission$ ll
+total 12
+drwxrwxr-x  3 ubuntu ubuntu 4096 Mar 17 15:24 ./
+drwxr-x--- 11 ubuntu ubuntu 4096 Mar 17 15:08 ../
+drwxrwxr-x  5 ubuntu ubuntu 4096 Mar 17 15:08 app/
+-rw-r--r--  1 ubuntu ubuntu    0 Mar 17 15:24 chown_test.txt
+-rw-r--r--  1 ubuntu ubuntu    0 Mar 17 15:15 umask_test.txt
+ubuntu@ubuntu:~/07.permission$ touch app/config/secret.key
+chmod 777 app/config/secret.key
+touch app/deploy/old_deploy.sh
+chmod 777 app/deploy/old_deploy.sh
+ubuntu@ubuntu:~/07.permission$ find . -perm 777 -type f
+./app/config/secret.key
+./app/deploy/old_deploy.sh
+find: ‘./app/logs/app.log’: Permission denied
+ubuntu@ubuntu:~/07.permission$ chmod 600 app/config/secret.key 
+ubuntu@ubuntu:~/07.permission$ ll app/config/secret.key 
+-rw------- 1 ubuntu ubuntu 0 Mar 17 15:48 app/config/secret.key
+ubuntu@ubuntu:~/07.permission$ chmod 755 app/deploy/old_deploy.sh 
+ubuntu@ubuntu:~/07.permission$ ll app/deploy/old_deploy.sh 
+-rwxr-xr-x 1 ubuntu ubuntu 0 Mar 17 15:48 app/deploy/old_deploy.sh*
+ubuntu@ubuntu:~/07.permission$ find . -perm 777 -type f
+find: ‘./app/logs/app.log’: Permission denied
+ubuntu@ubuntu:~/07.permission$ umask
+0022
+ubuntu@ubuntu:~/07.permission$ touch test.txt
+ubuntu@ubuntu:~/07.permission$ ll test.txt 
+-rw-r--r-- 1 ubuntu ubuntu 0 Mar 17 15:51 test.txt
