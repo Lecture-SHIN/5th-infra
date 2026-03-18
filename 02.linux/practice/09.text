@@ -806,20 +806,24 @@ application-dev.yml  application-prod.yml  application-template.yml
 
 # 4. 생성된 두 파일에서 password 행만 grep으로 확인
 # 5. prod 파일에서 LOG_LEVEL 행을 sed로 주석 처리 (#LOG_LEVEL)
+ubuntu@ubuntu:~/09.text/config$ grep "password" application-dev.yml application-prod.yml 
+application-dev.yml:    password: dev_pass123
+application-prod.yml:    password: prod_pass!@#
+ubuntu@ubuntu:~/09.text/config$ grep "root:" application-prod.yml 
+    root: WARN
+ubuntu@ubuntu:~/09.text/config$ sed -i 's/root: WARN/#root: WARN/g' application-prod.yml 
+ubuntu@ubuntu:~/09.text/config$ grep "root:" application-prod.yml 
+    #root: WARN
 
 ---
 3. 접근 로그 통계 분석
-tree /home/ubuntu/09.text
+# 현재 위치: /home/ubuntu/09.text/logs
 
-/home/ubuntu/09.text
-├── config
-│   ├── application-template.yml   ← 원본 템플릿
-│   ├── application-dev.yml        ← sed 치환 결과
-│   └── application-prod.yml       ← sed 치환 결과
-├── logs
-│   ├── app.log                    ← 장애 분석 대상
-│   └── access.log                 ← Nginx 접근 로그
-└── data
+# 1. grep으로 500번대 응답 코드 포함 행만 추출
+# 2. awk로 IP 주소($1)별 요청 수 집계 출력
+# 3. awk로 HTTP 상태코드($9)별 요청 수 집계 출력
+# 4. awk로 전체 응답 바이트($10)의 합계 출력
+# 5. 200 응답만 grep으로 추출 후 awk로 요청 URL($7)만 출력
 
 
 
