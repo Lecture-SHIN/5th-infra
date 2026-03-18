@@ -383,9 +383,221 @@ ubuntu@ubuntu:~/09.text$ awk 'BEGIN {print "===행 목록==="} {print NR, $0} EN
 11 2024-03-15 09:10:14 INFO  HealthCheck - Application is UP
 ===행 완료===
 
+--- /etc/passwd
+ubuntu@ubuntu:~/09.text$ tail /etc/passwd
+syslog:x:103:104::/nonexistent:/usr/sbin/nologin
+uuidd:x:104:105::/run/uuidd:/usr/sbin/nologin
+tcpdump:x:105:107::/nonexistent:/usr/sbin/nologin
+tss:x:106:108:TPM software stack,,,:/var/lib/tpm:/bin/false
+landscape:x:107:109::/var/lib/landscape:/usr/sbin/nologin
+fwupd-refresh:x:989:989:Firmware update daemon:/var/lib/fwupd:/usr/sbin/nologin
+usbmux:x:108:46:usbmux daemon,,,:/var/lib/usbmux:/usr/sbin/nologin
+sshd:x:109:65534::/run/sshd:/usr/sbin/nologin
+ubuntu:x:1000:1000:ubuntu:/home/ubuntu:/bin/bash
+appuser:x:999:988::/home/appuser:/bin/false
+ubuntu@ubuntu:~/09.text$ awk -F: '{print $1}' /etc/passwd
+root
+daemon
+bin
+sys
+sync
+games
+man
+lp
+mail
+news
+uucp
+proxy
+www-data
+backup
+list
+irc
+_apt
+nobody
+systemd-network
+systemd-timesync
+dhcpcd
+messagebus
+systemd-resolve
+pollinate
+polkitd
+syslog
+uuidd
+tcpdump
+tss
+landscape
+fwupd-refresh
+usbmux
+sshd
+ubuntu
+appuser
+ubuntu@ubuntu:~/09.text$ awk -F: '{print $1, $7}' /etc/passwd
+root /bin/bash
+daemon /usr/sbin/nologin
+bin /usr/sbin/nologin
+sys /usr/sbin/nologin
+sync /bin/sync
+games /usr/sbin/nologin
+man /usr/sbin/nologin
+lp /usr/sbin/nologin
+mail /usr/sbin/nologin
+news /usr/sbin/nologin
+uucp /usr/sbin/nologin
+proxy /usr/sbin/nologin
+www-data /usr/sbin/nologin
+backup /usr/sbin/nologin
+list /usr/sbin/nologin
+irc /usr/sbin/nologin
+_apt /usr/sbin/nologin
+nobody /usr/sbin/nologin
+systemd-network /usr/sbin/nologin
+systemd-timesync /usr/sbin/nologin
+dhcpcd /bin/false
+messagebus /usr/sbin/nologin
+systemd-resolve /usr/sbin/nologin
+pollinate /bin/false
+polkitd /usr/sbin/nologin
+syslog /usr/sbin/nologin
+uuidd /usr/sbin/nologin
+tcpdump /usr/sbin/nologin
+tss /bin/false
+landscape /usr/sbin/nologin
+fwupd-refresh /usr/sbin/nologin
+usbmux /usr/sbin/nologin
+sshd /usr/sbin/nologin
+ubuntu /bin/bash
+appuser /bin/false
+
+ubuntu@ubuntu:~/09.text$ cat > data.csv << 'EOF'
+이름,부서,직급,연봉,입사연도
+김민준,개발팀,시니어,75000000,2019
+이서연,운영팀,주니어,42000000,2022
+박도윤,개발팀,리드,95000000,2017
+최아린,기획팀,시니어,68000000,2020
+정하준,개발팀,주니어,45000000,2023
+한소율,운영팀,시니어,71000000,2018
+윤지호,기획팀,리드,88000000,2016
+임나은,개발팀,시니어,80000000,2019
+송민재,운영팀,주니어,40000000,2024
+오예린,개발팀,리드,98000000,2015
+EOF
+ubuntu@ubuntu:~/09.text$ cat data.csv 
+이름,부서,직급,연봉,입사연도
+김민준,개발팀,시니어,75000000,2019
+이서연,운영팀,주니어,42000000,2022
+박도윤,개발팀,리드,95000000,2017
+최아린,기획팀,시니어,68000000,2020
+정하준,개발팀,주니어,45000000,2023
+한소율,운영팀,시니어,71000000,2018
+윤지호,기획팀,리드,88000000,2016
+임나은,개발팀,시니어,80000000,2019
+송민재,운영팀,주니어,40000000,2024
+오예린,개발팀,리드,98000000,2015
+ubuntu@ubuntu:~/09.text$ awk -F, '{print $1, $3}' data.csv 
+이름 직급
+김민준 시니어
+이서연 주니어
+박도윤 리드
+최아린 시니어
+정하준 주니어
+한소율 시니어
+윤지호 리드
+임나은 시니어
+송민재 주니어
+오예린 리드
+ubuntu@ubuntu:~/09.text$ awk -F, 'NR==1 {print $0}' data.csv 
+이름,부서,직급,연봉,입사연도
+ubuntu@ubuntu:~/09.text$ awk -F, 'NR==1' data.csv 
+이름,부서,직급,연봉,입사연도
+ubuntu@ubuntu:~/09.text$ awk -F, 'NR>1' data.csv 
+김민준,개발팀,시니어,75000000,2019
+이서연,운영팀,주니어,42000000,2022
+박도윤,개발팀,리드,95000000,2017
+최아린,기획팀,시니어,68000000,2020
+정하준,개발팀,주니어,45000000,2023
+한소율,운영팀,시니어,71000000,2018
+윤지호,기획팀,리드,88000000,2016
+임나은,개발팀,시니어,80000000,2019
+송민재,운영팀,주니어,40000000,2024
+오예린,개발팀,리드,98000000,2015
+ubuntu@ubuntu:~/09.text$ awk -F, 'NR>1 && $2 == "개발팀"' data.csv 
+김민준,개발팀,시니어,75000000,2019
+박도윤,개발팀,리드,95000000,2017
+정하준,개발팀,주니어,45000000,2023
+임나은,개발팀,시니어,80000000,2019
+오예린,개발팀,리드,98000000,2015
 
 
+--- app.log
+awk 실습1. ERROR(/ERROR/) 포함된 행 출력
+ubuntu@ubuntu:~/09.text$ awk '/ERROR/ {print $0}' app.log
+2024-03-15 09:04:55 ERROR PostService - NullPointerException at PostService.java:87
+2024-03-15 09:05:01 ERROR UserService - Authentication failed: user_id=9999
+2024-03-15 09:07:10 ERROR JpaService - Connection pool exhausted - HikariCP timeout
+2024-03-15 09:08:23 ERROR SecurityService - JWT token expired: user_id=1005
 
+awk 실습2. 3 필드값이 ERROR 행 출력
+ubuntu@ubuntu:~/09.text$ awk '$3=="ERROR" {print $0}' app.log
+2024-03-15 09:04:55 ERROR PostService - NullPointerException at PostService.java:87
+2024-03-15 09:05:01 ERROR UserService - Authentication failed: user_id=9999
+2024-03-15 09:07:10 ERROR JpaService - Connection pool exhausted - HikariCP timeout
+2024-03-15 09:08:23 ERROR SecurityService - JWT token expired: user_id=1005
 
+awk 실습3. 3 ~ 7 행 출력
+ubuntu@ubuntu:~/09.text$ awk 'NR >= 3 && NR <= 7 {print}' app.log 
+2024-03-15 09:03:45 WARN  HikariCP - Connection pool is 80% full
+2024-03-15 09:04:55 ERROR PostService - NullPointerException at PostService.java:87
+2024-03-15 09:05:01 ERROR UserService - Authentication failed: user_id=9999
+2024-03-15 09:05:30 INFO  UserService - User login: user_id=1002
+2024-03-15 09:06:22 WARN  RedisService - Cache miss rate high: 45%
 
+--- data.csv
+- 사원들의 총 연봉 계산
+ubuntu@ubuntu:~/09.text$ ls
+application.yml      app.log  data      logs
+application.yml.bak  config   data.csv
+ubuntu@ubuntu:~/09.text$ cat data.csv 
+이름,부서,직급,연봉,입사연도
+김민준,개발팀,시니어,75000000,2019
+이서연,운영팀,주니어,42000000,2022
+박도윤,개발팀,리드,95000000,2017
+최아린,기획팀,시니어,68000000,2020
+정하준,개발팀,주니어,45000000,2023
+한소율,운영팀,시니어,71000000,2018
+윤지호,기획팀,리드,88000000,2016
+임나은,개발팀,시니어,80000000,2019
+송민재,운영팀,주니어,40000000,2024
+오예린,개발팀,리드,98000000,2015
+ubuntu@ubuntu:~/09.text$ awk -F, 'NR > 1 {sum += $4} END {print "총 연봉 합계 : ", sum}' data.csv
+총 연봉 합계 :  702000000
 
+--- app.log
+- ERROR 행 개수 집계
+ubuntu@ubuntu:~/09.text$ awk '/ERROR/ {count++} END {print "ERROR의 수 : ", count}' app.log
+ERROR의 수 :  4
+
+ubuntu@ubuntu:~/09.text$ awk '
+/ERROR/ {err++}
+/WARN/ {warn++}
+/INFO/ {info++}
+END {print "ERROR:", err
+print "WARN:", warn
+print "INFO:", info}
+' app.log
+ERROR: 4
+WARN: 2
+INFO: 5
+
+--- data.txt
+cat > data.txt << 'EOF'
+server-01 web OK 1024
+server-02 db OK 2048
+server-03 cache OK 512
+server-04 web OK 1536
+server-05 db OK 4096
+server-06 wen OK 768
+server-07 cache OK 1024
+server-08 db OK 3072
+server-09 web OK 2048
+server-10 cache OK 256
+EOF
