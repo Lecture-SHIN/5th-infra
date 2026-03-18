@@ -1,0 +1,463 @@
+--- redirect
+ubuntu@ubuntu:~/10.pipe_redirect$ pwd
+/home/ubuntu/10.pipe_redirect
+ubuntu@ubuntu:~/10.pipe_redirect$ ls -l
+total 12
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 config
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 logs
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 output
+ubuntu@ubuntu:~/10.pipe_redirect$ ls -l > filelist.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ ll
+total 24
+drwxrwxr-x  5 ubuntu ubuntu 4096 Mar 18 13:09 ./
+drwxr-x--- 14 ubuntu ubuntu 4096 Mar 18 13:08 ../
+drwxrwxr-x  2 ubuntu ubuntu 4096 Mar 18 13:08 config/
+-rw-rw-r--  1 ubuntu ubuntu  221 Mar 18 13:09 filelist.txt
+drwxrwxr-x  2 ubuntu ubuntu 4096 Mar 18 13:08 logs/
+drwxrwxr-x  2 ubuntu ubuntu 4096 Mar 18 13:08 output/
+ubuntu@ubuntu:~/10.pipe_redirect$ cat filelist.txt 
+total 12
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 config
+-rw-rw-r-- 1 ubuntu ubuntu    0 Mar 18 13:09 filelist.txt
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 logs
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 output
+ubuntu@ubuntu:~/10.pipe_redirect$ ls -l > filelist.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ cat filelist.txt 
+total 12
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 config
+-rw-rw-r-- 1 ubuntu ubuntu    0 Mar 18 13:10 filelist.txt
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 logs
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 output
+ubuntu@ubuntu:~/10.pipe_redirect$ ls -l >> filelist.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ cat filelist.txt 
+total 12
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 config
+-rw-rw-r-- 1 ubuntu ubuntu    0 Mar 18 13:10 filelist.txt
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 logs
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 output
+total 16
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 config
+-rw-rw-r-- 1 ubuntu ubuntu  221 Mar 18 13:10 filelist.txt
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 logs
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 output
+ubuntu@ubuntu:~/10.pipe_redirect$ ls /notexist
+ls: cannot access '/notexist': No such file or directory
+ubuntu@ubuntu:~/10.pipe_redirect$ ls /notexist 2> error.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ cat error.txt 
+ls: cannot access '/notexist': No such file or directory
+ubuntu@ubuntu:~/10.pipe_redirect$ ls /notexist 2>> error.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ cat error.txt 
+ls: cannot access '/notexist': No such file or directory
+ls: cannot access '/notexist': No such file or directory
+ubuntu@ubuntu:~/10.pipe_redirect$ ls /var /notexist
+ls: cannot access '/notexist': No such file or directory
+/var:
+backups  cache  crash  lib  local  lock  log  mail  opt  run  snap  spool  tmp
+ubuntu@ubuntu:~/10.pipe_redirect$ ls /var /notexist 2>> error.txt
+/var:
+backups  cache  crash  lib  local  lock  log  mail  opt  run  snap  spool  tmp
+ubuntu@ubuntu:~/10.pipe_redirect$ cat error.txt 
+ls: cannot access '/notexist': No such file or directory
+ls: cannot access '/notexist': No such file or directory
+ls: cannot access '/notexist': No such file or directory
+ubuntu@ubuntu:~/10.pipe_redirect$ ls /var /notexist &> result.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ cat result.txt 
+ls: cannot access '/notexist': No such file or directory
+/var:
+backups
+cache
+crash
+lib
+local
+lock
+log
+mail
+opt
+run
+snap
+spool
+tmp
+
+
+--- pipe
+
+--- tee
+ubuntu@ubuntu:~/10.pipe_redirect$ ls
+config  error.txt  filelist.txt  logs  output  result.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ ls -l > output.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ ls
+config  error.txt  filelist.txt  logs  output  output.txt  result.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ ls -l | tee output.txt
+total 24
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 config
+-rw-rw-r-- 1 ubuntu ubuntu  171 Mar 18 13:13 error.txt
+-rw-rw-r-- 1 ubuntu ubuntu  442 Mar 18 13:10 filelist.txt
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 logs
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 18 13:08 output
+-rw-rw-r-- 1 ubuntu ubuntu    0 Mar 18 13:18 output.txt
+-rw-rw-r-- 1 ubuntu ubuntu  130 Mar 18 13:14 result.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ echo "시작: $(date)"
+시작: Wed Mar 18 01:20:00 PM KST 2026
+ubuntu@ubuntu:~/10.pipe_redirect$ echo "시작: $(date)" > date1.txt date2.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ ls
+config     error.txt     logs    output.txt
+date1.txt  filelist.txt  output  result.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ ls
+config  date1.txt  error.txt  filelist.txt  logs  output  output.txt  result.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ cat date1.txt 
+시작: Wed Mar 18 01:20:22 PM KST 2026 date2.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ echo "시작: $(date)" | tee date1.txt date2.txt
+시작: Wed Mar 18 01:21:29 PM KST 2026
+ubuntu@ubuntu:~/10.pipe_redirect$ ls date*
+date1.txt  date2.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ cat date1.txt date2.txt 
+시작: Wed Mar 18 01:21:29 PM KST 2026
+시작: Wed Mar 18 01:21:29 PM KST 2026
+
+--- xargs
+ubuntu@ubuntu:~/10.pipe_redirect$ ls
+config     date2.txt  filelist.txt  output      result.txt
+date1.txt  error.txt  logs          output.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ find . -name "date*.txt"
+./date1.txt
+./date2.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ find . -name "date*.txt" | xargs rm
+ubuntu@ubuntu:~/10.pipe_redirect$ ls
+config  error.txt  filelist.txt  logs  output  output.txt  result.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ touch "my log.log"
+ubuntu@ubuntu:~/10.pipe_redirect$ ls
+ config      filelist.txt  'my log.log'   output.txt
+ error.txt   logs           output        result.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ find . -name "*.log" | xargs rm
+rm: cannot remove './my': No such file or directory
+rm: cannot remove 'log.log': No such file or directory
+ubuntu@ubuntu:~/10.pipe_redirect$ find . -name "*.log" | xargs -0 rm
+rm: cannot remove './my log.log'$'\n': No such file or directory
+ubuntu@ubuntu:~/10.pipe_redirect$ find . -name "*.log" -print0 | xargs -
+0 rm
+ubuntu@ubuntu:~/10.pipe_redirect$ ls
+config  error.txt  filelist.txt  logs  output  output.txt  result.txt
+
+--- diff
+ubuntu@ubuntu:~/10.pipe_redirect$ mkdir diff1 diff2
+ubuntu@ubuntu:~/10.pipe_redirect$ ls
+config  diff2      filelist.txt  output      result.txt
+diff1   error.txt  logs          output.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ touch diff1/a.txt diff1/b.txt diff1/c.
+txt
+ubuntu@ubuntu:~/10.pipe_redirect$ touch diff2/a.txt diff2/b.txt diff2/d.
+txt
+ubuntu@ubuntu:~/10.pipe_redirect$ diff <(ls diff1) <(ls diff2)
+3c3
+< c.txt
+---
+> d.txt
+
+--- 
+1. 배포 로그 수집 및 저장
+# 현재 위치: /home/ubuntu/10.pipe_redirect
+
+# 1. app.log에서 ERROR 행만 필터링 → output/error_only.txt 로 저장
+# 2. app.log에서 ERROR 행을 grep으로 필터 후 tee로 화면 출력 + output/error_tee.txt 저장
+# 3. 존재하지 않는 파일을 cat 으로 열 때 에러 메시지 → output/err.txt 로 저장
+#    cat /notexist.log 2> output/err.txt
+# 4. app.log 의 전체 출력과 에러를 모두 output/all.txt 로 저장
+#    cat logs/app.log /notexist.log &> output/all.txt
+# 5. find로 .log 파일 검색 결과를 output/loglist.txt 에 저장하면서 화면에도 출력 (tee)
+
+ubuntu@ubuntu:~/10.pipe_redirect$ pwd
+/home/ubuntu/10.pipe_redirect
+ubuntu@ubuntu:~/10.pipe_redirect$ grep "ERROR" logs/app.log > output/error_only.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ ls output/error_only.txt 
+output/error_only.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ cat output/error_only.txt 
+2024-03-15 09:04:55 ERROR PostService - NullPointerException at PostService.java:87
+2024-03-15 09:05:01 ERROR UserService - Authentication failed: user_id=9999
+2024-03-15 09:07:10 ERROR JpaService - Connection pool exhausted - HikariCP timeout
+2024-03-15 09:08:23 ERROR SecurityService - JWT token expired: user_id=1005
+2024-03-15 09:10:14 ERROR PostService - NullPointerException at PostService.java:87
+ubuntu@ubuntu:~/10.pipe_redirect$ grep "ERROR" logs/app.log | tee output
+/error_tee.txt
+2024-03-15 09:04:55 ERROR PostService - NullPointerException at PostService.java:87
+2024-03-15 09:05:01 ERROR UserService - Authentication failed: user_id=9999
+2024-03-15 09:07:10 ERROR JpaService - Connection pool exhausted - HikariCP timeout
+2024-03-15 09:08:23 ERROR SecurityService - JWT token expired: user_id=1005
+2024-03-15 09:10:14 ERROR PostService - NullPointerException at PostService.java:87
+ubuntu@ubuntu:~/10.pipe_redirect$ cat /notexist.log 2> output/err.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ cat output/err.txt 
+cat: /notexist.log: No such file or directory
+ubuntu@ubuntu:~/10.pipe_redirect$ cat logs/app.log /notexist.log &> output/all.txt
+ubuntu@ubuntu:~/10.pipe_redirect$ cat output/all.txt 
+2024-03-15 09:01:00 INFO  UserService - User login: user_id=1001
+2024-03-15 09:02:11 INFO  PostService - Post created: post_id=501
+2024-03-15 09:03:45 WARN  HikariCP - Connection pool is 80% full
+2024-03-15 09:04:55 ERROR PostService - NullPointerException at PostService.java:87
+2024-03-15 09:05:01 ERROR UserService - Authentication failed: user_id=9999
+2024-03-15 09:06:22 WARN  RedisService - Cache miss rate high: 45%
+2024-03-15 09:07:10 ERROR JpaService - Connection pool exhausted - HikariCP timeout
+2024-03-15 09:08:23 ERROR SecurityService - JWT token expired: user_id=1005
+2024-03-15 09:09:00 INFO  UserService - User logout: user_id=1001
+2024-03-15 09:10:14 ERROR PostService - NullPointerException at PostService.java:87
+cat: /notexist.log: No such file or directory
+ubuntu@ubuntu:~/10.pipe_redirect$ find . -name "*.log"
+./logs/app.log
+ubuntu@ubuntu:~/10.pipe_redirect$ find . -name "*.log" | tee output/loglist.txt
+./logs/app.log
+ubuntu@ubuntu:~/10.pipe_redirect$ cat output/loglist.txt 
+./logs/app.log
+
+
+---
+2. 파이프 체이닝으로 로그 분석
+# 현재 위치: /home/ubuntu/10.pipe_redirect
+
+# 1. app.log에서 ERROR 필터 → HealthCheck 제외 → 줄 수 카운트 (파이프 3단계)
+# 2. app.log에서 ERROR 행 추출 → 서비스명($4) 출력 → 정렬 → 중복 제거
+#    cat | grep | awk | sort | uniq
+# 3. /etc/passwd 에서 사용자명만 추출 후 정렬
+#    cat /etc/passwd | cut -d: -f1 | sort
+# 4. app.log 전체 행 수 / ERROR 행 수 / WARN 행 수를 각각 wc -l 로 출력
+# 5. find로 30일 초과 .log 검색 결과를 xargs로 rm 실행
+#    (먼저 find만 실행해서 대상 확인 후 xargs rm 적용)
+
+ubuntu@ubuntu:~/10.pipe_redirect$ cat logs/app.log 
+2024-03-15 09:01:00 INFO  UserService - User login: user_id=1001
+2024-03-15 09:02:11 INFO  PostService - Post created: post_id=501
+2024-03-15 09:03:45 WARN  HikariCP - Connection pool is 80% full
+2024-03-15 09:04:55 ERROR PostService - NullPointerException at PostService.java:87
+2024-03-15 09:05:01 ERROR UserService - Authentication failed: user_id=9999
+2024-03-15 09:06:22 WARN  RedisService - Cache miss rate high: 45%
+2024-03-15 09:07:10 ERROR JpaService - Connection pool exhausted - HikariCP timeout
+2024-03-15 09:08:23 ERROR SecurityService - JWT token expired: user_id=1005
+2024-03-15 09:09:00 INFO  UserService - User logout: user_id=1001
+2024-03-15 09:10:14 ERROR PostService - NullPointerException at PostService.java:87
+ubuntu@ubuntu:~/10.pipe_redirect$ cat logs/app.log | grep "ERROR" | grep -v "HealthCheck"
+2024-03-15 09:04:55 ERROR PostService - NullPointerException at PostService.java:87
+2024-03-15 09:05:01 ERROR UserService - Authentication failed: user_id=9999
+2024-03-15 09:07:10 ERROR JpaService - Connection pool exhausted - HikariCP timeout
+2024-03-15 09:08:23 ERROR SecurityService - JWT token expired: user_id=1005
+2024-03-15 09:10:14 ERROR PostService - NullPointerException at PostService.java:87
+ubuntu@ubuntu:~/10.pipe_redirect$ cat logs/app.log | grep "ERROR" | grep -v "HealthCheck" | wc -l
+5
+ubuntu@ubuntu:~/10.pipe_redirect$ cat logs/app.log  | grep "ERROR" | awk '{print $4}'
+PostService
+UserService
+JpaService
+SecurityService
+PostService
+ubuntu@ubuntu:~/10.pipe_redirect$ cat logs/app.log  | grep "ERROR" | awk '{print $4}' | sort | uniq
+JpaService
+PostService
+SecurityService
+UserService
+ubuntu@ubuntu:~/10.pipe_redirect$ cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/run/ircd:/usr/sbin/nologin
+_apt:x:42:65534::/nonexistent:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-network:x:998:998:systemd Network Management:/:/usr/sbin/nologin
+systemd-timesync:x:997:997:systemd Time Synchronization:/:/usr/sbin/nologin
+dhcpcd:x:100:65534:DHCP Client Daemon,,,:/usr/lib/dhcpcd:/bin/false
+messagebus:x:101:102::/nonexistent:/usr/sbin/nologin
+systemd-resolve:x:992:992:systemd Resolver:/:/usr/sbin/nologin
+pollinate:x:102:1::/var/cache/pollinate:/bin/false
+polkitd:x:991:991:User for polkitd:/:/usr/sbin/nologin
+syslog:x:103:104::/nonexistent:/usr/sbin/nologin
+uuidd:x:104:105::/run/uuidd:/usr/sbin/nologin
+tcpdump:x:105:107::/nonexistent:/usr/sbin/nologin
+tss:x:106:108:TPM software stack,,,:/var/lib/tpm:/bin/false
+landscape:x:107:109::/var/lib/landscape:/usr/sbin/nologin
+fwupd-refresh:x:989:989:Firmware update daemon:/var/lib/fwupd:/usr/sbin/nologin
+usbmux:x:108:46:usbmux daemon,,,:/var/lib/usbmux:/usr/sbin/nologin
+sshd:x:109:65534::/run/sshd:/usr/sbin/nologin
+ubuntu:x:1000:1000:ubuntu:/home/ubuntu:/bin/bash
+appuser:x:999:988::/home/appuser:/bin/false
+ubuntu@ubuntu:~/10.pipe_redirect$ cat /etc/passwd | cut -d: -f1 | sort
+appuser
+_apt
+backup
+bin
+daemon
+dhcpcd
+fwupd-refresh
+games
+irc
+landscape
+list
+lp
+mail
+man
+messagebus
+news
+nobody
+polkitd
+pollinate
+proxy
+root
+sshd
+sync
+sys
+syslog
+systemd-network
+systemd-resolve
+systemd-timesync
+tcpdump
+tss
+ubuntu
+usbmux
+uucp
+uuidd
+www-data
+ubuntu@ubuntu:~/10.pipe_redirect$ echo "---전체---" && wc -l < logs/app.log 
+---전체---
+10
+ubuntu@ubuntu:~/10.pipe_redirect$ echo "---ERROR---" && grep "ERROR" logs/app.log | wc -l
+---ERROR---
+5
+ubuntu@ubuntu:~/10.pipe_redirect$ echo "---WARN---" && grep "WARN" logs/app.log | wc -l
+---WARN---
+2
+ubuntu@ubuntu:~/10.pipe_redirect$ find . -name ".log" -mtime +30 | xargs rm
+rm: missing operand
+Try 'rm --help' for more information.
+ubuntu@ubuntu:~/10.pipe_redirect$ find . -name ".log" -mtime +30 -print0 | xa
+rgs -0 rm
+rm: missing operand
+Try 'rm --help' for more information.
+
+---
+3. 히어독으로 설정 파일 자동 생성
+# 현재 위치: /home/ubuntu/10.pipe_redirect/config
+
+# 1. 히어독으로 application-dev.yml 생성
+cat > application-dev.yml << 'EOF'
+spring:
+  datasource:
+    url: jdbc:mysql://dev-db.internal:3306/appdb
+    username: dev_user
+    password: dev_pass123
+  redis:
+    host: dev-redis.internal
+server:
+  port: 8080
+logging:
+  level:
+    root: DEBUG
+EOF
+
+# 2. 히어독으로 application-prod.yml 생성
+#    (위 dev 내용을 참고하여 prod 값으로 직접 작성)
+cat > application-prod.yml << 'EOF'
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db.internal:3306/appdb
+    username: prod_user
+    password: prod_pass!@#
+  redis:
+    host: prod-redis.internal
+server:
+  port: 8080
+logging:
+  level:
+    root: DEBUG
+EOF
+
+# 3. diff <(cat application-dev.yml) <(cat application-prod.yml) 로 두 파일 비교
+# 4. 두 파일의 password 행만 grep으로 추출 → ../output/passwords.txt 저장
+#    2>/dev/null 로 에러는 버리기
+# 5. cat application-prod.yml | tee /tmp/prod_config_backup.yml 로
+#    화면 출력과 동시에 /tmp 에 백업
+
+ubuntu@ubuntu:~/10.pipe_redirect/config$ cat > application-dev.yml << 'EOF'
+spring:
+  datasource:
+    url: jdbc:mysql://dev-db.internal:3306/appdb
+    username: dev_user
+    password: dev_pass123
+  redis:
+    host: dev-redis.internal
+server:
+  port: 8080
+logging:
+  level:
+    root: DEBUG
+EOF
+ubuntu@ubuntu:~/10.pipe_redirect/config$ ls
+application-dev.yml
+ubuntu@ubuntu:~/10.pipe_redirect/config$ cat > application-prod.yml << 'EOF'
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db.internal:3306/appdb
+    username: prod_user
+    password: prod_pass!@#
+  redis:
+    host: prod-redis.internal
+server:
+  port: 8080
+logging:
+  level:
+    root: DEBUG
+EOF
+ubuntu@ubuntu:~/10.pipe_redirect/config$ ls
+application-dev.yml  application-prod.yml
+ubuntu@ubuntu:~/10.pipe_redirect/config$ diff <(cat application-dev.yml) <(cat application-prod.yml)
+3,5c3,5
+<     url: jdbc:mysql://dev-db.internal:3306/appdb
+<     username: dev_user
+<     password: dev_pass123
+---
+>     url: jdbc:mysql://prod-db.internal:3306/appdb
+>     username: prod_user
+>     password: prod_pass!@#
+7c7
+<     host: dev-redis.internal
+---
+>     host: prod-redis.internal
+ubuntu@ubuntu:~/10.pipe_redirect/config$ grep "password" application-dev.yml application-prod.yml 
+application-dev.yml:    password: dev_pass123
+application-prod.yml:    password: prod_pass!@#
+ubuntu@ubuntu:~/10.pipe_redirect/config$ grep "password" application-dev.yml application-prod.yml 2>/dev/null > ../output/passwords.txt
+ubuntu@ubuntu:~/10.pipe_redirect/config$ cat ../output/passwords.txt 
+application-dev.yml:    password: dev_pass123
+application-prod.yml:    password: prod_pass!@#
+ubuntu@ubuntu:~/10.pipe_redirect/config$ cat application-prod.yml | tee /tmp/prod_config_backup.yml
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db.internal:3306/appdb
+    username: prod_user
+    password: prod_pass!@#
+  redis:
+    host: prod-redis.internal
+server:
+  port: 8080
+logging:
+  level:
+    root: DEBUG
+ubuntu@ubuntu:~/10.pipe_redirect/config$ ls /tmp/prod_config_backup.yml 
+/tmp/prod_config_backup.yml
+
+
+
+
+
+
+
+
+
+
+
+
