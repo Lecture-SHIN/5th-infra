@@ -1,0 +1,417 @@
+--- sort
+ubuntu@ubuntu:~/11.sort_uniq$ ls
+app.log  data  logs  names.txt  numbers.txt
+ubuntu@ubuntu:~/11.sort_uniq$ cat names.txt 
+Charlie
+alice
+Bob
+dave
+Alice
+bob
+Charlie
+ubuntu@ubuntu:~/11.sort_uniq$ sort names.txt 
+alice
+Alice
+bob
+Bob
+Charlie
+Charlie
+dave
+ubuntu@ubuntu:~/11.sort_uniq$ sort -r names.txt 
+dave
+Charlie
+Charlie
+Bob
+bob
+Alice
+alice
+ubuntu@ubuntu:~/11.sort_uniq$ cat numbers.txt 
+42
+7
+100
+3
+55
+21
+8
+ubuntu@ubuntu:~/11.sort_uniq$ sort numbers.txt 
+100
+21
+3
+42
+55
+7
+8
+ubuntu@ubuntu:~/11.sort_uniq$ sort -n numbers.txt 
+3
+7
+8
+21
+42
+55
+100
+ubuntu@ubuntu:~/11.sort_uniq$ sort -rn numbers.txt 
+100
+55
+42
+21
+8
+7
+3
+ubuntu@ubuntu:~/11.sort_uniq$ sort -k2 app.log 
+2024-03-15 09:01:00 INFO  UserService - User login
+2024-03-15 09:02:11 INFO  PostService - Post created
+2024-03-15 09:03:45 WARN  HikariCP - Connection pool full
+2024-03-15 09:04:55 ERROR PostService - NullPointerException
+2024-03-15 09:05:01 ERROR UserService - Authentication failed
+ubuntu@ubuntu:~/11.sort_uniq$ sort -k2r app.log 
+2024-03-15 09:05:01 ERROR UserService - Authentication failed
+2024-03-15 09:04:55 ERROR PostService - NullPointerException
+2024-03-15 09:03:45 WARN  HikariCP - Connection pool full
+2024-03-15 09:02:11 INFO  PostService - Post created
+2024-03-15 09:01:00 INFO  UserService - User login
+ubuntu@ubuntu:~/11.sort_uniq$ cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/run/ircd:/usr/sbin/nologin
+_apt:x:42:65534::/nonexistent:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-network:x:998:998:systemd Network Management:/:/usr/sbin/nologin
+systemd-timesync:x:997:997:systemd Time Synchronization:/:/usr/sbin/nologin
+dhcpcd:x:100:65534:DHCP Client Daemon,,,:/usr/lib/dhcpcd:/bin/false
+messagebus:x:101:102::/nonexistent:/usr/sbin/nologin
+systemd-resolve:x:992:992:systemd Resolver:/:/usr/sbin/nologin
+pollinate:x:102:1::/var/cache/pollinate:/bin/false
+polkitd:x:991:991:User for polkitd:/:/usr/sbin/nologin
+syslog:x:103:104::/nonexistent:/usr/sbin/nologin
+uuidd:x:104:105::/run/uuidd:/usr/sbin/nologin
+tcpdump:x:105:107::/nonexistent:/usr/sbin/nologin
+tss:x:106:108:TPM software stack,,,:/var/lib/tpm:/bin/false
+landscape:x:107:109::/var/lib/landscape:/usr/sbin/nologin
+fwupd-refresh:x:989:989:Firmware update daemon:/var/lib/fwupd:/usr/sbin/nologin
+usbmux:x:108:46:usbmux daemon,,,:/var/lib/usbmux:/usr/sbin/nologin
+sshd:x:109:65534::/run/sshd:/usr/sbin/nologin
+ubuntu:x:1000:1000:ubuntu:/home/ubuntu:/bin/bash
+appuser:x:999:988::/home/appuser:/bin/false
+ubuntu@ubuntu:~/11.sort_uniq$ sort -t: -k3 -n /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/run/ircd:/usr/sbin/nologin
+_apt:x:42:65534::/nonexistent:/usr/sbin/nologin
+dhcpcd:x:100:65534:DHCP Client Daemon,,,:/usr/lib/dhcpcd:/bin/false
+messagebus:x:101:102::/nonexistent:/usr/sbin/nologin
+pollinate:x:102:1::/var/cache/pollinate:/bin/false
+syslog:x:103:104::/nonexistent:/usr/sbin/nologin
+uuidd:x:104:105::/run/uuidd:/usr/sbin/nologin
+tcpdump:x:105:107::/nonexistent:/usr/sbin/nologin
+tss:x:106:108:TPM software stack,,,:/var/lib/tpm:/bin/false
+landscape:x:107:109::/var/lib/landscape:/usr/sbin/nologin
+usbmux:x:108:46:usbmux daemon,,,:/var/lib/usbmux:/usr/sbin/nologin
+sshd:x:109:65534::/run/sshd:/usr/sbin/nologin
+fwupd-refresh:x:989:989:Firmware update daemon:/var/lib/fwupd:/usr/sbin/nologin
+polkitd:x:991:991:User for polkitd:/:/usr/sbin/nologin
+systemd-resolve:x:992:992:systemd Resolver:/:/usr/sbin/nologin
+systemd-timesync:x:997:997:systemd Time Synchronization:/:/usr/sbin/nologin
+systemd-network:x:998:998:systemd Network Management:/:/usr/sbin/nologin
+appuser:x:999:988::/home/appuser:/bin/false
+ubuntu:x:1000:1000:ubuntu:/home/ubuntu:/bin/bash
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+ubuntu@ubuntu:~/11.sort_uniq$ du -sh /home/ubuntu/09.text/
+52K     /home/ubuntu/09.text/
+ubuntu@ubuntu:~/11.sort_uniq$ du -sh /home/ubuntu/09.text/*
+4.0K    /home/ubuntu/09.text/application.yml
+4.0K    /home/ubuntu/09.text/application.yml.bak
+4.0K    /home/ubuntu/09.text/app.log
+16K     /home/ubuntu/09.text/config
+4.0K    /home/ubuntu/09.text/data
+4.0K    /home/ubuntu/09.text/data.csv
+4.0K    /home/ubuntu/09.text/data.txt
+8.0K    /home/ubuntu/09.text/logs
+ubuntu@ubuntu:~/11.sort_uniq$ du -sh /home/ubuntu/09.text/* | sort -rh
+16K     /home/ubuntu/09.text/config
+8.0K    /home/ubuntu/09.text/logs
+4.0K    /home/ubuntu/09.text/data.txt
+4.0K    /home/ubuntu/09.text/data.csv
+4.0K    /home/ubuntu/09.text/data
+4.0K    /home/ubuntu/09.text/app.log
+4.0K    /home/ubuntu/09.text/application.yml.bak
+4.0K    /home/ubuntu/09.text/application.yml
+
+--- uniq
+ubuntu@ubuntu:~/11.sort_uniq$ cat names.txt 
+Charlie
+alice
+Bob
+dave
+Alice
+bob
+Charlie
+ubuntu@ubuntu:~/11.sort_uniq$ uniq names.txt 
+Charlie
+alice
+Bob
+dave
+Alice
+bob
+Charlie
+ubuntu@ubuntu:~/11.sort_uniq$ sort names.txt | uniq
+alice
+Alice
+bob
+Bob
+Charlie
+dave
+ubuntu@ubuntu:~/11.sort_uniq$ sort names.txt | uniq -c
+      1 alice
+      1 Alice
+      1 bob
+      1 Bob
+      2 Charlie
+      1 dave
+ubuntu@ubuntu:~/11.sort_uniq$ sort names.txt | uniq -d
+Charlie
+ubuntu@ubuntu:~/11.sort_uniq$ sort names.txt | uniq -u
+alice
+Alice
+bob
+Bob
+dave
+ubuntu@ubuntu:~/11.sort_uniq$ sort names.txt | uniq -c
+      1 alice
+      1 Alice
+      1 bob
+      1 Bob
+      2 Charlie
+      1 dave
+ubuntu@ubuntu:~/11.sort_uniq$ sort names.txt | uniq -c | sort -rn
+      2 Charlie
+      1 dave
+      1 Bob
+      1 bob
+      1 Alice
+      1 alice
+
+--- IP 접속 빈도 분석
+ubuntu@ubuntu:~/11.sort_uniq$ cat access.log 
+192.168.1.10 - - [15/Mar/2024:09:01:00] "GET /api/posts HTTP/1.1" 200 512
+192.168.1.20 - - [15/Mar/2024:09:01:05] "POST /api/users HTTP/1.1" 201 128
+192.168.1.10 - - [15/Mar/2024:09:01:10] "GET /api/posts/1 HTTP/1.1" 200 256
+192.168.1.30 - - [15/Mar/2024:09:01:15] "GET /api/posts HTTP/1.1" 200 512
+192.168.1.20 - - [15/Mar/2024:09:01:20] "DELETE /api/posts/1 HTTP/1.1" 403 64
+192.168.1.10 - - [15/Mar/2024:09:01:25] "POST /api/posts HTTP/1.1" 201 300
+192.168.1.30 - - [15/Mar/2024:09:01:30] "GET /api/users HTTP/1.1" 500 48
+192.168.1.10 - - [15/Mar/2024:09:01:35] "GET /api/posts HTTP/1.1" 200 512
+192.168.1.20 - - [15/Mar/2024:09:01:40] "GET /api/posts/2 HTTP/1.1" 200 280
+192.168.1.30 - - [15/Mar/2024:09:01:45] "POST /api/users HTTP/1.1" 500 48
+ubuntu@ubuntu:~/11.sort_uniq$ awk '{print $1}' access.log \
+> | sort \
+> | uniq -c \
+> | sort -rn
+      4 192.168.1.10
+      3 192.168.1.30
+      3 192.168.1.20
+
+--- wc
+ubuntu@ubuntu:~/11.sort_uniq$ wc names.txt 
+ 7  7 41 names.txt
+ubuntu@ubuntu:~/11.sort_uniq$ wc -l names.txt 
+7 names.txt
+ubuntu@ubuntu:~/11.sort_uniq$ wc -w names.txt 
+7 names.txt
+ubuntu@ubuntu:~/11.sort_uniq$ wc -c names.txt 
+41 names.txt
+ubuntu@ubuntu:~/11.sort_uniq$ wc access.log 
+ 10  90 749 access.log
+ubuntu@ubuntu:~/11.sort_uniq$ wc -l access.log 
+10 access.log
+ubuntu@ubuntu:~/11.sort_uniq$ wc -w access.log 
+90 access.log
+ubuntu@ubuntu:~/11.sort_uniq$ wc -c access.log 
+749 access.log
+ubuntu@ubuntu:~/11.sort_uniq$ wc -l < names.txt 
+7
+ubuntu@ubuntu:~/11.sort_uniq$ wc -c names.txt 
+41 names.txt
+ubuntu@ubuntu:~/11.sort_uniq$ echo "hello" | wc -c
+6
+ubuntu@ubuntu:~/11.sort_uniq$ echo "hello" | wc -m
+6
+ubuntu@ubuntu:~/11.sort_uniq$ echo "안녕" | wc -c
+7
+ubuntu@ubuntu:~/11.sort_uniq$ echo "안녕" | wc -m
+3
+ubuntu@ubuntu:~/11.sort_uniq$ cat access.log 
+192.168.1.10 - - [15/Mar/2024:09:01:00] "GET /api/posts HTTP/1.1" 200 512
+192.168.1.20 - - [15/Mar/2024:09:01:05] "POST /api/users HTTP/1.1" 201 128
+192.168.1.10 - - [15/Mar/2024:09:01:10] "GET /api/posts/1 HTTP/1.1" 200 256
+192.168.1.30 - - [15/Mar/2024:09:01:15] "GET /api/posts HTTP/1.1" 200 512
+192.168.1.20 - - [15/Mar/2024:09:01:20] "DELETE /api/posts/1 HTTP/1.1" 403 64
+192.168.1.10 - - [15/Mar/2024:09:01:25] "POST /api/posts HTTP/1.1" 201 300
+192.168.1.30 - - [15/Mar/2024:09:01:30] "GET /api/users HTTP/1.1" 500 48
+192.168.1.10 - - [15/Mar/2024:09:01:35] "GET /api/posts HTTP/1.1" 200 512
+192.168.1.20 - - [15/Mar/2024:09:01:40] "GET /api/posts/2 HTTP/1.1" 200 280
+192.168.1.30 - - [15/Mar/2024:09:01:45] "POST /api/users HTTP/1.1" 500 48
+ubuntu@ubuntu:~/11.sort_uniq$ grep "200 " access.log | wc -l
+5
+ubuntu@ubuntu:~/11.sort_uniq$ awk '{print $6}' access.log 
+/api/posts
+/api/users
+/api/posts/1
+/api/posts
+/api/posts/1
+/api/posts
+/api/users
+/api/posts
+/api/posts/2
+/api/users
+ubuntu@ubuntu:~/11.sort_uniq$ awk '{print $6}' access.log | sort -u | wc -l
+4
+
+--- cut
+ubuntu@ubuntu:~/11.sort_uniq$ cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/run/ircd:/usr/sbin/nologin
+_apt:x:42:65534::/nonexistent:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-network:x:998:998:systemd Network Management:/:/usr/sbin/nologin
+systemd-timesync:x:997:997:systemd Time Synchronization:/:/usr/sbin/nologin
+dhcpcd:x:100:65534:DHCP Client Daemon,,,:/usr/lib/dhcpcd:/bin/false
+messagebus:x:101:102::/nonexistent:/usr/sbin/nologin
+systemd-resolve:x:992:992:systemd Resolver:/:/usr/sbin/nologin
+pollinate:x:102:1::/var/cache/pollinate:/bin/false
+polkitd:x:991:991:User for polkitd:/:/usr/sbin/nologin
+syslog:x:103:104::/nonexistent:/usr/sbin/nologin
+uuidd:x:104:105::/run/uuidd:/usr/sbin/nologin
+tcpdump:x:105:107::/nonexistent:/usr/sbin/nologin
+tss:x:106:108:TPM software stack,,,:/var/lib/tpm:/bin/false
+landscape:x:107:109::/var/lib/landscape:/usr/sbin/nologin
+fwupd-refresh:x:989:989:Firmware update daemon:/var/lib/fwupd:/usr/sbin/nologin
+usbmux:x:108:46:usbmux daemon,,,:/var/lib/usbmux:/usr/sbin/nologin
+sshd:x:109:65534::/run/sshd:/usr/sbin/nologin
+ubuntu:x:1000:1000:ubuntu:/home/ubuntu:/bin/bash
+appuser:x:999:988::/home/appuser:/bin/false
+ubuntu@ubuntu:~/11.sort_uniq$ cut -d: -f1 /etc/passwd
+root
+daemon
+bin
+sys
+sync
+games
+man
+lp
+mail
+news
+uucp
+proxy
+www-data
+backup
+list
+irc
+_apt
+nobody
+systemd-network
+systemd-timesync
+dhcpcd
+messagebus
+systemd-resolve
+pollinate
+polkitd
+syslog
+uuidd
+tcpdump
+tss
+landscape
+fwupd-refresh
+usbmux
+sshd
+ubuntu
+appuser
+ubuntu@ubuntu:~/11.sort_uniq$ cut -d: -f1,6 /etc/passwd
+root:/root
+daemon:/usr/sbin
+bin:/bin
+sys:/dev
+sync:/bin
+games:/usr/games
+man:/var/cache/man
+lp:/var/spool/lpd
+mail:/var/mail
+news:/var/spool/news
+uucp:/var/spool/uucp
+proxy:/bin
+www-data:/var/www
+backup:/var/backups
+list:/var/list
+irc:/run/ircd
+_apt:/nonexistent
+nobody:/nonexistent
+systemd-network:/
+systemd-timesync:/
+dhcpcd:/usr/lib/dhcpcd
+messagebus:/nonexistent
+systemd-resolve:/
+pollinate:/var/cache/pollinate
+polkitd:/
+syslog:/nonexistent
+uuidd:/run/uuidd
+tcpdump:/nonexistent
+tss:/var/lib/tpm
+landscape:/var/lib/landscape
+fwupd-refresh:/var/lib/fwupd
+usbmux:/var/lib/usbmux
+sshd:/run/sshd
+ubuntu:/home/ubuntu
+appuser:/home/appuser
+
+--- tr
+ubuntu@ubuntu:~/11.sort_uniq$ echo "hello" | tr 'a-z' 'A-Z'
+HELLO
+ubuntu@ubuntu:~/11.sort_uniq$ echo "a:b:c" | tr ':' ','
+a,b,c
+ubuntu@ubuntu:~/11.sort_uniq$ cat from-window-file | tr -d '\r'
+cat: from-window-file: No such file or directory
+ubuntu@ubuntu:~/11.sort_uniq$ echo "aabbcc" | tr -s 'a-z'
+abc
+ubuntu@ubuntu:~/11.sort_uniq$ cat from-file | tr -cd '0-9\n'
+cat: from-file: No such file or directory
+
+ 
