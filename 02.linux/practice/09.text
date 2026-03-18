@@ -595,9 +595,167 @@ server-02 db OK 2048
 server-03 cache OK 512
 server-04 web OK 1536
 server-05 db OK 4096
-server-06 wen OK 768
+server-06 web OK 768
 server-07 cache OK 1024
 server-08 db OK 3072
 server-09 web OK 2048
 server-10 cache OK 256
 EOF
+
+ubuntu@ubuntu:~/09.text$ cat data.txt 
+server-01 web OK 1024
+server-02 db OK 2048
+server-03 cache OK 512
+server-04 web OK 1536
+server-05 db OK 4096
+server-06 web OK 768
+server-07 cache OK 1024
+server-08 db OK 3072
+server-09 web OK 2048
+server-10 cache OK 256
+ubuntu@ubuntu:~/09.text$ awk '{print $NF}' data.txt
+1024
+2048
+512
+1536
+4096
+768
+1024
+3072
+2048
+256
+ubuntu@ubuntu:~/09.text$ awk '{sum += $NF} END {print "합계 : ", sum}' data.txt
+합계 :  16384
+ubuntu@ubuntu:~/09.text$ awk '{sum += $NF; count++} END {print "평 
+균 : ", sum/count}' data.txt
+평균 :  1638.4
+ubuntu@ubuntu:~/09.text$ awk '{sum += $NF; count++} END {printf "평
+균 : %.0f", sum/count}' data.txt
+평균 : 1638ubuntu@ubuntu:~/09.text$ awk '{sum += $NF; count++} END {printf "평균 : %.2f\n", sum/count}' data.txt
+평균 : 1638.40
+
+
+---
+1. 운영 장애 로그 분석
+# 현재 위치: /home/ubuntu/09.text
+
+# [분석 1] grep 활용
+# 1. ERROR 또는 WARN 포함 행 추출
+# 2. ERROR 행에서 HealthCheck는 제외하고 출력
+# 3. NullPointerException 발생 행과 그 이후 2줄 함께 출력
+# 4. ERROR가 포함된 행 수 출력
+ubuntu@ubuntu:~/09.text$ grep -E "ERROR|WARN" app.log
+2024-03-15 09:03:45 WARN  HikariCP - Connection pool is 80% full
+2024-03-15 09:04:55 ERROR PostService - NullPointerException at PostService.java:87
+2024-03-15 09:05:01 ERROR UserService - Authentication failed: user_id=9999
+2024-03-15 09:06:22 WARN  RedisService - Cache miss rate high: 45%
+2024-03-15 09:07:10 ERROR JpaService - Connection pool exhausted - HikariCP timeout
+2024-03-15 09:08:23 ERROR SecurityService - JWT token expired: user_id=1005
+2024-03-15 09:10:14 ERROR PostService - NullPointerException at PostService.java:87
+ubuntu@ubuntu:~/09.text$ grep "ERROR" app.log | grep -v "HealthCheck"
+2024-03-15 09:04:55 ERROR PostService - NullPointerException at PostService.java:87
+2024-03-15 09:05:01 ERROR UserService - Authentication failed: user_id=9999
+2024-03-15 09:07:10 ERROR JpaService - Connection pool exhausted - HikariCP timeout
+2024-03-15 09:08:23 ERROR SecurityService - JWT token expired: user_id=1005
+2024-03-15 09:10:14 ERROR PostService - NullPointerException at PostService.java:87
+ubuntu@ubuntu:~/09.text$ grep -A 2 "NullPointerException" app.log
+2024-03-15 09:04:55 ERROR PostService - NullPointerException at PostService.java:87
+2024-03-15 09:05:01 ERROR UserService - Authentication failed: user_id=9999
+2024-03-15 09:05:30 INFO  UserService - User login: user_id=1002
+--
+2024-03-15 09:10:14 ERROR PostService - NullPointerException at PostService.java:87
+2024-03-15 09:11:00 INFO  HealthCheck - Application is UP
+2024-03-15 09:12:00 INFO  HealthCheck - Application is UP
+ubuntu@ubuntu:~/09.text$ grep -c "ERROR" app.log
+5
+
+# [분석 2] awk 활용
+# 5. 3번째 필드가 ERROR인 행에서 4번째 필드(서비스명)만 출력
+# 6. ERROR 발생 횟수 집계 후 "총 ERROR 수: N" 형태로 출력
+ubuntu@ubuntu:~/09.text$ awk '$3 == "ERROR" {print $4}' app.log
+PostService
+UserService
+JpaService
+SecurityService
+PostService
+ubuntu@ubuntu:~/09.text$ awk '$3 == "ERROR" {count++} END {print " 총 ERROR 수:", count}' app.log
+총 ERROR 수: 5
+
+# 7. 서비스명($4)별 ERROR 빈도를 집계하여 출력
+#    (힌트: awk 배열 활용 — count[$4]++)
+## 배열
+ubuntu@ubuntu:~/09.text$ cat data.csv 
+이름,부서,직급,연봉,입사연도
+김민준,개발팀,시니어,75000000,2019
+이서연,운영팀,주니어,42000000,2022
+박도윤,개발팀,리드,95000000,2017
+최아린,기획팀,시니어,68000000,2020
+정하준,개발팀,주니어,45000000,2023
+한소율,운영팀,시니어,71000000,2018
+윤지호,기획팀,리드,88000000,2016
+임나은,개발팀,시니어,80000000,2019
+송민재,운영팀,주니어,40000000,2024
+오예린,개발팀,리드,98000000,2015
+ubuntu@ubuntu:~/09.text$ awk -F, 'NR ==2 {for (i = 1; i <= NF; i++) print i"번째 필드:", $i}' data.csv
+1번째 필드: 김민준
+2번째 필드: 개발팀
+3번째 필드: 시니어
+4번째 필드: 75000000
+5번째 필드: 2019
+ubuntu@ubuntu:~/09.text$ awk -F, 'NR > 1 {count[$2]++} END {for (dept in count) print dept}' data.csv
+기획팀
+운영팀
+개발팀
+ubuntu@ubuntu:~/09.text$ awk -F, 'NR > 1 {count[$2]++} END {for (dept in count) print dept, count[dept]}' data.csv
+기획팀 2
+운영팀 3
+개발팀 5
+
+
+
+---
+2. 배포 전 설정 파일 환경 분리
+# 현재 위치: /home/ubuntu/09.text/config
+
+# 1. 템플릿 파일에서 플레이스홀더(대문자_패턴) 포함 행만 grep으로 확인
+# 2. sed로 dev 환경 값 치환하여 application-dev.yml 생성
+#    DB_HOST → dev-db.internal  /  DB_USER → dev_user
+#    DB_PASS → dev_pass123      /  REDIS_HOST → dev-redis.internal
+#    APP_PORT → 8080            /  LOG_LEVEL → DEBUG
+# 3. sed로 prod 환경 값 치환하여 application-prod.yml 생성
+#    DB_HOST → prod-db.internal  /  DB_USER → prod_user
+#    DB_PASS → prod_pass!@#      /  REDIS_HOST → prod-redis.internal
+#    APP_PORT → 8080             /  LOG_LEVEL → WARN
+# 4. 생성된 두 파일에서 password 행만 grep으로 확인
+# 5. prod 파일에서 LOG_LEVEL 행을 sed로 주석 처리 (#LOG_LEVEL)
+
+---
+3. 접근 로그 통계 분석
+tree /home/ubuntu/09.text
+
+/home/ubuntu/09.text
+├── config
+│   ├── application-template.yml   ← 원본 템플릿
+│   ├── application-dev.yml        ← sed 치환 결과
+│   └── application-prod.yml       ← sed 치환 결과
+├── logs
+│   ├── app.log                    ← 장애 분석 대상
+│   └── access.log                 ← Nginx 접근 로그
+└── data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
