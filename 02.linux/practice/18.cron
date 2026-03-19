@@ -1,0 +1,82 @@
+--- 크론 등록
+crontab -2
+
+2 : vim 선택 후 마지막 줄에 추가
+
+
+# 1분 마다 test_job.sh 실행
+*/1 * * * * /home/ubuntu/18.cron/scripts/test_job.sh
+
+
+--- 표현식
+
+
+# 매일 새벽 2시 로그 정리
+# 0 2 * * * 
+# /scripts/log_cleanup.sh >> /logs/cleanup.log
+
+# 5분마다 서비스 상태 확인
+# */5 * * * * 
+# myapp
+
+# 매주 일요일 자정 백업
+# 0 0 * * 0 
+# /scripts/backup.sh
+
+# 매월 1일 오전 9시 보고서 생성
+# 0 9 1 * 0 
+# /scripts/backup.sh
+
+# 부팅 시 앱 초기화
+# @reboot
+# /scripts/init.sh >> /logs/init.log
+
+--- at
+ubuntu@ubuntu:~/18.cron$ systemctl status atd
+● atd.service - Deferred execution scheduler
+     Loaded: loaded (/usr/lib/systemd/system/atd.service; enabled; preset: enable>
+     Active: active (running) since Thu 2026-03-19 17:25:00 KST; 44s ago
+       Docs: man:atd(8)
+    Process: 3269 ExecStartPre=find /var/spool/cron/atjobs -type f -name =* -not >
+   Main PID: 3271 (atd)
+      Tasks: 1 (limit: 4601)
+     Memory: 264.0K (peak: 1.5M)
+        CPU: 54ms
+     CGroup: /system.slice/atd.service
+             └─3271 /usr/sbin/atd -f
+
+Mar 19 17:25:00 ubuntu systemd[1]: Starting atd.service - Deferred execution sche>
+Mar 19 17:25:00 ubuntu systemd[1]: Started atd.service - Deferred execution sched>
+ubuntu@ubuntu:~/18.cron$ atq
+ubuntu@ubuntu:~/18.cron$ at now + 3 minute
+warning: commands will be executed using /bin/sh
+at Thu Mar 19 17:30:00 2026
+at> /home/ubuntu/18.cron/scripts/test_job.sh
+at> <EOT>
+job 1 at Thu Mar 19 17:30:00 2026
+ubuntu@ubuntu:~/18.cron$ atq
+1       Thu Mar 19 17:30:00 2026 a ubuntu
+ubuntu@ubuntu:~/18.cron$ cat logs/cron_test.log 
+Thu Mar 19 05:09:21 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:14:01 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:15:01 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:16:02 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:17:01 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:18:01 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:19:01 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:20:01 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:21:01 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:22:01 PM KST 2026: cron 작업 실행됨
+ubuntu@ubuntu:~/18.cron$ atq
+ubuntu@ubuntu:~/18.cron$ cat logs/cron_test.log 
+Thu Mar 19 05:09:21 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:14:01 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:15:01 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:16:02 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:17:01 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:18:01 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:19:01 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:20:01 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:21:01 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:22:01 PM KST 2026: cron 작업 실행됨
+Thu Mar 19 05:30:00 PM KST 2026: cron 작업 실행됨
