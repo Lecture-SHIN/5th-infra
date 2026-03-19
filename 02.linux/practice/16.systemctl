@@ -1,0 +1,298 @@
+--- 
+ubuntu@ubuntu:~/16.systemctl$ systemctl list-units --type=service --state=running
+  UNIT                      LOAD   ACTIVE SUB     DESCRIPTION                                   
+  cron.service              loaded active running Regular background program processing daemon
+  dbus.service              loaded active running D-Bus System Message Bus
+  fwupd.service             loaded active running Firmware update daemon
+  getty@tty1.service        loaded active running Getty on tty1
+  ModemManager.service      loaded active running Modem Manager
+  multipathd.service        loaded active running Device-Mapper Multipath Device Controller
+  polkit.service            loaded active running Authorization Manager
+  rsyslog.service           loaded active running System Logging Service
+  ssh.service               loaded active running OpenBSD Secure Shell server
+  systemd-journald.service  loaded active running Journal Service
+  systemd-logind.service    loaded active running User Login Management
+  systemd-networkd.service  loaded active running Network Configuration
+  systemd-resolved.service  loaded active running Network Name Resolution
+  systemd-timesyncd.service loaded active running Network Time Synchronization
+  systemd-udevd.service     loaded active running Rule-based Manager for Device Events and Files
+  udisks2.service           loaded active running Disk Manager
+  upower.service            loaded active running Daemon for power management
+  user@1000.service         loaded active running User Manager for UID 1000
+
+Legend: LOAD   → Reflects whether the unit definition was properly loaded.
+        ACTIVE → The high-level unit activation state, i.e. generalization of SUB.
+        SUB    → The low-level unit activation state, values depend on unit type.
+
+18 loaded units listed.
+ubuntu@ubuntu:~/16.systemctl$ systemctl list-units --type=service | grep active
+  apparmor.service                                                                          loaded active exited  Load AppArmor profiles
+  apport.service                                                                            loaded active exited  automatic crash report generation
+  blk-availability.service                                                                  loaded active exited  Availability of block devices
+  console-setup.service                                                                     loaded active exited  Set console font and keymap
+  cron.service                                                                              loaded active running Regular background program processing daemon
+  dbus.service                                                                              loaded active running D-Bus System Message Bus
+  finalrd.service                                                                           loaded active exited  Create final runtime dir for shutdown pivot root
+  fwupd.service                                                                             loaded active running Firmware update daemon
+  getty@tty1.service                                                                        loaded active running Getty on tty1
+  keyboard-setup.service                                                                    loaded active exited  Set the console keyboard layout
+  kmod-static-nodes.service                                                                 loaded active exited  Create List of Static Device Nodes
+  lvm2-monitor.service                                                                      loaded active exited  Monitoring of LVM2 mirrors, snapshots etc. using dmeventd or progress polling
+  ModemManager.service                                                                      loaded active running Modem Manager
+  multipathd.service                                                                        loaded active running Device-Mapper Multipath Device Controller
+  plymouth-quit-wait.service                                                                loaded active exited  Hold until boot process finishes up
+  plymouth-quit.service                                                                     loaded active exited  Terminate Plymouth Boot Screen
+  plymouth-read-write.service                                                               loaded active exited  Tell Plymouth To Write Out Runtime Data
+  polkit.service                                                                            loaded active running Authorization Manager
+  rsyslog.service                                                                           loaded active running System Logging Service
+  setvtrgb.service                                                                          loaded active exited  Set console scheme
+  snapd.apparmor.service                                                                    loaded active exited  Load AppArmor profiles managed internally by snapd
+  snapd.seeded.service                                                                      loaded active exited  Wait until snapd is fully seeded
+  ssh.service                                                                               loaded active running OpenBSD Secure Shell server
+  sysstat.service                                                                           loaded active exited  Resets System Activity Logs
+  systemd-binfmt.service                                                                    loaded active exited  Set Up Additional Binary Formats
+  systemd-fsck@dev-disk-by\x2duuid-49f212b9\x2dd9ef\x2d4350\x2d97e9\x2d27c639ce182e.service loaded active exited  File System Check on /dev/disk/by-uuid/49f212b9-d9ef-4350-97e9-27c639ce182e
+  systemd-journal-flush.service                                                             loaded active exited  Flush Journal to Persistent Storage
+  systemd-journald.service                                                                  loaded active running Journal Service
+  systemd-logind.service                                                                    loaded active running User Login Management
+  systemd-modules-load.service                                                              loaded active exited  Load Kernel Modules
+  systemd-networkd-wait-online.service                                                      loaded active exited  Wait for Network to be Configured
+  systemd-networkd.service                                                                  loaded active running Network Configuration
+  systemd-random-seed.service                                                               loaded active exited  Load/Save OS Random Seed
+  systemd-remount-fs.service                                                                loaded active exited  Remount Root and Kernel File Systems
+  systemd-resolved.service                                                                  loaded active running Network Name Resolution
+  systemd-sysctl.service                                                                    loaded active exited  Apply Kernel Variables
+  systemd-timesyncd.service                                                                 loaded active running Network Time Synchronization
+  systemd-tmpfiles-setup-dev-early.service                                                  loaded active exited  Create Static Device Nodes in /dev gracefully
+  systemd-tmpfiles-setup-dev.service                                                        loaded active exited  Create Static Device Nodes in /dev
+  systemd-tmpfiles-setup.service                                                            loaded active exited  Create Volatile Files and Directories
+  systemd-udev-trigger.service                                                              loaded active exited  Coldplug All udev Devices
+  systemd-udevd.service                                                                     loaded active running Rule-based Manager for Device Events and Files
+  systemd-update-utmp.service                                                               loaded active exited  Record System Boot/Shutdown in UTMP
+  systemd-user-sessions.service                                                             loaded active exited  Permit User Sessions
+  udisks2.service                                                                           loaded active running Disk Manager
+  ufw.service                                                                               loaded active exited  Uncomplicated firewall
+  upower.service                                                                            loaded active running Daemon for power management
+  user-runtime-dir@1000.service                                                             loaded active exited  User Runtime Directory /run/user/1000
+  user@1000.service                                                                         loaded active running User Manager for UID 1000
+49 loaded units listed. Pass --all to see loaded but inactive units, too.
+
+ubuntu@ubuntu:~/16.systemctl$ systemctl status ssh
+● ssh.service - OpenBSD Secure Shell server
+     Loaded: loaded (/usr/lib/systemd/system/ssh.service; disabled; preset: enabled)
+     Active: active (running) since Thu 2026-03-19 10:03:50 KST; 4h 29min ago
+TriggeredBy: ● ssh.socket
+       Docs: man:sshd(8)
+             man:sshd_config(5)
+    Process: 722 ExecStartPre=/usr/sbin/sshd -t (code=exited, status=0/SUCCESS)
+   Main PID: 741 (sshd)
+      Tasks: 1 (limit: 4601)
+     Memory: 5.0M (peak: 5.5M)
+        CPU: 314ms
+     CGroup: /system.slice/ssh.service
+             └─741 "sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups"
+
+Mar 19 10:03:48 ubuntu systemd[1]: Starting ssh.service - OpenBSD Secure Shell server...
+Mar 19 10:03:50 ubuntu sshd[741]: Server listening on 0.0.0.0 port 22.
+Mar 19 10:03:50 ubuntu sshd[741]: Server listening on :: port 22.
+Mar 19 10:03:50 ubuntu systemd[1]: Started ssh.service - OpenBSD Secure Shell server.
+Mar 19 10:03:50 ubuntu sshd[748]: Accepted publickey for ubuntu from 10.0.2.2 port 51370 ssh2: ED25519 SHA256:70EvwpI3L9nTvUj9>
+Mar 19 10:03:51 ubuntu sshd[748]: pam_unix(sshd:session): session opened for user ubuntu(uid=1000) by ubuntu(uid=0)
+ubuntu@ubuntu:~/16.systemctl$ systemctl is-active ssh
+active
+ubuntu@ubuntu:~/16.systemctl$ systemctl is-enabled ssh
+disabled
+
+
+--- 시스템 등록
+ubuntu@ubuntu:~/16.systemctl$ pwd
+/home/ubuntu/16.systemctl
+ubuntu@ubuntu:~/16.systemctl$ mkdir -p app/logs
+ubuntu@ubuntu:~/16.systemctl$ ls
+app
+ubuntu@ubuntu:~/16.systemctl$ cat > app/run.sh << 'EOF'
+#!/bin/bash
+echo "=== 서비스 시작: $(date) ==="
+echo "PID: $$"
+
+COUNT=0
+while true; do
+    COUNT=$((COUNT + 1))
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] 서비스  실행 중 - 요청수: $COUNT"
+    sleep 5
+done
+EOF
+ubuntu@ubuntu:~/16.systemctl$ ll app/run.sh 
+-rw-rw-r-- 1 ubuntu ubuntu 222 Mar 19 14:44 app/run.sh
+ubuntu@ubuntu:~/16.systemctl$ chmod +x app/run.sh
+ubuntu@ubuntu:~/16.systemctl$ ll app/run.sh 
+-rwxrwxr-x 1 ubuntu ubuntu 222 Mar 19 14:44 app/run.sh*
+
+
+--- UNIT 파일 위치
+# 패키지 기본 제공
+ubuntu@ubuntu:~/16.systemctl$ ls /lib/systemd/system
+# 사용자 정의
+ubuntu@ubuntu:~/16.systemctl$ ls /etc/systemd/system
+
+ubuntu@ubuntu:~/16.systemctl$ systemctl status myapp
+○ myapp.service - My Practice Application
+     Loaded: loaded (/etc/systemd/system/myapp.service; disabled; preset: enabled)
+     Active: inactive (dead)
+ubuntu@ubuntu:~/16.systemctl$ ls app/logs/
+ubuntu@ubuntu:~/16.systemctl$ sudo systemctl daemon-reload
+ubuntu@ubuntu:~/16.systemctl$ systemctl status myapp
+○ myapp.service - My Practice Application
+     Loaded: loaded (/etc/systemd/system/myapp.service; disabled; preset: enabled)
+     Active: inactive (dead)
+ubuntu@ubuntu:~/16.systemctl$ sudo systemctl start myapp
+ubuntu@ubuntu:~/16.systemctl$ sudo systemctl status myapp
+● myapp.service - My Practice Application
+     Loaded: loaded (/etc/systemd/system/myapp.service; disabled; preset: enabled)
+     Active: active (running) since Thu 2026-03-19 15:09:20 KST; 9s ago
+   Main PID: 1892 (run.sh)
+      Tasks: 2 (limit: 4601)
+     Memory: 568.0K (peak: 1.5M)
+        CPU: 69ms
+     CGroup: /system.slice/myapp.service
+             ├─1892 /bin/bash /home/ubuntu/16.systemctl/app/run.sh
+             └─1897 sleep 5
+
+Mar 19 15:09:20 ubuntu systemd[1]: Started myapp.service - My Practice Application.
+ubuntu@ubuntu:~/16.systemctl$ ls app/logs/
+app.log  error.log
+ubuntu@ubuntu:~/16.systemctl$ cat app/logs/app.log 
+=== 서비스 시작: Thu Mar 19 03:09:20 PM KST 2026 ===
+PID: 1892
+2026-03-19 15:09:20 [INFO] 서비스 실행 중 - 요청수: 1
+2026-03-19 15:09:25 [INFO] 서비스 실행 중 - 요청수: 2
+2026-03-19 15:09:30 [INFO] 서비스 실행 중 - 요청수: 3
+2026-03-19 15:09:35 [INFO] 서비스 실행 중 - 요청수: 4
+2026-03-19 15:09:40 [INFO] 서비스 실행 중 - 요청수: 5
+2026-03-19 15:09:45 [INFO] 서비스 실행 중 - 요청수: 6
+2026-03-19 15:09:50 [INFO] 서비스 실행 중 - 요청수: 7
+2026-03-19 15:09:55 [INFO] 서비스 실행 중 - 요청수: 8
+2026-03-19 15:10:00 [INFO] 서비스 실행 중 - 요청수: 9
+2026-03-19 15:10:05 [INFO] 서비스 실행 중 - 요청수: 10
+2026-03-19 15:10:10 [INFO] 서비스 실행 중 - 요청수: 11
+2026-03-19 15:10:15 [INFO] 서비스 실행 중 - 요청수: 12
+2026-03-19 15:10:20 [INFO] 서비스 실행 중 - 요청수: 13
+2026-03-19 15:10:25 [INFO] 서비스 실행 중 - 요청수: 14
+2026-03-19 15:10:30 [INFO] 서비스 실행 중 - 요청수: 15
+2026-03-19 15:10:35 [INFO] 서비스 실행 중 - 요청수: 16
+2026-03-19 15:10:40 [INFO] 서비스 실행 중 - 요청수: 17
+2026-03-19 15:10:45 [INFO] 서비스 실행 중 - 요청수: 18
+2026-03-19 15:10:50 [INFO] 서비스 실행 중 - 요청수: 19
+2026-03-19 15:10:55 [INFO] 서비스 실행 중 - 요청수: 20
+2026-03-19 15:11:00 [INFO] 서비스 실행 중 - 요청수: 21
+2026-03-19 15:11:05 [INFO] 서비스 실행 중 - 요청수: 22
+2026-03-19 15:11:10 [INFO] 서비스 실행 중 - 요청수: 23
+2026-03-19 15:11:15 [INFO] 서비스 실행 중 - 요청수: 24
+2026-03-19 15:11:20 [INFO] 서비스 실행 중 - 요청수: 25
+2026-03-19 15:11:25 [INFO] 서비스 실행 중 - 요청수: 26
+2026-03-19 15:11:30 [INFO] 서비스 실행 중 - 요청수: 27
+2026-03-19 15:11:35 [INFO] 서비스 실행 중 - 요청수: 28
+2026-03-19 15:11:40 [INFO] 서비스 실행 중 - 요청수: 29
+2026-03-19 15:11:45 [INFO] 서비스 실행 중 - 요청수: 30
+2026-03-19 15:11:51 [INFO] 서비스 실행 중 - 요청수: 31
+2026-03-19 15:11:56 [INFO] 서비스 실행 중 - 요청수: 32
+2026-03-19 15:12:01 [INFO] 서비스 실행 중 - 요청수: 33
+2026-03-19 15:12:06 [INFO] 서비스 실행 중 - 요청수: 34
+2026-03-19 15:12:11 [INFO] 서비스 실행 중 - 요청수: 35
+2026-03-19 15:12:16 [INFO] 서비스 실행 중 - 요청수: 36
+ubuntu@ubuntu:~/16.systemctl$ tail -f app/logs/app.log 
+2026-03-19 15:12:16 [INFO] 서비스 실행 중 - 요청수: 36
+2026-03-19 15:12:21 [INFO] 서비스 실행 중 - 요청수: 37
+2026-03-19 15:12:26 [INFO] 서비스 실행 중 - 요청수: 38
+2026-03-19 15:12:31 [INFO] 서비스 실행 중 - 요청수: 39
+2026-03-19 15:12:36 [INFO] 서비스 실행 중 - 요청수: 40
+2026-03-19 15:12:41 [INFO] 서비스 실행 중 - 요청수: 41
+2026-03-19 15:12:46 [INFO] 서비스 실행 중 - 요청수: 42
+2026-03-19 15:12:51 [INFO] 서비스 실행 중 - 요청수: 43
+2026-03-19 15:12:56 [INFO] 서비스 실행 중 - 요청수: 44
+2026-03-19 15:13:01 [INFO] 서비스 실행 중 - 요청수: 45
+2026-03-19 15:13:06 [INFO] 서비스 실행 중 - 요청수: 46
+2026-03-19 15:13:11 [INFO] 서비스 실행 중 - 요청수: 47
+2026-03-19 15:13:16 [INFO] 서비스 실행 중 - 요청수: 48
+2026-03-19 15:13:21 [INFO] 서비스 실행 중 - 요청수: 49
+2026-03-19 15:13:26 [INFO] 서비스 실행 중 - 요청수: 50
+^C
+
+ubuntu@ubuntu:~/16.systemctl$ journalctl -u myapp
+Mar 19 15:09:20 ubuntu systemd[1]: Started myapp.serv>
+lines 1-1/1 (END)...skipping...
+Mar 19 15:09:20 ubuntu systemd[1]: Started myapp.service - My Practice Application.
+ubuntu@ubuntu:~/16.systemctl$ sudo systemctl stop myapp
+ubuntu@ubuntu:~/16.systemctl$ sudo systemctl status myapp
+○ myapp.service - My Practice Application
+     Loaded: loaded (/etc/systemd/system/myapp.service; disabled; preset: enabled)
+     Active: inactive (dead)
+
+Mar 19 15:09:20 ubuntu systemd[1]: Started myapp.service - My Practice Application.
+Mar 19 15:18:16 ubuntu systemd[1]: Stopping myapp.service - My Practice Application...
+Mar 19 15:18:16 ubuntu systemd[1]: myapp.service: Deactivated successfully.
+Mar 19 15:18:16 ubuntu systemd[1]: Stopped myapp.service - My Practice Application.
+Mar 19 15:18:16 ubuntu systemd[1]: myapp.service: Consumed 1.981s CPU time, 1.5M memory peak, 0B memory swap peak.
+
+---
+1. SSH 서비스 상태 관리
+# 현재 위치: /home/ubuntu/16.systemctl
+
+# 1. systemctl status ssh 로 SSH 서비스 상태 확인
+# 2. systemctl is-active ssh 로 실행 여부 확인
+# 3. systemctl is-enabled ssh 로 자동 시작 여부 확인
+# 4. sudo systemctl restart ssh 후 status 재확인
+# 5. journalctl -u ssh -n 20 으로 최근 SSH 로그 확인
+# 6. journalctl -u ssh --since "10 minutes ago" 로 최근 10분 로그 확인
+# 7. systemctl list-units --type=service | grep active | head -10
+
+
+---
+2. Spring Boot 앱 systemd 서비스 등록
+
+# 1. /etc/systemd/system/myapp.service 파일 작성
+sudo vim /etc/systemd/system/myapp.service
+
+# 내용:
+sudo tee /etc/systemd/system/myapp.service > /dev/null << 'EOF'
+[Unit]
+Description=My Test Application
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/16.systemctl/app
+ExecStart=/home/ubuntu/16.systemctl/app/run.sh
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:/home/ubuntu/16.systemctl/app/logs/app.log
+StandardError=append:/home/ubuntu/16.systemctl/app/logs/error.log
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 2. sudo systemctl daemon-reload
+# 3. sudo systemctl start myapp
+# 4. sudo systemctl status myapp 으로 상태 확인
+# 5. journalctl -u myapp -f 로 실시간 로그 확인 (Ctrl+C로 종료)
+# 6. cat /home/ubuntu/16.systemctl/app/logs/app.log 로 로그 파일 확인
+# 7. sudo systemctl stop myapp
+# 8. sudo systemctl enable myapp 으로 자동 시작 등록
+# 9. systemctl is-enabled myapp 확인
+---
+3. 서비스 장애 및 자동 재시작 확인
+
+# 1. sudo systemctl start myapp
+# 2. ps aux | grep run.sh 로 PID 확인
+# 3. 해당 PID를 kill -9 로 강제 종료
+# 4. 5초 후 sudo systemctl status myapp 으로 자동 재시작 확인
+#    (Restart=on-failure 설정 동작 확인)
+# 5. journalctl -u myapp -n 20 으로 재시작 로그 확인
+# 6. sudo systemctl disable myapp 으로 자동 시작 해제
+# 7. sudo systemctl stop myapp 으로 서비스 중지
+# 8. sudo rm /etc/systemd/system/myapp.service
+# 9. sudo systemctl daemon-reload
+# 참고) 캐시때문에 서비스가 남아 있을 수도 있음 => sudo systemctl reset-failed # 캐시 초기화
+
