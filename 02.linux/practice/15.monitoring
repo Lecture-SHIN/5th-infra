@@ -1,0 +1,48 @@
+---
+1. 서버 자원 현황 파악
+
+# 현재 위치: /home/ubuntu/15.monitoring
+
+# 1. top -b -n 1 | head -20 으로 현재 자원 현황 스냅샷 출력
+# 2. free -h 로 메모리 사용 현황 확인
+# 3. free -h 에서 available 컬럼 값 확인 (실제 사용 가능 메모리)
+ubuntu@ubuntu:~/15.monitoring$ free -h
+               total        used        free      shared  buff/cache   available
+Mem:           3.8Gi       408Mi       3.3Gi       1.0Mi       342Mi       3.4Gi
+Swap:          2.2Gi          0B       2.2Gi
+ubuntu@ubuntu:~/15.monitoring$ free -h | awk 'NR == 2 {print "사용 가능 메모리:", $7}'
+사용 가능 메모리: 3.4Gi
+
+# 4. vmstat 1 3 으로 1초 간격 3회 통계 확인
+ubuntu@ubuntu:~/15.monitoring$ vmstat 1 3
+procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu
+ 1  0      0 3469192  26052 324360    0    0    21     4 1036    0  0  2 98  0  0  0
+ 0  0      0 3469192  26052 324360    0    0     0     0 1000   58  0  2 98  0  0  0
+ 0  0      0 3469192  26052 324360    0    0     0     0  996   54  0  1 99  0  0  0
+
+# 5. top -b -n 1 | grep "Cpu" 로 CPU 사용률만 추출
+# 6. free -m | awk 'NR==2 {print "메모리 사용률:", $3/$2*100"%"}' 로 메모리 사용률 계산
+ubuntu@ubuntu:~/15.monitoring$ free -m | awk 'NR==2 {print "메모리 사용률:", $3/$2*100"%"}'
+메모리 사용률: 10.3933%
+
+---
+2. CPU/메모리 부하 테스트 모니터링
+# 현재 위치: /home/ubuntu/15.monitoring
+
+# 1. top -b -n 1 | head -15 로 부하 상황 확인
+# 2. ps aux --sort=-%cpu | head -5 로 CPU 상위 프로세스 확인
+# 3. vmstat 1 3 으로 r 컬럼 (실행 대기) 변화 확인
+# 4. pkill dd 로 부하 프로세스 종료
+# 5. top -b -n 1 | grep "Cpu" 로 CPU 정상화 확인
+
+---
+3. 모니터링 결과 파일 저장
+# 현재 위치: /home/ubuntu/15.monitoring
+
+# 1. top -b -n 1 > top_snapshot.txt 로 스냅샷 저장
+# 2. free -h >> top_snapshot.txt 로 메모리 정보 추가
+# 3. ps aux --sort=-%cpu | head -10 >> top_snapshot.txt 로 CPU 상위 프로세스 추가
+# 4. cat top_snapshot.txt 로 전체 보고서 확인
+# 5. 아래 one-liner 로 시스템 요약 출력
+#    echo "=== $(date) ===" && free -h | grep Mem && df -h / | tail -1
