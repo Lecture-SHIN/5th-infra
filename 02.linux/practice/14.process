@@ -1,0 +1,75 @@
+--- ps
+ps
+ps --forest
+ps aux
+ps -ef
+ps -u ubuntu
+ps -ef --forest
+ps -p 1017
+ps -p 1017 -o pid,ppid,%cpu,%mem
+
+--- jobs, fg, bg
+jobs
+sleep 300
+jobs
+ps -ef | grep sleep
+bg %1
+jobs
+sleep 300
+bg %1
+jobs
+fg %1
+jobs
+sleep 300 &
+ps -p 1113
+jobs
+kill -15 %1
+jobs
+
+--- kill
+ubuntu@ubuntu:~/14.process$ sleep 1000&
+[1] 1120
+ubuntu@ubuntu:~/14.process$ sleep 2000&
+[2] 1121
+ubuntu@ubuntu:~/14.process$ sleep 3000&
+[3] 1122
+ubuntu@ubuntu:~/14.process$ jobs
+[1]   Running                 sleep 1000 &
+[2]-  Running                 sleep 2000 &
+[3]+  Running                 sleep 3000 &
+ubuntu@ubuntu:~/14.process$ ps aux | grep sleep
+ubuntu      1120  0.0  0.0   7004  2128 pts/0    S    10:42   0:00 sleep 1000
+ubuntu      1121  0.0  0.0   7004  2128 pts/0    S    10:42   0:00 sleep 2000
+ubuntu      1122  0.0  0.0   7004  2132 pts/0    S    10:42   0:00 sleep 3000
+ubuntu      1124  0.0  0.0   7864  2356 pts/0    S+   10:43   0:00 grep --color=auto sleep
+ubuntu@ubuntu:~/14.process$ ps aux | grep -v grep | grep sleep
+ubuntu      1120  0.0  0.0   7004  2128 pts/0    S    10:42   0:00 sleep 1000
+ubuntu      1121  0.0  0.0   7004  2128 pts/0    S    10:42   0:00 sleep 2000
+ubuntu      1122  0.0  0.0   7004  2132 pts/0    S    10:42   0:00 sleep 3000
+ubuntu@ubuntu:~/14.process$ kill 1120
+ubuntu@ubuntu:~/14.process$ ps aux | grep -v grep | grep sleep
+ubuntu      1121  0.0  0.0   7004  2128 pts/0    S    10:42   0:00 sleep 2000
+ubuntu      1122  0.0  0.0   7004  2132 pts/0    S    10:42   0:00 sleep 3000
+[1]   Terminated              sleep 1000
+ubuntu@ubuntu:~/14.process$ kill -9 1121
+ubuntu@ubuntu:~/14.process$ ps aux | grep -v grep | grep sleep
+ubuntu      1122  0.0  0.0   7004  2132 pts/0    S    10:42   0:00 sleep 3000
+[2]-  Killed                  sleep 2000
+ubuntu@ubuntu:~/14.process$ man pkill
+ubuntu@ubuntu:~/14.process$ pkill -f "sleep 3000"
+[3]+  Terminated              sleep 3000
+ubuntu@ubuntu:~/14.process$ sleep 100&
+[1] 1154
+ubuntu@ubuntu:~/14.process$ sleep 200&
+[2] 1155
+ubuntu@ubuntu:~/14.process$ sleep 300&
+[3] 1156
+ubuntu@ubuntu:~/14.process$ ps aux | grep -v grep | grep sleep
+ubuntu      1154  0.0  0.0   7004  2132 pts/0    S    10:49   0:00 sleep 100
+ubuntu      1155  0.0  0.0   7004  2128 pts/0    S    10:49   0:00 sleep 200
+ubuntu      1156  0.0  0.0   7004  2132 pts/0    S    10:49   0:00 sleep 300
+ubuntu@ubuntu:~/14.process$ killall sleep
+[1]   Terminated              sleep 100
+[2]-  Terminated              sleep 200
+ubuntu@ubuntu:~/14.process$ ps aux | grep -v grep | grep sleep
+[3]+  Terminated              sleep 300
