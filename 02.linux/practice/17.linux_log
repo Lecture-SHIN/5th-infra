@@ -1,0 +1,169 @@
+---
+1. 시스템 로그 분석
+# 현재 위치: /home/ubuntu/17.log
+
+# 1. tail -n 30 /var/log/syslog 로 최근 시스템 로그 확인
+# 2. "session opened" /var/log/auth.log 으로 최근 로그인 10개 항목 확인
+ubuntu@ubuntu:~/17.log$ sudo grep -a "session opened" /var/log/auth.log | tail -10
+2026-03-19T15:46:05.945625+09:00 ubuntu sudo: pam_unix(sudo:session): session opened for user root(uid=0) by ubuntu(uid=1000)
+2026-03-19T15:55:01.606951+09:00 ubuntu CRON[2520]: pam_unix(cron:session): session opened for user root(uid=0) by root(uid=0)
+2026-03-19T16:05:01.642742+09:00 ubuntu CRON[2539]: pam_unix(cron:session): session opened for user root(uid=0) by root(uid=0)
+2026-03-19T16:05:04.901941+09:00 ubuntu sudo: pam_unix(sudo:session): session opened for user root(uid=0) by ubuntu(uid=1000)
+2026-03-19T16:05:48.047815+09:00 ubuntu sudo: pam_unix(sudo:session): session opened for user root(uid=0) by ubuntu(uid=1000)
+2026-03-19T16:07:13.021323+09:00 ubuntu sudo: pam_unix(sudo:session): session opened for user root(uid=0) by ubuntu(uid=1000)
+2026-03-19T16:12:09.896678+09:00 ubuntu sudo:   ubuntu : TTY=pts/0 ; PWD=/home/ubuntu/17.log ; USER=root ; COMMAND=/usr/bin/grep 'session opened' /var/log/auth.log
+2026-03-19T16:12:09.952022+09:00 ubuntu sudo: pam_unix(sudo:session): session opened for user root(uid=0) by ubuntu(uid=1000)
+2026-03-19T16:13:58.753336+09:00 ubuntu sudo:   ubuntu : TTY=pts/0 ; PWD=/home/ubuntu/17.log ; USER=root ; COMMAND=/usr/bin/grep -a 'session opened' /var/log/auth.log
+2026-03-19T16:13:58.755553+09:00 ubuntu sudo: pam_unix(sudo:session): session opened for user root(uid=0) by ubuntu(uid=1000)
+
+# 3. "Failed password" /var/log/auth.log 으로 실패한 로그인 수 확인
+ubuntu@ubuntu:~/17.log$ sudo grep -a "Failed password" /var/log
+/auth.log | wc -l
+1
+
+# 4. 최근 커널 메시지 15개 확인
+ubuntu@ubuntu:~/17.log$ sudo dmesg | tail -15
+
+# 5. /var/log/ 으로 용량 큰 로그 파일 10개 확인
+ubuntu@ubuntu:~/17.log$ ls -lh /var/log/ | sort -k5 -rn | head -10
+-rw-r--r--  1 root      root            758K Mar 19 08:56 dpkg.log
+-rw-r-----  1 syslog    adm             456K Mar 19 15:06 kern.log
+-rw-rw----  1 root      utmp             384 Mar 18 09:09 btmp
+-rw-rw-r--  1 root      utmp            286K Mar 19 10:03 lastlog
+-rw-r-----  1 syslog    adm             105K Mar 19 16:17 auth.log
+-rw-r-----  1 syslog    adm              71K Mar 13 17:01 cloud-init.log
+-rw-r--r--  1 root      root             60K Aug  6  2025 bootstrap.log
+-rw-r-----  1 root      adm              48K Mar 19 10:03 dmesg
+-rw-r-----  1 root      adm              47K Mar 19 08:12 dmesg.0
+-rw-r--r--  1 root      root             41K Mar 19 08:56 alternatives.log
+
+# 6. 현재 부팅 이후 에러 로그 확인
+# hint : journalctl -p -b
+ubuntu@ubuntu:~/17.log$ journalctl -p err -b | tail -20
+Mar 19 10:03:33 ubuntu kernel: ITS: WARNING: ITS mitigation depends on retpoline and rethunk support
+Mar 19 10:03:34 ubuntu systemd-tmpfiles[348]: /usr/lib/tmpfiles.d/snapd.conf:1: Unknown command type '!'.
+Mar 19 10:03:35 ubuntu systemd-tmpfiles[361]: /usr/lib/tmpfiles.d/snapd.conf:1: Unknown command type '!'.
+Mar 19 10:03:39 ubuntu kernel: vmwgfx 0000:00:02.0: [drm] *ERROR* vmwgfx seems to be running on an unsupported hypervisor.
+Mar 19 10:03:39 ubuntu kernel: vmwgfx 0000:00:02.0: [drm] *ERROR* This configuration is likely broken.
+Mar 19 10:03:39 ubuntu kernel: vmwgfx 0000:00:02.0: [drm] *ERROR* Please switch to a supported graphics device to avoid problems.
+Mar 19 10:03:41 ubuntu systemd-tmpfiles[509]: /usr/lib/tmpfiles.d/snapd.conf:1: Unknown command type '!'.
+Mar 19 10:09:40 ubuntu login[739]: PAM unable to dlopen(pam_lastlog.so): /usr/lib/security/pam_lastlog.so: cannot open shared object file: No such file or directory
+Mar 19 10:09:40 ubuntu login[739]: PAM adding faulty module: pam_lastlog.so
+Mar 19 10:18:32 ubuntu systemd-tmpfiles[1070]: /usr/lib/tmpfiles.d/snapd.conf:1: Unknown command type '!'.
+
+---
+2. logrotate 설정 및 테스트
+# 1. ls -lh /home/ubuntu/17.log/app/logs/ 로 현재 로그 크기 확인
+
+# 2. /etc/logrotate.d/myapp-test 파일 작성
+
+# 내용:
+/home/ubuntu/17.log/app/logs/*.log {
+    daily
+    rotate 5
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0644 ubuntu ubuntu
+    dateext
+}
+
+sudo tee /etc/logrotate.d/myapp-test > /dev/null << 'EOF'
+/home/ubuntu/17.log/app/logs/*.log {
+    daily
+    rotate 5
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0644 ubuntu ubuntu
+    dateext
+}
+EOF
+
+
+# 3. 드라이런 확인
+ubuntu@ubuntu:~/17.log$ sudo logrotate -d /etc/logrotate.d/myap
+p-test 
+
+# 4. 강제 실행
+ubuntu@ubuntu:~/17.log$ sudo logrotate -f /etc/logrotate.d/myap
+p-test 
+# 5. 순환 결과 확인
+# 6. 정리(위의 파일 삭제)
+ubuntu@ubuntu:~/17.log$ sudo rm /etc/logrotate.d/myapp-test 
+
+---
+3. 로그 분석 파이프라인 구성
+# 현재 위치: /home/ubuntu/17.log
+
+# 1. 레벨별 발생 횟수 집계 (INFO/WARN/ERROR)
+ubuntu@ubuntu:~/17.log$ grep -oE "(INFO|WARN|ERROR)" /home/ubuntu/17.log/app.log | sort | uniq -c
+      4 ERROR
+      2 INFO
+      2 WARN
+
+# 2. ERROR 발생 서비스별 집계
+ubuntu@ubuntu:~/17.log$ grep "ERROR" /home/ubuntu/17.log/app.log | awk '{print $4}' | sort | uniq -c
+      1 JpaService
+      2 PostService
+      1 UserService
+
+# 3. 시간대별 요청 수 집계 (시:분 기준)
+ubuntu@ubuntu:~/17.log$ awk '{print $2}' /home/ubuntu/17.log/app.log 
+09:01:00
+09:02:11
+09:03:45
+09:04:55
+09:05:01
+09:06:22
+09:07:10
+09:08:23
+ubuntu@ubuntu:~/17.log$ awk '{print $2}' /home/ubuntu/17.log/app.log | cut -d: -f1,2
+09:01
+09:02
+09:03
+09:04
+09:05
+09:06
+09:07
+09:08
+ubuntu@ubuntu:~/17.log$ awk '{print $2}' /home/ubuntu/17.log/app.log | cut -d: -f1,2 | sort | uniq -c
+      1 09:01
+      1 09:02
+      1 09:03
+      1 09:04
+      1 09:05
+      1 09:06
+      1 09:07
+      1 09:08
+
+# 4. 분석 결과를 report.txt 에 저장 (각 항목 헤더 포함)
+# 5. cat report.txt 로 전체 보고서 확인
+ubuntu@ubuntu:~/17.log$ {
+> echo "---1. 레벨별 발생 횟수 집계 (INFO/WARN/ERROR)---"
+> grep -oE "(INFO|WARN|ERROR)" /home/ubuntu/17.log/app.log | sort | uniq -c
+> echo "---2. ERROR 발생 서비스별 집계---"
+> grep "ERROR" /home/ubuntu/17.log/app.log | awk '{print $4}' | sort | uniq -c
+> echo "---3. 시간대별 요청 수 집계 (시:분 기준)---"
+> awk '{print $2}' /home/ubuntu/17.log/app.log | cut -d: -f1,2 | sort | uniq -c
+> } > report.txt
+ubuntu@ubuntu:~/17.log$ cat report.txt 
+---1. 레벨별 발생 횟수 집계 (INFO/WARN/ERROR)---
+      4 ERROR
+      2 INFO
+      2 WARN
+---2. ERROR 발생 서비스별 집계---
+      1 JpaService
+      2 PostService
+      1 UserService
+---3. 시간대별 요청 수 집계 (시:분 기준)---
+      1 09:01
+      1 09:02
+      1 09:03
+      1 09:04
+      1 09:05
+      1 09:06
+      1 09:07
+      1 09:08
