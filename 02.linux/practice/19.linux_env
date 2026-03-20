@@ -1,0 +1,220 @@
+--- 변수
+ubuntu@ubuntu:~/19.env$ env | wc -l
+23
+ubuntu@ubuntu:~/19.env$ printenv | wc -l
+23
+ubuntu@ubuntu:~/19.env$ echo $HOME
+/home/ubuntu
+ubuntu@ubuntu:~/19.env$ echo $PATH
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+ubuntu@ubuntu:~/19.env$ echo $USER
+ubuntu
+ubuntu@ubuntu:~/19.env$ printenv PATH
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+ubuntu@ubuntu:~/19.env$ printenv DB_HOST
+ubuntu@ubuntu:~/19.env$ echo $DB_HOST
+
+ubuntu@ubuntu:~/19.env$ export DB_HOST="localhost"
+ubuntu@ubuntu:~/19.env$ echo $DB_HOST
+localhost
+ubuntu@ubuntu:~/19.env$ unset DB_HOST
+ubuntu@ubuntu:~/19.env$ echo $DB_HOST
+
+--- export 사용 : 하위 프로세스에 변수 전달
+ubuntu@ubuntu:~/19.env$ MY_VAR=hello
+ubuntu@ubuntu:~/19.env$ echo $MY_VAR
+hello
+ubuntu@ubuntu:~/19.env$ export MY_VAR2=hello2
+ubuntu@ubuntu:~/19.env$ echo $MY_VAR2
+hello2
+ubuntu@ubuntu:~/19.env$ bash -c 'echo "$MY_VAR"'
+
+ubuntu@ubuntu:~/19.env$ bash -c 'echo "$MY_VAR2"'
+hello2
+
+
+--- 출력
+ubuntu@ubuntu:~/19.env$ env | grep -E "DB_|MY_"
+MY_VAR2=hello2
+
+--- 변수 반영
+ubuntu@ubuntu:~/19.env$ echo $0
+-bash
+ubuntu@ubuntu:~/19.env$ cat /etc/environment 
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+ubuntu@ubuntu:~/19.env$ sudo cat /etc/environment 
+[sudo] password for ubuntu: 
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+ubuntu@ubuntu:~/19.env$ sudo cat /etc/profile
+# /etc/profile: system-wide .profile file for the Bourne shell (sh(1))
+# and Bourne compatible shells (bash(1), ksh(1), ash(1), ...).
+
+if [ "${PS1-}" ]; then
+  if [ "${BASH-}" ] && [ "$BASH" != "/bin/sh" ]; then
+    # The file bash.bashrc already sets the default PS1.
+    # PS1='\h:\w\$ '
+    if [ -f /etc/bash.bashrc ]; then
+      . /etc/bash.bashrc
+    fi
+  else
+    if [ "$(id -u)" -eq 0 ]; then
+      PS1='# '
+    else
+      PS1='$ '
+    fi
+  fi
+fi
+
+if [ -d /etc/profile.d ]; then
+  for i in /etc/profile.d/*.sh; do
+    if [ -r $i ]; then
+      . $i
+    fi
+  done
+  unset i
+fi
+
+--- 
+1. 애플리케이션 환경변수 설정
+
+# 현재 위치: /home/ubuntu/19.env
+
+# 1. 현재 환경변수 전체 확인 (env)
+# 2. 아래 환경변수를 export 로 설정
+#    APP_ENV=production
+#    DB_HOST=prod-db.internal
+#    DB_PORT=3306
+#    REDIS_HOST=prod-redis.internal
+#    JAVA_OPTS="-Xmx512m -Xms256m"
+# 3. echo 로 각 변수 값 확인
+# 4. "APP_|DB_|REDIS_|JAVA_" 로 설정한 변수만 필터
+# 5. 새 bash 셸 실행 후 echo $APP_ENV 확인
+# 6. unset DB_HOST 후 echo $DB_HOST 로 삭제 확인
+
+ubuntu@ubuntu:~/19.env$ export APP_ENV=production
+ubuntu@ubuntu:~/19.env$ echo $APP_ENV
+production
+ubuntu@ubuntu:~/19.env$ env | grep -E "APP_"
+APP_ENV=production
+
+---
+2. .bashrc 커스터마이징
+# 1. ~/.bashrc 백업
+cp ~/.bashrc ~/.bashrc.bak
+
+# 2. ~/.bashrc 에 아래 내용 추가 (vim 또는 echo >> 사용)
+#    alias ll='ls -alh'
+#    alias ..='cd ..'
+#    alias cdlog='cd /var/log'
+#    export HISTSIZE=10000
+#    export HISTTIMEFORMAT="%Y-%m-%d %H:%M:%S "
+
+# 3. source ~/.bashrc 로 즉시 적용
+# 4. ll 명령어로 alias 동작 확인
+# 5. history 로 타임스탬프 포함 출력 확인
+# 6. ~/.bashrc 에 mkcd 함수 추가
+#    mkcd() { mkdir -p "$1" && cd "$1"; }
+# 7. source 후 mkcd /home/ubuntu/19.env/testdir 로 동작 확인
+
+ubuntu@ubuntu:~/19.env$ ll
+total 8
+drwxrwxr-x  2 ubuntu ubuntu 4096 Mar 20 09:12 ./
+drwxr-x--- 24 ubuntu ubuntu 4096 Mar 20 09:33 ../
+ubuntu@ubuntu:~/19.env$ ..
+..: command not found
+ubuntu@ubuntu:~/19.env$ cp ~/.bashrc ~/.bashrc.bak
+ubuntu@ubuntu:~/19.env$ ll
+total 8
+drwxrwxr-x  2 ubuntu ubuntu 4096 Mar 20 09:12 ./
+drwxr-x--- 24 ubuntu ubuntu 4096 Mar 20 09:45 ../
+ubuntu@ubuntu:~/19.env$ ll /home/ubuntu/
+total 148
+drwxr-x--- 24 ubuntu ubuntu  4096 Mar 20 09:45 ./
+drwxr-xr-x  3 root   root    4096 Mar 13 17:01 ../
+drwxrwxr-x  2 ubuntu ubuntu  4096 Mar 16 11:41 01.basic/
+drwxrwxr-x  3 ubuntu ubuntu  4096 Mar 16 14:12 02.directory/
+drwxrwxr-x  4 ubuntu ubuntu  4096 Mar 16 16:10 03.file/
+drwxrwxr-x  7 ubuntu ubuntu  4096 Mar 16 17:28 04.find/
+drwxrwxr-x  7 ubuntu ubuntu  4096 Mar 17 11:28 05.link/
+drwxrwxr-x  9 ubuntu ubuntu  4096 Mar 17 14:26 06.archive/
+drwxrwxr-x  3 ubuntu ubuntu  4096 Mar 17 15:51 07.permission/
+drwxr-xr-x  3 ubuntu ubuntu  4096 Mar 17 16:15 08.disk/
+drwxr-xr-x  5 ubuntu ubuntu  4096 Mar 18 10:09 09.text/
+drwxrwxr-x  7 ubuntu ubuntu  4096 Mar 18 13:43 10.pipe_redirect/
+drwxrwxr-x  4 ubuntu ubuntu  4096 Mar 18 15:04 11.sort_uniq/
+drwxrwxr-x  4 ubuntu ubuntu  4096 Mar 18 16:45 12.diff_patch/
+drwxrwxr-x  2 ubuntu ubuntu  4096 Mar 19 09:36 13.vim/
+drwxrwxr-x  2 ubuntu ubuntu  4096 Mar 19 11:31 14.process/
+drwxrwxr-x  2 ubuntu ubuntu  4096 Mar 19 14:11 15.monitoring/
+drwxrwxr-x  3 ubuntu ubuntu  4096 Mar 19 14:44 16.systemctl/
+drwxrwxr-x  3 ubuntu ubuntu  4096 Mar 19 16:44 17.log/
+drwxrwxr-x  4 ubuntu ubuntu  4096 Mar 19 17:08 18.cron/
+drwxrwxr-x  2 ubuntu ubuntu  4096 Mar 20 09:12 19.env/
+-rw-------  1 ubuntu ubuntu  4096 Mar 17 18:40 .bash_history
+-rw-r--r--  1 ubuntu ubuntu   220 Mar 31  2024 .bash_logout
+-rw-r--r--  1 ubuntu ubuntu  3771 Mar 31  2024 .bashrc
+-rw-r--r--  1 ubuntu ubuntu  3771 Mar 20 09:45 .bashrc.bak
+drwx------  2 ubuntu ubuntu  4096 Mar 13 17:02 .cache/
+drwx------  4 ubuntu ubuntu  4096 Mar 19 13:31 .config/
+-rw-rw-r--  1 ubuntu ubuntu     6 Mar 16 11:06 file.txt
+-rw-------  1 ubuntu ubuntu    48 Mar 19 17:25 .lesshst
+-rw-r--r--  1 ubuntu ubuntu   807 Mar 31  2024 .profile
+-rw-rw-r--  1 ubuntu ubuntu    75 Mar 19 17:11 .selected_editor
+drwx------  2 ubuntu ubuntu  4096 Mar 16 09:36 .ssh/
+-rw-r--r--  1 ubuntu ubuntu     0 Mar 16 10:26 .sudo_as_admin_successful
+-rw-------  1 ubuntu ubuntu 12490 Mar 20 09:33 .viminfo
+-rw-rw-r--  1 ubuntu ubuntu    35 Mar 19 09:35 .vimrc
+ubuntu@ubuntu:~/19.env$ vi ~/.bashrc
+ubuntu@ubuntu:~/19.env$ source ~/.bashrc
+ubuntu@ubuntu:~/19.env$ ll
+total 8.0K
+drwxrwxr-x  2 ubuntu ubuntu 4.0K Mar 20 09:12 .
+drwxr-x--- 24 ubuntu ubuntu 4.0K Mar 20 09:46 ..
+ubuntu@ubuntu:~/19.env$ ..
+ubuntu@ubuntu:~$ history | tail -5
+   53  2026-03-20 09:46:03 vi ~/.bashrc
+   54  2026-03-20 09:46:46 source ~/.bashrc
+   55  2026-03-20 09:46:57 ll
+   56  2026-03-20 09:47:08 ..
+   57  2026-03-20 09:47:21 history | tail -5
+ubuntu@ubuntu:~$ vi ~/.bashrc
+ubuntu@ubuntu:~$ source ~/.bashrc
+ubuntu@ubuntu:~$ cd 19.env/
+ubuntu@ubuntu:~/19.env$ tree
+.
+
+0 directories, 0 files
+ubuntu@ubuntu:~/19.env$ mkcd /home/ubuntu/19.env/testdir
+ubuntu@ubuntu:~/19.env/testdir$ ..
+ubuntu@ubuntu:~/19.env$ cp -i ~/.bashrc.bak ~/.bashrc
+cp: overwrite '/home/ubuntu/.bashrc'? y
+ubuntu@ubuntu:~/19.env$ source ~/.bashrc
+ubuntu@ubuntu:~/19.env$ ll
+total 12
+drwxrwxr-x  3 ubuntu ubuntu 4096 Mar 20 09:49 ./
+drwxr-x--- 24 ubuntu ubuntu 4096 Mar 20 09:49 ../
+drwxrwxr-x  2 ubuntu ubuntu 4096 Mar 20 09:49 testdir/
+
+---
+3. 환경변수 파일 관리 (.env 패턴)
+# 현재 위치: /home/ubuntu/19.env
+
+# 1. .env 파일 작성
+cat > .env << 'EOF'
+APP_ENV=production
+DB_HOST=prod-db.internal
+DB_PORT=3306
+DB_NAME=appdb
+REDIS_HOST=prod-redis.internal
+REDIS_PORT=6379
+APP_PORT=8080
+LOG_LEVEL=WARN
+EOF
+
+# 2. .env 파일 내용 확인
+# 3. .env 파일의 변수를 현재 셸에 로드
+# 4. env | grep -E "APP_|DB_|REDIS_|LOG_" 로 로드 확인
+# 5. .env 에서 DB_HOST 값만 추출
+# 6. .env 파일 권한을 600 으로 설정 (민감 정보 보호)
+#    chmod 600 .env && ls -l .env
+
