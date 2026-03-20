@@ -1,0 +1,52 @@
+--- netstat
+sudo apt install -y net-tools
+
+netstat -tlnp                   # TCP LISTEN + 프로세스
+netstat -an                     # 전체 연결 상태
+netstat -an | grep :8080        # 특정 포트 확인
+netstat -rn                     # 라우팅 테이블
+netstat -s                      # 네트워크 통계
+
+
+--- ss
+ss -tlnp                        # TCP LISTEN 포트 + 프로세스 (가장 많이 사용)
+ss -tlnp | grep :8080           # 8080 포트 사용 여부 확인
+ss -tunap                       # TCP+UDP 전체 연결
+ss -an | grep ESTABLISHED       # 현재 연결된 세션
+ss -an | grep TIME-WAIT         # TIME_WAIT 상태 확인
+
+-- lsof
+lsof -i tcp:22
+
+---
+1. 서버 포트 현황 파악
+# 현재 위치: /home/ubuntu/23.port
+
+# 1. ss -tlnp 로 현재 LISTEN 중인 TCP 포트 전체 확인
+# 2. ss -tlnp | grep :22 로 SSH 포트 확인
+# 3. sudo lsof -i -n -P | grep LISTEN 으로 LISTEN 포트 + 프로세스 확인
+# 4. ss -an | grep ESTABLISHED | wc -l 로 현재 연결된 세션 수 확인
+# 5. ss -an | awk '{print $1}' | sort | uniq -c | sort -rn 으로
+#    소켓 상태별 개수 집계
+
+---
+2. 포트 충돌 시뮬레이션 및 해결
+# 현재 위치: /home/ubuntu/23.port
+
+# 1. ss -tlnp | grep :9090 으로 포트 점유 확인
+# 2. sudo lsof -i :9090 으로 점유 프로세스 확인
+# 3. PID 확인 후 kill -15 로 종료
+# 4. ss -tlnp | grep :9090 으로 포트 해제 확인
+# 5. rm test.pid 정리
+
+---
+3. 연결 상태 분석
+# 현재 위치: /home/ubuntu/23.port
+
+# 1. ss -tan 으로 전체 TCP 연결 상태 확인
+# 2. ss -tan | grep ESTABLISHED 로 현재 활성 연결만 출력
+# 3. ss -tan | awk 'NR>1 {print $1}' | sort | uniq -c 로 상태별 카운트
+# 4. sudo lsof -i -n -P 2>/dev/null | grep ubuntu 로
+#    ubuntu 사용자의 네트워크 연결 확인
+# 5. ss -tlnp 결과를 port_status.txt 로 저장
+#    (헤더: "=== 포트 현황: $(date) ===")
