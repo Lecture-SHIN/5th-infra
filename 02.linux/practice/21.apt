@@ -1,0 +1,34 @@
+---
+
+1. 실습 환경 패키지 설치 및 관리
+
+
+
+# 현재 위치: /home/ubuntu/21.apt
+
+# 1. sudo apt update 로 패키지 목록 갱신
+# 2. apt list --upgradable 2>/dev/null | head -10 으로 업그레이드 가능 목록 확인
+# 3. apt search "text editor" | head -10 으로 텍스트 편집기 검색
+# 4. apt show vim 으로 vim 패키지 상세 정보 확인
+# 5. sudo apt install -y figlet 으로 figlet 설치
+# 6. figlet "Hello Linux" 로 동작 확인
+#    figlet : 텍스트를 큰 ASCII 아트 글자로 출력해주는 프로그램
+# 7. dpkg -L figlet 으로 설치된 파일 목록 확인
+# 8. sudo apt remove figlet -y 로 삭제
+# 9. sudo apt autoremove -y 로 불필요 패키지 정리
+
+
+---
+2. 설치 패키지 현황 관리
+
+# 1. dpkg -l | grep "^ii" | wc -l 로 설치된 패키지 수 확인
+# 2. apt list --installed 2>/dev/null | grep java 로 java 관련 패키지 확인
+# 3. dpkg -S /usr/bin/vim 으로 vim 실행 파일이 속한 패키지 확인
+# 4. dpkg -l | grep "^ii" | awk '{print $2}' | sort
+#    설치된 패키지 목록을 출력후 /home/ubuntu/21.apt/installed_packages.txt 파일로 저장하기
+# 5. installed_packages.txt 로 총 패키지 수 확인
+# 6. installed_packages.txt 에서 python 관련 패키지 필터
+ubuntu@ubuntu:~/21.apt$ wc -l /home/ubuntu/21.apt/installed_packages.txt 
+692 /home/ubuntu/21.apt/installed_packages.txt
+ubuntu@ubuntu:~/21.apt$ grep python /home/ubuntu/21.apt/installe
+d_packages.txt 
