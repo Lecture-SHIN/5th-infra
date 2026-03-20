@@ -1,0 +1,15 @@
+--- scp
+--- client -> ubuntu server
+--- 송신 : C:\CE\06.infra\02.linux\from-client.txt
+--- 수신 : /home/ubuntu/25.ssh
+--- client의 터미널(cmd)
+--- 주의!
+!!! Are you sure you want to continue connecting (yes/no/[fingerprint])? yes 로 설정!!
+
+>ssh-keygen -R [127.0.0.1]:9999
+>ssh -p 9999 ubuntu@127.0.0.1
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+>scp -P 9999 C:\CE\06.infra\02.linux\from-client.txt ubuntu@127.0.0.1:/home/ubuntu/25.ssh/
+from-client.txt                                     100%   19    18.6KB/s   00:00
+
