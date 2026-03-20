@@ -295,4 +295,54 @@ ubuntu@ubuntu:~/24.curl_wget$ curl -s https://jsonplaceholder.typicode.com/users
 "Chaim_McDermott@dana.io"
 "Rey.Padberg@karina.biz"
 
---- 
+--- POST
+ubuntu@ubuntu:~/24.curl_wget$ curl -X POST https://jsonplaceholder.typicode.com/users \
+> -H "Content-Type: application/json" \
+> -d '{
+  "name": "Kim DevOps",
+  "username": "kimdevops",
+  "email": "kim@example.com"
+}'
+{
+  "name": "Kim DevOps",
+  "username": "kimdevops",
+  "email": "kim@example.com",
+  "id": 11
+}
+
+ubuntu@ubuntu:~/24.curl_wget$ ls
+ubuntu@ubuntu:~/24.curl_wget$ vi new_user.json
+ubuntu@ubuntu:~/24.curl_wget$ curl -X POST https://jsonplaceholder.typicode.com/users -H "Content-Type: application/json" -d @/home/ubuntu/24.curl_wget/new_user.json
+{
+  "name": "Kim DevOps",
+  "username": "kimdevops",
+  "email": "kim@example.com",
+  "id": 11
+}
+
+--- DELETE
+ubuntu@ubuntu:~/24.curl_wget$ curl -X DELETE https://jsonplaceholder.typicode.com/users/1 \
+> -s -o /dev/null -w "%{http_code}\n"
+200
+ubuntu@ubuntu:~/24.curl_wget$ curl -v -X DELETE https://jsonplaceholder.typicode.com/users/1
+
+--- 파일
+ubuntu@ubuntu:~/24.curl_wget$ ll
+total 12
+drwxrwxr-x  2 ubuntu ubuntu 4096 Mar 20 15:15 ./
+drwxr-x--- 30 ubuntu ubuntu 4096 Mar 20 15:15 ../
+-rw-rw-r--  1 ubuntu ubuntu   84 Mar 20 15:15 new_user.json
+ubuntu@ubuntu:~/24.curl_wget$ curl -O https://jsonplaceholder.typicode.com/users
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  5645    0  5645    0     0  12639      0 --:--:-- --:--:-- --:--:-- 12656
+ubuntu@ubuntu:~/24.curl_wget$ ll
+total 20
+drwxrwxr-x  2 ubuntu ubuntu 4096 Mar 20 15:24 ./
+drwxr-x--- 30 ubuntu ubuntu 4096 Mar 20 15:15 ../
+-rw-rw-r--  1 ubuntu ubuntu   84 Mar 20 15:15 new_user.json
+-rw-rw-r--  1 ubuntu ubuntu 5645 Mar 20 15:24 users
+ubuntu@ubuntu:~/24.curl_wget$ vi users
+
+--- wget
+ubuntu@ubuntu:~/24.curl_wget$ wget https://projectlombok.org/downloads/lombok.jar
