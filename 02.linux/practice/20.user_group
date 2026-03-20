@@ -1,0 +1,197 @@
+--- user 생성, 사용
+ubuntu@ubuntu:~/20.user_group$ tail -5 /etc/passwd
+fwupd-refresh:x:989:989:Firmware update daemon:/var/lib/fwupd:/usr/sbin/nologin
+usbmux:x:108:46:usbmux daemon,,,:/var/lib/usbmux:/usr/sbin/nologin
+sshd:x:109:65534::/run/sshd:/usr/sbin/nologin
+ubuntu:x:1000:1000:ubuntu:/home/ubuntu:/bin/bash
+appuser:x:999:988::/home/appuser:/bin/false
+ubuntu@ubuntu:~/20.user_group$ sudo adduser newuser
+[sudo] password for ubuntu: 
+info: Adding user `newuser' ...
+info: Selecting UID/GID from range 1000 to 59999 ...
+info: Adding new group `newuser' (1001) ...
+info: Adding new user `newuser' (1001) with group `newuser (1001)' ...
+info: Creating home directory `/home/newuser' ...
+info: Copying files from `/etc/skel' ...
+New password: 
+Retype new password: 
+passwd: password updated successfully
+Changing the user information for newuser
+Enter the new value, or press ENTER for the default
+        Full Name []: 
+        Room Number []: 
+        Work Phone []: 
+        Home Phone []: 
+        Other []: 
+Is the information correct? [Y/n] y
+info: Adding new user `newuser' to supplemental / extra groups `users' ...
+info: Adding user `newuser' to group `users' ...
+ubuntu@ubuntu:~/20.user_group$ tail -5 /etc/passwd
+usbmux:x:108:46:usbmux daemon,,,:/var/lib/usbmux:/usr/sbin/nologin
+sshd:x:109:65534::/run/sshd:/usr/sbin/nologin
+ubuntu:x:1000:1000:ubuntu:/home/ubuntu:/bin/bash
+appuser:x:999:988::/home/appuser:/bin/false
+newuser:x:1001:1001:,,,:/home/newuser:/bin/bash
+
+--- newuser
+ubuntu@ubuntu:~/20.user_group$ su - newuser
+Password: 
+su: Authentication failure
+ubuntu@ubuntu:~/20.user_group$ su - newuser
+Password: 
+newuser@ubuntu:~$ history
+    1  history
+newuser@ubuntu:~$ su -
+Password: 
+su: Authentication failure
+newuser@ubuntu:~$ su -
+Password: 
+su: Authentication failure
+newuser@ubuntu:~$ cat /etc/shadow
+cat: /etc/shadow: Permission denied
+newuser@ubuntu:~$ sudo cat /etc/shadow
+[sudo] password for newuser: 
+newuser is not in the sudoers file.
+newuser@ubuntu:~$ groups
+newuser users
+
+--- root 계정
+ubuntu@ubuntu:~$ sudo passwd root
+New password: 
+Retype new password: 
+passwd: password updated successfully
+
+ubuntu@ubuntu:~$ su -
+Password: 
+root@ubuntu:~# 
+
+--- group 생성, 사용
+ubuntu@ubuntu:~$ sudo groupadd devteam
+ubuntu@ubuntu:~$ tail /etc/group
+uuidd:x:105:
+rdma:x:106:
+tcpdump:x:107:
+tss:x:108:
+landscape:x:109:
+fwupd-refresh:x:989:
+ubuntu:x:1000:
+appuser:x:988:
+newuser:x:1001:
+devteam:x:1002:
+ubuntu@ubuntu:~$ ll /
+total 2333788
+drwxr-xr-x  23 root root       4096 Mar 13 16:45 ./
+drwxr-xr-x  23 root root       4096 Mar 13 16:45 ../
+lrwxrwxrwx   1 root root          7 Apr 22  2024 bin -> usr/bin/
+drwxr-xr-x   2 root root       4096 Feb 26  2024 bin.usr-is-merged/
+drwxr-xr-x   4 root root       4096 Mar 16 10:37 boot/
+dr-xr-xr-x   2 root root       4096 Aug  6  2025 cdrom/
+drwxr-xr-x  20 root root       4100 Mar 20 07:38 dev/
+drwxr-xr-x 108 root root       4096 Mar 20 10:40 etc/
+drwxr-xr-x   4 root root       4096 Mar 20 10:24 home/
+lrwxrwxrwx   1 root root          7 Apr 22  2024 lib -> usr/lib/
+lrwxrwxrwx   1 root root          9 Apr 22  2024 lib64 -> usr/lib64/
+drwxr-xr-x   2 root root       4096 Feb 26  2024 lib.usr-is-merged/
+drwx------   2 root root      16384 Mar 13 16:42 lost+found/
+drwxr-xr-x   2 root root       4096 Aug  6  2025 media/
+drwxr-xr-x   2 root root       4096 Aug  6  2025 mnt/
+drwxr-xr-x   2 root root       4096 Aug  6  2025 opt/
+dr-xr-xr-x 173 root root          0 Mar 20 07:38 proc/
+drwx------   3 root root       4096 Mar 19 16:23 root/
+drwxr-xr-x  29 root root        940 Mar 20 10:24 run/
+lrwxrwxrwx   1 root root          8 Apr 22  2024 sbin -> usr/sbin/
+drwxr-xr-x   2 root root       4096 Dec 11  2024 sbin.usr-is-merged/
+drwxr-xr-x   2 root root       4096 Mar 13 17:01 snap/
+drwxr-xr-x   2 root root       4096 Aug  6  2025 srv/
+-rw-------   1 root root 2389704704 Mar 13 16:45 swap.img
+dr-xr-xr-x  13 root root          0 Mar 20 07:38 sys/
+drwxrwxrwt  12 root root       4096 Mar 20 10:34 tmp/
+drwxr-xr-x  12 root root       4096 Aug  6  2025 usr/
+drwxr-xr-x  13 root root       4096 Mar 13 17:01 var/
+ubuntu@ubuntu:~$ groups ubuntu
+ubuntu : ubuntu adm cdrom sudo dip plugdev lxd
+ubuntu@ubuntu:~$ sudo usermod -aG devteam ubuntu
+ubuntu@ubuntu:~$ groups ubuntu
+ubuntu : ubuntu adm cdrom sudo dip plugdev lxd devteam
+ubuntu@ubuntu:~$ groups ubuntu
+ubuntu : ubuntu adm cdrom sudo dip plugdev lxd devteam
+ubuntu@ubuntu:~$ sudo usermod -G ubuntu,adm,cdrom,sudo,dip,plugd
+ev,lxd ubuntu
+ubuntu@ubuntu:~$ groups
+ubuntu adm cdrom sudo dip plugdev lxd
+ubuntu@ubuntu:~$ man gpasswd
+ubuntu@ubuntu:~$ sudo gpasswd -d ubuntu devteam
+Removing user ubuntu from group devteam
+gpasswd: user 'ubuntu' is not a member of 'devteam'
+
+--- 
+1. 서비스 전용 계정 생성
+
+# 1. deploy 그룹 생성
+# 2. 서비스 전용 시스템 계정 생성(serviceuser, deploy 그룹) (로그인 불가)
+# 3. id serviceuser 로 UID/GID 확인
+ubuntu@ubuntu:~$ sudo groupadd deploy
+ubuntu@ubuntu:~$ sudo useradd -r -s /bin/false -g deploy service
+user
+ubuntu@ubuntu:~$ id serviceuser
+uid=996(serviceuser) gid=1003(deploy) groups=1003(deploy)
+
+# 4. 배포 디렉터리(/home/ubuntu/20.user_group/app) 생성 후 소유자 변경
+# 시스템 계정은 홈 디렉터리 없음, 서비스 디렉터리 소유권 부여가 목적
+# 5. ls -l /home/ubuntu/20.user_group/ 로 소유자 확인
+# 6. sudo userdel appuser 로 계정 삭제
+# 7. sudo groupdel deploy 로 그룹 삭제
+ubuntu@ubuntu:~$ sudo groupadd deploy
+ubuntu@ubuntu:~$ sudo useradd -r -s /bin/false -g deploy service
+user
+ubuntu@ubuntu:~$ id serviceuser
+uid=996(serviceuser) gid=1003(deploy) groups=1003(deploy)
+ubuntu@ubuntu:~$ cd 20.user_group/
+ubuntu@ubuntu:~/20.user_group$ mkdir app
+ubuntu@ubuntu:~/20.user_group$ ls
+app
+ubuntu@ubuntu:~/20.user_group$ ll app/
+total 8
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 20 11:05 ./
+drwxrwxr-x 3 ubuntu ubuntu 4096 Mar 20 11:05 ../
+ubuntu@ubuntu:~/20.user_group$ ll 
+total 12
+drwxrwxr-x  3 ubuntu ubuntu 4096 Mar 20 11:05 ./
+drwxr-x--- 25 ubuntu ubuntu 4096 Mar 20 10:49 ../
+drwxrwxr-x  2 ubuntu ubuntu 4096 Mar 20 11:05 app/
+ubuntu@ubuntu:~/20.user_group$ sudo chown serviceuser:deploy /home/ubuntu/20.user_group/app
+ubuntu@ubuntu:~/20.user_group$ ll
+total 12
+drwxrwxr-x  3 ubuntu      ubuntu 4096 Mar 20 11:05 ./
+drwxr-x--- 25 ubuntu      ubuntu 4096 Mar 20 10:49 ../
+drwxrwxr-x  2 serviceuser deploy 4096 Mar 20 11:05 app/
+ubuntu@ubuntu:~/20.user_group$ sudo userdel serviceuser
+ubuntu@ubuntu:~/20.user_group$ sudo groupdel deploy
+
+---
+2. 개발자 계정 관리
+
+# 1. developer 그룹 생성
+# 2. dev01 계정 생성 (홈 디렉터리 포함, bash 셸)
+#    sudo useradd -m -s /bin/bash -G developer dev01
+# 3. dev01 패스워드 설정
+#    sudo passwd dev01
+# 4. id dev01 로 계정 정보 확인
+# 5. dev01을 sudo 그룹에 추가
+#    sudo usermod -aG sudo dev01
+# 6. id dev01 로 sudo 그룹 추가 확인
+# 7. dev01 계정 잠금 → passwd -l → 잠금 확인
+# 8. 계정 잠금 해제 → passwd -u
+# 9. sudo userdel -r dev01 로 계정 + 홈 디렉터리 삭제
+# 10. sudo groupdel developer
+
+---
+3. 로그인 기록 및 사용자 현황 점검
+
+# 1. who 로 현재 로그인한 사용자 확인
+# 2. w 로 사용자 활동 내역 확인
+# 3. last | head -20 으로 최근 로그인 기록 확인
+# 4. last | grep ubuntu | head -10 으로 ubuntu 계정 로그인 이력
+# 5. sudo lastb | head -10 으로 실패한 로그인 시도 확인
+# 6. /etc/passwd에서 bash 셸 사용 계정 목록
+# 7. /etc/group에서 sudo 그룹 멤버 확인
