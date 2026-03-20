@@ -213,8 +213,57 @@ EOF
 
 # 2. .env 파일 내용 확인
 # 3. .env 파일의 변수를 현재 셸에 로드
+ubuntu@ubuntu:~/19.env$ cat > .env << 'EOF'
+APP_ENV=production
+DB_HOST=prod-db.internal
+DB_PORT=3306
+DB_NAME=appdb
+REDIS_HOST=prod-redis.internal
+REDIS_PORT=6379
+APP_PORT=8080
+LOG_LEVEL=WARN
+EOF
+ubuntu@ubuntu:~/19.env$ cat .env 
+APP_ENV=production
+DB_HOST=prod-db.internal
+DB_PORT=3306
+DB_NAME=appdb
+REDIS_HOST=prod-redis.internal
+REDIS_PORT=6379
+APP_PORT=8080
+LOG_LEVEL=WARN
+ubuntu@ubuntu:~/19.env$ ll .env
+-rw-rw-r-- 1 ubuntu ubuntu 147 Mar 20 10:03 .env
+ubuntu@ubuntu:~/19.env$ chmod 600 .env
+ubuntu@ubuntu:~/19.env$ ll .env
+-rw------- 1 ubuntu ubuntu 147 Mar 20 10:03 .env
+ubuntu@ubuntu:~/19.env$ unset APP_ENV DB_HOST DB_PORT DB_NAME REDIS_HOST REDIS_PORT APP_PORT LOG_LEVEL
+ubuntu@ubuntu:~/19.env$ set -a
+ubuntu@ubuntu:~/19.env$ source .env
+ubuntu@ubuntu:~/19.env$ set +a
+
 # 4. env | grep -E "APP_|DB_|REDIS_|LOG_" 로 로드 확인
 # 5. .env 에서 DB_HOST 값만 추출
+ubuntu@ubuntu:~/19.env$ env | grep -E "APP_|DB_|REDIS_|LOG_"
+LOG_LEVEL=WARN
+REDIS_HOST=prod-redis.internal
+DB_PORT=3306
+APP_ENV=production
+DB_HOST=prod-db.internal
+REDIS_PORT=6379
+DB_NAME=appdb
+APP_PORT=8080
+ubuntu@ubuntu:~/19.env$ grep "DB_HOST" .env
+DB_HOST=prod-db.internal
+ubuntu@ubuntu:~/19.env$ grep "DB_HOST" .env | cut -d= -f2
+prod-db.internal
+ubuntu@ubuntu:~/19.env$ awk -F= '/DB_HOST/{print $2}' .env
+prod-db.internal
+ubuntu@ubuntu:~/19.env$ grep "^DB_HOST" .env | cut -d= -f2
+prod-db.internal
+ubuntu@ubuntu:~/19.env$ awk -F= '/^DB_HOST/{print $2}' .env
+prod-db.internal
+
 # 6. .env 파일 권한을 600 으로 설정 (민감 정보 보호)
 #    chmod 600 .env && ls -l .env
 
