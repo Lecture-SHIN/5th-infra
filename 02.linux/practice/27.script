@@ -128,3 +128,232 @@ ubuntu@ubuntu:~/27.script$ ./practice_condition.sh 80800
 잘못된 포트 번호 : 80800
 ubuntu@ubuntu:~/27.script$ vi practice_condition.sh
 
+--- practice_loop.sh
+# while 카운트다운
+echo "---카운트다운---"
+N=3
+while [ $N -gt 0 ]; do
+    echo "$N..."
+    ((N--))
+done
+echo "시작!!!"
+
+--- cmd
+ubuntu@ubuntu:~/27.script$ vi practice_loop.sh
+ubuntu@ubuntu:~/27.script$ chmod +x practice_loop.sh 
+ubuntu@ubuntu:~/27.script$ ./practice_loop.sh 
+환경: dev
+환경: prod
+ubuntu@ubuntu:~/27.script$ vi practice_loop.sh
+ubuntu@ubuntu:~/27.script$ ./practice_loop.sh 
+환경: dev
+환경: prod
+---재시도---
+시도 1 / 3
+시도 2 / 3
+시도 3 / 3
+ubuntu@ubuntu:~/27.script$ ls /etc/*.conf
+/etc/adduser.conf
+/etc/ca-certificates.conf
+/etc/debconf.conf
+/etc/deluser.conf
+/etc/dhcpcd.conf
+/etc/e2scrub.conf
+/etc/fuse.conf
+/etc/gai.conf
+/etc/hdparm.conf
+/etc/host.conf
+/etc/ld.so.conf
+/etc/libaudit.conf
+/etc/locale.conf
+/etc/logrotate.conf
+/etc/mke2fs.conf
+/etc/multipath.conf
+/etc/nftables.conf
+/etc/nsswitch.conf
+/etc/overlayroot.conf
+/etc/pam.conf
+/etc/resolv.conf
+/etc/rsyslog.conf
+/etc/sensors3.conf
+/etc/sudo.conf
+/etc/sudo_logsrvd.conf
+/etc/sysctl.conf
+/etc/ucf.conf
+/etc/usb_modeswitch.conf
+/etc/vconsole.conf
+/etc/xattr.conf
+ubuntu@ubuntu:~/27.script$ ls /etc/*.conf | wc -l
+30
+ubuntu@ubuntu:~/27.script$ vi practice_loop.sh
+
+
+--- practice_function.sh
+  1 #!/bin/bash
+  2 
+  3 function print_banner() {
+  4     local TITLE=$1
+  5     echo "=============================="
+  6     echo "  $TITLE"
+  7     echo "=============================="
+  8 }
+  9 
+ 10 function is_port_open() {
+ 11     local HOST=$1
+ 12     local PORT=$2
+ 13     # timeout 1: 1초 안에 응답 없으면 실패
+ 14     if timeout 1 bash -c "echo > /dev/tcp/$HOST/$PORT" 2>/dev/null; then
+ 15         echo "[OPEN] $HOST:$PORT"
+ 16         return 0
+ 17     else
+ 18         echo "[CLOSE] $HOST:$PORT"
+ 19         return 1
+ 20     fi
+ 21 }
+ 22 
+ 23 function get_disk_usage() {
+ 24     local DIR=${1:-"/"}          # 기본값: /
+ 25     local USAGE
+ 26 
+ 27     # / 사용률 : ? 출력
+ 28     USAGE=$(df -h "$DIR" | awk 'NR==2 {print $5}')
+ 29     echo "$DIR 사용률 : $USAGE"
+ 30 }
+ 31 
+ 32 # 함수 호출
+ 33 print_banner "서버 점검 시작"
+ 34 is_port_open "localhost" "22"
+ 35 is_port_open "localhost" "9999"
+ 36 get_disk_usage "/"
+ 37 get_disk_usage "/home"
+
+
+
+
+--- cmd
+ubuntu@ubuntu:~/27.script$ vi practice_function.sh
+ubuntu@ubuntu:~/27.script$ chmod +x practice_function.sh 
+ubuntu@ubuntu:~/27.script$ ./practice_function.sh 
+==============================
+  서버 점검 시작
+==============================
+[OPEN] localhost:22
+[CLOSE] localhost:9999
+/ 사용률 : 57%
+/home 사용률 : 57%
+ubuntu@ubuntu:~/27.script$ ss -nlpt
+State         Recv-Q         Send-Q                 Local Address:Port                 Peer Address:Port        Process        
+LISTEN        0              4096                         0.0.0.0:22                        0.0.0.0:*                          
+LISTEN        0              4096                   127.0.0.53%lo:53                        0.0.0.0:*                          
+LISTEN        0              4096                      127.0.0.54:53                        0.0.0.0:*                          
+LISTEN        0              4096                            [::]:22                           [::]:*                          
+ubuntu@ubuntu:~/27.script$ ./practice_function.sh 
+==============================
+  서버 점검 시작
+==============================
+[OPEN] localhost:22
+[CLOSE] localhost:9999
+/ 사용률 : 57%
+/home 사용률 : 57%
+ubuntu@ubuntu:~/27.script$ vi practice_function.sh
+ubuntu@ubuntu:~/27.script$ print_banner "서버 점검 시작"
+print_banner: command not found
+ubuntu@ubuntu:~/27.script$ source ./practice_function.sh 
+==============================
+  서버 점검 시작
+==============================
+[OPEN] localhost:22
+[CLOSE] localhost:9999
+/ 사용률 : 57%
+/home 사용률 : 57%
+ubuntu@ubuntu:~/27.script$ print_banner "서버 점검 시작"
+==============================
+  서버 점검 시작
+==============================
+
+
+--- 
+1. 시나리오: 배포 자동화 스크립트
+
+
+
+ubuntu@ubuntu:~/27.script$ vi deploy.sh
+
+
+--- 내용 작성
+  1 #!/bin/bash
+  2 set -euo pipefail
+  3 
+  4 # 변수 설정
+  5 APP_NAME="myapp"
+  6 VERSION=$1
+  7 DEPLOY_DIR="/home/ubuntu/27.script/releases"
+  8 LOG_FILE="/home/ubuntu/27.script/deploy.log"
+  9 
+ 10 # [구현 1] 인자 검증
+ 11 # VERSION이 비어있으면 "Usage: ./deploy.sh <version>" 출력 후 exit 1
+ 12 if [ -z "$VERSION" ]; then
+ 13     echo "Usage: ./deploy.sh <version>"
+ 14 fi
+ 15 
+ 16 # [구현 2] 배포 디렉터리 생성
+ 17 # $DEPLOY_DIR/$VERSION 디렉터리 없으면 생성
+ 18 if [ ! -d "$DEPLOY_DIR/$VERSION" ]; then
+ 19     mkdir -p "$DEPLOY_DIR/$VERSION"
+ 20 fi
+ 21 
+ 22 # [구현 3] 배포 시뮬레이션
+ 23 # "[$APP_NAME] 배포 시작: v$VERSION" 출력
+ 24 # "배포 파일 복사 중..." 출력 후 sleep 1
+ 25 # "서비스 재시작 중..." 출력 후 sleep 1
+ 26 # "배포 완료: $(date)" 출력
+ 27 {
+ 28     echo "[$APP_NAME] 배포 시작: v$VERSION"
+ 29     echo "배포 파일 복사 중..."
+ 30     sleep 1
+ 31     echo "서비스 재시작 중..."
+ 32     sleep 1
+ 33     echo "배포 완료: $(date)"
+ 34 } | tee -a "$LOG_FILE"
+ 35 # [구현 4] 로그 기록
+ 36 # 위 메시지를 $LOG_FILE 에도 >> 로 기록
+ 37 
+ 38 # [구현 5] 실행 권한 부여 후 테스트
+ 39 # chmod +x deploy.sh
+ 40 # ./deploy.sh 1.0.0
+ 41 # ./deploy.sh 2.0.0
+ 42 # cat deploy.log 로 로그 확인
+~                                                                                                                   
+~                                               
+
+ubuntu@ubuntu:~/27.script$ chmod +x deploy.sh 
+ubuntu@ubuntu:~/27.script$ ls
+deploy.sh              practice_exit.sh      practice_loop.sh
+intro.sh               practice_function.sh  practice_variable.sh
+practice_condition.sh  practice_loop1.sh
+ubuntu@ubuntu:~/27.script$ ./deploy.sh
+./deploy.sh: line 6: $1: unbound variable
+ubuntu@ubuntu:~/27.script$ ./deploy.sh 1.0.0
+[myapp] 배포 시작: v1.0.0
+배포 파일 복사 중...
+서비스 재시작 중...
+배포 완료: Mon Mar 23 03:26:14 PM KST 2026
+ubuntu@ubuntu:~/27.script$ ./deploy.sh 2.0.0
+[myapp] 배포 시작: v2.0.0
+배포 파일 복사 중...
+서비스 재시작 중...
+배포 완료: Mon Mar 23 03:27:27 PM KST 2026
+ubuntu@ubuntu:~/27.script$ ls
+deploy.log  practice_condition.sh  practice_loop1.sh     releases
+deploy.sh   practice_exit.sh       practice_loop.sh
+intro.sh    practice_function.sh   practice_variable.sh
+ubuntu@ubuntu:~/27.script$ cat deploy.log 
+[myapp] 배포 시작: v1.0.0
+배포 파일 복사 중...
+서비스 재시작 중...
+배포 완료: Mon Mar 23 03:26:14 PM KST 2026
+[myapp] 배포 시작: v2.0.0
+배포 파일 복사 중...
+서비스 재시작 중...
+배포 완료: Mon Mar 23 03:27:27 PM KST 2026
+
