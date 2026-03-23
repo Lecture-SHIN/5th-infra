@@ -1,0 +1,130 @@
+--- intro.sh
+ubuntu@ubuntu:~/27.script$ vi intro.sh
+ubuntu@ubuntu:~/27.script$ chmod +x intro.sh 
+ubuntu@ubuntu:~/27.script$ ls
+intro.sh
+ubuntu@ubuntu:~/27.script$ ./intro.sh 
+Starting myapp
+ubuntu@ubuntu:~/27.script$ bash intro.sh 
+Starting myapp
+ubuntu@ubuntu:~/27.script$ source intro.sh 
+Starting myapp
+ubuntu@ubuntu:~/27.script$ echo $APP_NAME
+myapp
+ubuntu@ubuntu:~/27.script$ sh intro.sh 
+Starting myapp
+
+
+--- practice_variable.sh
+ubuntu@ubuntu:~/27.script$ cat practice_variable.sh 
+#!/bin/bash
+
+APP="spring-boot-app"
+VERSION="3.5.9"
+TODAY=$(date +%Y-%m-%d)
+
+echo "앱 이름: $APP"
+echo "버전: ${VERSION}"
+echo "오늘 날짜: $TODAY"
+echo "스크립트명: $0"
+echo "인자 개수: $#"
+echo "첫 번째 인자: $1"
+
+ls /home/ubuntu > /dev/null 2>&1
+echo "직전 명령: $?"
+
+echo "현재 스크립트 PID: $$"
+
+sleep 5&
+echo "백그라운드 PID:$!"
+
+--- cmd
+ubuntu@ubuntu:~/27.script$ vi practice_variable.sh
+ubuntu@ubuntu:~/27.script$ chmod +x practice_variable.sh 
+ubuntu@ubuntu:~/27.script$ ./practice_variable.sh 
+앱 이름: spring-boot-app
+버전: 3.5.9
+오늘 날짜: 2026-03-23
+스크립트명: ./practice_variable.sh
+인자 개수: 0
+첫 번째 인자: 
+ubuntu@ubuntu:~/27.script$ ./practice_variable.sh hello
+앱 이름: spring-boot-app
+버전: 3.5.9
+오늘 날짜: 2026-03-23
+스크립트명: ./practice_variable.sh
+인자 개수: 1
+첫 번째 인자: hello
+ubuntu@ubuntu:~/27.script$ ./practice_variable.sh hello script
+앱 이름: spring-boot-app
+버전: 3.5.9
+오늘 날짜: 2026-03-23
+스크립트명: ./practice_variable.sh
+인자 개수: 2
+첫 번째 인자: hello
+
+--- 특수변수 추가
+ubuntu@ubuntu:~/27.script$ ./practice_variable.sh hello script
+앱 이름: spring-boot-app
+버전: 3.5.9
+오늘 날짜: 2026-03-23
+스크립트명: ./practice_variable.sh
+인자 개수: 2
+첫 번째 인자: hello
+직전 명령: 0
+현재 스크립트 PID: 4020
+백그라운드 PID:4023
+
+--- practice_condition.sh
+#!/bin/bash
+
+FILE="/etc/hostname"
+INPUT=$1
+
+# 파일 존재 확인
+if [ -f "$FILE" ]; then
+        echo "[OK] $FILE 파일 존재"
+else
+        echo "[FAIL] $FILE 파일 없음"
+fi
+
+# 인자 비어있는지 확인
+if [ -z "$INPUT" ]; then
+        echo "인자를 입력해주세요"
+        exit 1
+fi
+
+# 숫자 비교
+# 0 : 사용 x
+# 1 ~ 1023 : 시스템/루트 전용
+# 1024 ~ 49151 : 일반 애플리케이션
+# 49142 ~ 65535 : 임시/클라인트
+PORT=$INPUT
+if [ "$PORT" -ge 1024 ] && [ "$PORT" -le 65535 ]; then
+        echo "유효 포트 번호 : $PORT"
+else
+        echo "잘못된 포트 번호 : $PORT"
+fi
+
+--- cmd 
+ubuntu@ubuntu:~/27.script$ vi practice_condition.sh
+ubuntu@ubuntu:~/27.script$ chmod +x practice_condition.sh 
+ubuntu@ubuntu:~/27.script$ ./practice_condition.sh 
+[OK] /etc/hostname 파일 존재
+ubuntu@ubuntu:~/27.script$ ll /etc/hostname 
+-rw-r--r-- 1 root root 7 Mar 13 16:45 /etc/hostname
+ubuntu@ubuntu:~/27.script$ vi practice_condition.sh
+ubuntu@ubuntu:~/27.script$ ./practice_condition.sh 
+[OK] /etc/hostname 파일 존재
+인자를 입력해주세요
+ubuntu@ubuntu:~/27.script$ ./practice_condition.sh  hello
+[OK] /etc/hostname 파일 존재
+ubuntu@ubuntu:~/27.script$ vi practice_condition.sh
+ubuntu@ubuntu:~/27.script$ ./practice_condition.sh 8080
+[OK] /etc/hostname 파일 존재
+유효 포트 번호 : 8080
+ubuntu@ubuntu:~/27.script$ ./practice_condition.sh 80800
+[OK] /etc/hostname 파일 존재
+잘못된 포트 번호 : 80800
+ubuntu@ubuntu:~/27.script$ vi practice_condition.sh
+
