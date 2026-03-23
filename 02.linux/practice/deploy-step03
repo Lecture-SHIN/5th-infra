@@ -8,8 +8,10 @@ set -euo pipefail
 REPO_DIR="/home/ubuntu/infra-basic-deploy-lab"
 # 앱 루트경로
 APP_DIR="/home/ubuntu/infra-basic-deploy-lab/infra-basic-deploy-lab"
-# 빌드 결과(아티팩트)
+# 빌드 결과(아티팩트) — ls, 파일 탐색용 (글로빙)
 JAR_PATTERN="infra-basic-deploy-lab-*.jar"
+# pgrep용 (정규식)
+JAR_REGEX_PATTERN="infra-basic-deploy-lab-.*\.jar"
 # 앱 실행 결과 로그
 LOG_FILE="/home/ubuntu/infra-basic-deploy-lab/app.log"
 # 배포 과정 결과 로그
@@ -59,7 +61,7 @@ build_jar() {
 # 3) 기존 프로세스 종료
 stop_app() {
     local PID
-    PID=$(pgrep -f "$JAR_PATTERN" || true)
+    PID=$(pgrep -f "$JAR_REGEX_PATTERN" || true)
 
     # [힌트] $PID 가 비어있지 않으면 (-n) 종료 처리
     #         kill 후 최대 10초 대기하며 프로세스가 사라졌는지 확인
@@ -69,7 +71,7 @@ stop_app() {
         log "기존 프로세스 종료: PID=$PID"
         kill "$PID"
         for i in {1..10}; do
-            if ! pgrep -f "$JAR_PATTERN" > /dev/null; then
+            if ! pgrep -f "$JAR_REGEX_PATTERN" > /dev/null; then
                 log "프로세스 종료 확인"
                 break
             fi
