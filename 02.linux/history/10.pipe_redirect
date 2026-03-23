@@ -1,0 +1,159 @@
+  135  clear
+  136  mkdir -p /home/ubuntu/10.pipe_redirect/{logs,config,output}
+  137  cd /home/ubuntu/10.pipe_redirect
+  138  clear
+  139  pwd
+  140  ls -l
+  141  ls -l > filelist.txt
+  142  ll
+  143  cat filelist.txt 
+  144  ls -l > filelist.txt
+  145  cat filelist.txt 
+  146  ls -l >> filelist.txt
+  147  cat filelist.txt 
+  148  ls /notexist
+  149  ls /notexist 2> error.txt
+  150  cat error.txt 
+  151  ls /notexist 2>> error.txt
+  152  cat error.txt 
+  153  ls /var /notexist
+  154  ls /var /notexist 2>> error.txt
+  155  cat error.txt 
+  156  ls /var /notexist &> result.txt
+  157  cat result.txt 
+  158  clear
+  159  ls
+  160  ls -l > output.txt
+  161  ls
+  162  ls -l | tee output.txt
+  163  echo "시작: $(date)"
+  164  echo "시작: $(date)" > date1.txt date2.txt
+  165  ls
+  166  cat date1.txt 
+  167  echo "시작: $(date)" | tee date1.txt date2.txt
+  168  ls date*
+  169  cat date1.txt date2.txt 
+  170  clear
+  171  ls
+  172* 
+  173  find . -name "date*.txt" | xargs rm
+  174  ls
+  175  touch "my log.log"
+  176  ls
+  177  find . -name "*.log" | xargs rm
+  178  find . -name "*.log" | xargs -0 rm
+  179  find . -name "*.log" -print0 | xargs -0 rm
+  180  ls
+  181  clear
+  182  ls
+  183  man diff
+  184  diff logs output
+  185  diff output result.txt 
+  186  diff output.txt result.txt 
+  187  clear
+  188  ls output | diff
+  189  diff output
+  190  ls
+  191  diff <(ls output) <(ls logs
+)
+  192  diff <(ls output) <(ls logs
+)
+  193  diff <(ls output) <(ls logs)
+  194  ls
+  195  mkdir diff1 diff2
+  196  ls
+  197  touch diff/a.txt diff/b.txt diff/c.txt
+  198  touch diff/a.txt
+  199  touch diff1/a.txt diff1/b.txt diff1/c.txt
+  200  touch diff2/a.txt diff2/b.txt diff2/d.txt
+  201  diff <(ls diff1) <(ls diff2)
+  202  clear
+  203  cd /home/ubuntu/10.pipe_redirect/logs
+  204  cat > app.log << 'EOF'
+2024-03-15 09:01:00 INFO  UserService - User login: user_id=1001
+2024-03-15 09:02:11 INFO  PostService - Post created: post_id=501
+2024-03-15 09:03:45 WARN  HikariCP - Connection pool is 80% full
+2024-03-15 09:04:55 ERROR PostService - NullPointerException at PostService.java:87
+2024-03-15 09:05:01 ERROR UserService - Authentication failed: user_id=9999
+2024-03-15 09:06:22 WARN  RedisService - Cache miss rate high: 45%
+2024-03-15 09:07:10 ERROR JpaService - Connection pool exhausted - HikariCP timeout
+2024-03-15 09:08:23 ERROR SecurityService - JWT token expired: user_id=1005
+2024-03-15 09:09:00 INFO  UserService - User logout: user_id=1001
+2024-03-15 09:10:14 ERROR PostService - NullPointerException at PostService.java:87
+EOF
+
+  205  clear
+  206  pwd
+  207  ls
+  208  clear
+  209  cd ..
+  210  clear
+  211  pwd
+  212  grep "ERROR" logs/app.log > output/error_only.txt
+  213  ls output/error_only.txt 
+  214  cat output/error_only.txt 
+  215  grep "ERROR" logs/app.log | tee output/error_tee.txt
+  216  cat /notexist.log 2> output/err.txt
+  217  cat output/err.txt 
+  218  cat logs/app.log /notexist.log &> output/all.txt
+  219  cat output/all.txt 
+  220  find . -name "*.log"
+  221  find . -name "*.log" | tee output/loglist.txt
+  222  cat output/loglist.txt 
+  223  clear
+  224  cat logs/app.log 
+  225  cat logs/app.log | grep "ERROR" | grep -v "HealthCheck"
+  226  cat logs/app.log | grep "ERROR" | grep -v "HealthCheck" | wc -l
+  227  cat logs/app.log  | grep "ERROR" | awk '{print $4}'
+  228  cat logs/app.log  | grep "ERROR" | awk '{print $4}' | sort | uniq
+  229  cat /etc/passwd
+  230  cat /etc/passwd | cut -d: -f1 | sort
+  231  echo "---전체---" && wc -l < logs/app.log 
+  232  echo "---ERROR---" && grep "ERROR" logs/app.log | wc -l
+  233  echo "---WARB---" && grep "WARN" logs/app.log | wc -l
+  234  echo "---WARN---" && grep "WARN" logs/app.log | wc -l
+  235  find . -name ".log" -mtime +30 | xargs rm
+  236  find . -name ".log" -mtime +30 -print0 | xargs -0 rm
+  237  clear
+  238  cd config/
+  239  pwd
+  240  clear
+  241  cat > application-dev.yml << 'EOF'
+spring:
+  datasource:
+    url: jdbc:mysql://dev-db.internal:3306/appdb
+    username: dev_user
+    password: dev_pass123
+  redis:
+    host: dev-redis.internal
+server:
+  port: 8080
+logging:
+  level:
+    root: DEBUG
+EOF
+
+  242  ls
+  243  cat > application-prod.yml << 'EOF'
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db.internal:3306/appdb
+    username: prod_user
+    password: prod_pass!@#
+  redis:
+    host: prod-redis.internal
+server:
+  port: 8080
+logging:
+  level:
+    root: DEBUG
+EOF
+
+  244  ls
+  245  diff <(cat application-dev.yml) <(cat application-prod.yml)
+  246  grep "password" application-dev.yml application-prod.yml 
+  247  grep "password" application-dev.yml application-prod.yml 2>/dev/null > ../output/passwords.txt
+  248  cat ../output/passwords.txt 
+  249  cat application-prod.yml | tee /tmp/prod_config_backup.yml
+  250  ls /tmp/prod_config_backup.yml 
+  251  history

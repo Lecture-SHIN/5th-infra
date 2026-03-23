@@ -1,0 +1,229 @@
+ubuntu@ubuntu:~/27.script$ history
+    1  exit
+    2  clear
+    3  history
+    4  exit
+    5  ls deploy-lab/
+    6  java
+    7  clear
+    8  sudo vi /etc/environment
+    9  echo $JAVA_HOME
+   10  echo $PATH
+   11  javac -version
+   12  nohup java -jar app.jar > app.log 2>&1 &
+   13  ls
+   14  cd deploy-lab/
+   15  clear
+   16  ls
+   17  ps aux | grep app.jar
+   18  clear
+   19  nohup java -jar app.jar > app.log 2>&1 &
+   20  ps aux | grep app.jar
+   21  ss -tlnp | grep 8080
+   22  tail -f app.log
+   23  curl http://localhost:8080/api/backend
+   24  PID=$(pgrep -f "app.jar")
+   25  echo $PID
+   26  kill $PID
+   27  ps aux | grep app.jar
+   28  clear
+   29  git --version
+   30  ps aux | grep app.jar
+   31  clear
+   32  cd
+   33  clear
+   34  pwd
+   35  git config --global user.name Lecture-SHIN
+   36  git config --global user.email "lecture.yonggishin@gamil.com"
+   37  clear
+   38  git conifg
+   39  git conifg --list
+   40  clear
+   41  git config --list
+   42  clear
+   43  vim ~/.bashrc
+   44  source ~/.bashrc
+   45  echo $GITHUB_TOKEN
+   46  clear
+   47  git clone https://$GITHUB_TOKEN@github.com/Lecture-SHIN/infra-basic-deploy-lab.git
+   48  ls
+   49  cd infra-basic-deploy-lab/
+   50  clear
+   51  pwd
+   52  ls
+   53  cd infra-basic-deploy-lab/
+   54  ls
+   55  cd
+   56  clear
+   57  pwd
+   58  git clone https://$GITHUB_TOKEN@github.com/Lecture-SHIN/infra-basic-deploy-lab.git
+   59  rm -rf infra-basic-deploy-lab/
+   60  git clone https://$GITHUB_TOKEN@github.com/Lecture-SHIN/infra-basic-deploy-lab.git
+   61  cd infra-basic-deploy-lab/
+   62  clear
+   63  cd infra-basic-deploy-lab/
+   64  ls
+   65  vi /home/ubuntu/infra-basic-deploy-lab/infra-basic-deploy-lab/src/main/resources/application.properties
+   66  clear
+   67  sudo vi /home/ubuntu/infra-basic-deploy-lab/infra-basic-deploy-lab/src/main/resources/application.properties
+   68  mkdir -p /home/ubuntu/infra-basic-deploy-lab/infra-basic-deploy-lab/src/main/resources
+   69  vi /home/ubuntu/infra-basic-deploy-lab/infra-basic-deploy-lab/src/main/resources/application.properties
+   70  ls
+   71  clear
+   72  ls
+   73  sudo apt install -y maven
+   74  clear
+   75  mvn -version
+   76  clear
+   77  mvn
+   78  java -version
+   79  echo $JAVA_HOME
+   80  sudo vi /etc/environment
+   81  clear
+   82  vi /home/ubuntu/.bashrc
+   83  source ~/.bashrc
+   84  echo $JAVA_HOME
+   85  mvn
+   86  mvn -version
+   87  clear
+   88  pwd
+   89  ls
+   90  clear
+   91  mvn clean package -DskipTests
+   92  clear
+   93  ls
+   94  ls -lh target/
+   95  clear
+   96  pwd
+   97  PID=$(pgrep -f "deploy-lab.*\.jar")
+   98  kill $PID
+   99  nohup java -jar target/infra-baisc-deploy-lab-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+  100  clear
+  101  nohup java -jar target/infra-baisc-deploy-lab-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+  102  echo "PID : $!"
+  103  clear
+  104  ps aux | grep jar
+  105  ps aux | grep java
+  106  clear
+  107  ss -nlpt | grep 8080
+  108  nohup java -jar target/infra-basic-deploy-lab-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+  109  ss -nlpt | grep 8080
+  110  ps aux | grep jar
+  111  tail -f app.log
+  112  clear
+  113  ll
+  114  cd /home/ubuntu/infra-baisc-deploy-lab
+  115  cd /home/ubuntu/infra-basic-deploy-lab
+  116  clear
+  117  pwd
+  118  ll
+  119  git pull origin main
+  120  clear
+  121  cd /home/ubuntu/infra-basic-deploy-lab/infra-basic-deploy-lab
+  122  mvn clean package -DskipTests
+  123  clear
+  124  kill $(pgrep -f "infra-basicdeploy-lab.*\.jar")
+  125  pgrep -f "*.jar"
+  126  pgrep "*.jar"
+  127  clear
+  128  ps aux | grep java
+  129  kill 3100
+  130  ps aux | grep java
+  131  nohup java -jar target/infra-baisc-deploy-lab-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+  132  ps aux | grep java
+  133  nohup java -jar target/infra-basic-deploy-lab-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+  134  ps aux | grep java
+  135  clear
+  136  pkill -f "infra-basic-deploy-lab.*\.jar" 2>/dev/null || true
+  137  ps aux | grep java
+  138  clear
+  139  pkill -f "infra-basic-deploy-lab.*\.jar" 2>/dev/null || true
+  140  ps aux | grep java
+  141  cd infra-basic-deploy-lab
+  142  cd ..
+  143  clear
+  144  git pull origin main
+  145  cd infra-basic-deploy-lab
+  146  mvn clean package -DskipTests
+  147  pkill -f "infra-basic-deploy-lab.*\.jar" 2>/dev/null || true
+  148  nohup java -jar target/infra-basic-deploy-lab-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+  149  ps aux | grep java
+  150  clear
+  151  ps aux | grep java
+  152  kill 3410
+  153  ps aux | grep java
+  154  clear
+  155  cd 
+  156  clear
+  157  ls
+  158  mkdir 27.script
+  159  cd 27.script/
+  160  clear
+  161  vi intro.sh
+  162  chmod +x intro.sh 
+  163  ls
+  164  ./intro.sh 
+  165  bash intro.sh 
+  166  source intro.sh 
+  167  echo $APP_NAME
+  168  sh intro.sh 
+  169  clear
+  170  vi practice_variable.sh
+  171  chmod +x practice_variable.sh 
+  172  ./practice_variable.sh 
+  173  ./practice_variable.sh hello
+  174  ./practice_variable.sh hello script
+  175  vi practice_variable.sh
+  176  ./practice_variable.sh hello script
+  177  vi practice_variable.sh
+  178  clear
+  179  vi practice_condition.sh
+  180  clear
+  181  cd 27.script/
+  182  clear
+  183  ls
+  184  vi practice_condition.sh
+  185  chmod +x practice_condition.sh 
+  186  ./practice_condition.sh 
+  187  ll /etc/hostname 
+  188  vi practice_condition.sh
+  189  ./practice_condition.sh 
+  190  ./practice_condition.sh  hello
+  191  vi practice_condition.sh
+  192  ./practice_condition.sh 8080
+  193  ./practice_condition.sh 80800
+  194  vi practice_condition.sh
+  195  cat practice_condition.sh 
+  196  clear
+  197  cat practice_variable.sh 
+  198  clear
+  199  history
+  200  clear
+  201  vi practice_loop.sh
+  202  chmod +x practice_loop.sh 
+  203  ./practice_loop.sh 
+  204  vi practice_loop.sh
+  205  ./practice_loop.sh 
+  206  ls /etc/*.conf
+  207  ls /etc/*.conf | wc -l
+  208  vi practice_loop.sh
+  209  fg &1
+  210  vi practice_loop.sh 
+  211  vi practice_loop1.sh 
+  212  chmod +x practice_loop1.sh 
+  213  ./practice_loop1.sh 
+  214  vi practice_loop1.sh 
+  215  clear
+  216  vi practice_function.sh
+  217  chmod +x practice_function.sh 
+  218  ./practice_function.sh 
+  219  ss -nlpt
+  220  ./practice_function.sh 
+  221  vi practice_function.sh
+  222  print_banner "서버 점검 시작"
+  223  source ./practice_function.sh 
+  224  print_banner "서버 점검 시작"
+  225  vi function_test.sh
+  226  vi practice_function.sh
+  227  clear
+  228  history

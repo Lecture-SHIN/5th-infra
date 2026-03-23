@@ -1,0 +1,43 @@
+  456  mkdir -p /home/ubuntu/08.disk
+  457  cd /home/ubuntu/08.disk
+  458  clear
+  459  df -h
+  460  df -h /
+  461  df -h | grep -v tmpfs
+  462  clear
+  463  du
+  464  du -h
+  465  du -h /var/log
+  466  du -sh
+  467  du -sh /var/log
+  468  clear
+  469  du /var/log /home/ubuntu/
+  470  clear
+  471  du -sh /var/log /home/ubuntu/
+  472  clear
+  473  mkdir -p app/{logs,cache,upload}
+  474  dd if=/dev/zero bs=1024 count=5120 2>/dev/null | tr '\0' 'A' > app/logs/app.log
+  475  dd if=/dev/zero bs=1024 count=2048 2>/dev/null | tr '\0' 'B' > app/cache/cache.dat
+  476  dd if=/dev/zero bs=1024 count=8192 2>/dev/null | tr '\0' 'C' > app/upload/data.bin
+  477  tree
+  478  ll app
+  479  ll app/cache/
+  480  ll app/logs/
+  481  l -alh app/logs/
+  482  clear
+  483  dh -f
+  484  cleqar
+  485  clear
+  486  df -h
+  487  du -sh app/*
+  488  du -sh app/* | sort -rh
+  489  du -ah app/logs/
+  490  find . -type f -size +10M
+  491  clear
+  492  df -h | grep -v tmpfs
+  493  du -sh /home/ubuntu/* | sort -rh | head -5
+  494  find /home/ubuntu -type f -size +50M
+  495  find /home/ubuntu -name "*.log" -mtime +30
+  496  lsblk -f
+  497  clear
+  498  history

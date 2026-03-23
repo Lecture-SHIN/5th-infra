@@ -1,0 +1,31 @@
+   32  clear
+   33  cat /etc/apt/sources.list
+   34  cat /etc/apt/sources.list.d/ubuntu.sources
+   35  apt search java
+   36  clear
+   37  mkdir -p /home/ubuntu/21.apt
+   38  cd 21.apt/
+   39  clear
+   40  pwd
+   41  history
+   42  clear
+   43  apt list --upgradable 2>/dev/null | head -10
+   44  apt search "text editor" | head -10
+   45  apt show vim
+   46  sudo apt install -y figlet
+   47  figlet "Hello Linux"
+   48  dpkg -L figlet
+   49  sudo apt remove figlet -y
+   50  sudo apt autoremove -y
+   51  clear
+   52  dpkg -l
+   53  clear
+   54  dpkg -l | grep "^ii" | awk '{print $2}' | sort
+   55  dpkg -l | grep "^ii" | awk '{print $2}' | sort > /home/ubuntu/21.apt/installed_packages.txt
+   56  ll
+   57  wc -l /home/ubuntu/21.apt/installed_packages.txt 
+   58  grep python /home/ubuntu/21.apt/installed_packages.txt 
+   59  clear
+   60  cd
+   61  clear
+   62  history

@@ -1,0 +1,44 @@
+  274  cd
+  275  mkdir deploy-lab
+  276  cd deploy-lab/
+  277  clear
+  278  ls
+  279  java
+  280  clear
+  281  sudo apt install -y openjdk-17-jdk
+  282  java
+  283  java -version
+  284  clear
+  285  echo $JAVA_HOME
+  286  which java
+  287  ll /usr/bin/java
+  288  readlink -f $(which java)
+  289  sudo vi /etc/environment
+  290  echo $JAVA_HOME
+  291  echo 'export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64/bin/java"' >> ~/.bashrc
+  292  echo 'export PATH="$JAVA_HOME/bin:$PATH"' >> ~/.bashrc
+  293  soure ~/.bashrc
+  294  sourre ~/.bashrc
+  295  source ~/.bashrc
+  296  echo $JAVA_HOME
+  297  sudo vi /etc/environment
+  298  clear
+  299  java -jar app.jar 
+  300  clear
+  301  nohup java -jar app.jar > app.log 2>&1 &
+  302  ps aux | grep app.jar
+  303  ls
+  304  cat app.
+  305  cat app.log 
+  306  clear
+  307  ss -tlnp | grep 8080
+  308  ps -ef | grep java
+  309  curl http://localhost:8080/api/backend
+  310  clear
+  311  PID=$(pgrep -f "app.jar")
+  312  echo $PID
+  313  kill $PID
+  314  clear
+  315  ps aux | grep java
+  316  curl http://localhost:8080/api/backend
+  317  history

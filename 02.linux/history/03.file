@@ -1,0 +1,273 @@
+  216  clear
+  217  cd 
+  218  clear
+  219  pwd
+  220  mkdir 03.file
+  221  ls
+  222  cd 03.file/
+  223  clear
+  224  pwd
+  225  mkdir workspace/management
+  226  ls
+  227  mkdir -p workspace/management
+  228  ls
+  229  tree
+  230  ls
+  231  touch app.log
+  232  ls
+  233  touch file1.txt file2.txt file3.txt
+  234  tree
+  235  clear
+  236  ls -al
+  237  stat app.log
+  238  touch -a app.log
+  239  stat app.log
+  240  touch -m app.log
+  241  stat app.log
+  242  clear
+  243  stat app.log
+  244  clear
+  245  stat app.lo
+  246  stat app.log
+  247  touch -t 2510111200.30 app.log
+  248  stat app.log
+  249  touch -d "yesterday" app.log
+  250  stat app.log
+  251  touch -d "last year" app.log
+  252  stat app.log
+  253  touch -d "1 hour ago" app.log
+  254  stat app.log
+  255  clear
+  256  history
+ubuntu@ubuntu:~/03.file$ ls -al
+total 12
+drwxrwxr-x 3 ubuntu ubuntu 4096 Mar 16 14:37 .
+drwxr-x--- 7 ubuntu ubuntu 4096 Mar 16 14:33 ..
+-rw-rw-r-- 1 ubuntu ubuntu    0 Mar 16 14:36 app.log
+-rw-rw-r-- 1 ubuntu ubuntu    0 Mar 16 14:37 file1.txt
+-rw-rw-r-- 1 ubuntu ubuntu    0 Mar 16 14:37 file2.txt
+-rw-rw-r-- 1 ubuntu ubuntu    0 Mar 16 14:37 file3.txt
+drwxrwxr-x 3 ubuntu ubuntu 4096 Mar 16 14:35 workspace
+ubuntu@ubuntu:~/03.file$ stat app.log
+  File: app.log
+  Size: 0               Blocks: 0          IO Block: 4096   regular empty file
+Device: 252,0   Inode: 454127      Links: 1
+Access: (0664/-rw-rw-r--)  Uid: ( 1000/  ubuntu)   Gid: ( 1000/  ubuntu)
+Access: 2026-03-16 14:36:54.815014657 +0900
+Modify: 2026-03-16 14:36:54.815014657 +0900
+Change: 2026-03-16 14:36:54.815014657 +0900
+ Birth: 2026-03-16 14:36:54.815014657 +0900
+ubuntu@ubuntu:~/03.file$ touch -a app.log
+ubuntu@ubuntu:~/03.file$ stat app.log
+  File: app.log
+  Size: 0               Blocks: 0          IO Block: 4096   regular empty file
+Device: 252,0   Inode: 454127      Links: 1
+Access: (0664/-rw-rw-r--)  Uid: ( 1000/  ubuntu)   Gid: ( 1000/  ubuntu)
+Access: 2026-03-16 14:41:26.567786769 +0900
+Modify: 2026-03-16 14:36:54.815014657 +0900
+Change: 2026-03-16 14:41:26.567786769 +0900
+ Birth: 2026-03-16 14:36:54.815014657 +0900
+ubuntu@ubuntu:~/03.file$ touch -m app.log
+ubuntu@ubuntu:~/03.file$ stat app.log
+  File: app.log
+  Size: 0               Blocks: 0          IO Block: 4096   regular empty file
+Device: 252,0   Inode: 454127      Links: 1
+Access: (0664/-rw-rw-r--)  Uid: ( 1000/  ubuntu)   Gid: ( 1000/  ubuntu)
+Access: 2026-03-16 14:41:26.567786769 +0900
+Modify: 2026-03-16 14:42:21.146735584 +0900
+Change: 2026-03-16 14:42:21.146735584 +0900
+ Birth: 2026-03-16 14:36:54.815014657 +0900
+
+ubuntu@ubuntu:~/03.file$ stat app.log
+  File: app.log
+  Size: 0               Blocks: 0          IO Block: 4096   regular empty file
+Device: 252,0   Inode: 454127      Links: 1
+Access: (0664/-rw-rw-r--)  Uid: ( 1000/  ubuntu)   Gid: ( 1000/  ubuntu)
+Access: 2026-03-16 14:41:26.567786769 +0900
+Modify: 2026-03-16 14:42:21.146735584 +0900
+Change: 2026-03-16 14:42:21.146735584 +0900
+ Birth: 2026-03-16 14:36:54.815014657 +0900
+ubuntu@ubuntu:~/03.file$ touch -t 2510111200.30 app.log
+ubuntu@ubuntu:~/03.file$ stat app.log
+  File: app.log
+  Size: 0               Blocks: 0          IO Block: 4096   regular empty file
+Device: 252,0   Inode: 454127      Links: 1
+Access: (0664/-rw-rw-r--)  Uid: ( 1000/  ubuntu)   Gid: ( 1000/  ubuntu)
+Access: 2025-10-11 12:00:30.000000000 +0900
+Modify: 2025-10-11 12:00:30.000000000 +0900
+Change: 2026-03-16 14:48:35.538827712 +0900
+ Birth: 2026-03-16 14:36:54.815014657 +0900
+ubuntu@ubuntu:~/03.file$ touch -d "yesterday" app.log
+ubuntu@ubuntu:~/03.file$ stat app.log
+  File: app.log
+  Size: 0               Blocks: 0          IO Block: 4096   regular empty file
+Device: 252,0   Inode: 454127      Links: 1
+Access: (0664/-rw-rw-r--)  Uid: ( 1000/  ubuntu)   Gid: ( 1000/  ubuntu)
+Access: 2026-03-15 14:50:34.758757620 +0900
+Modify: 2026-03-15 14:50:34.758757620 +0900
+Change: 2026-03-16 14:50:34.757858134 +0900
+ Birth: 2026-03-16 14:36:54.815014657 +0900
+ubuntu@ubuntu:~/03.file$ touch -d "last year" app.log
+ubuntu@ubuntu:~/03.file$ stat app.log
+  File: app.log
+  Size: 0               Blocks: 0          IO Block: 4096   regular empty file
+Device: 252,0   Inode: 454127      Links: 1
+Access: (0664/-rw-rw-r--)  Uid: ( 1000/  ubuntu)   Gid: ( 1000/  ubuntu)
+Access: 2025-03-16 14:51:15.710412116 +0900
+Modify: 2025-03-16 14:51:15.710412116 +0900
+Change: 2026-03-16 14:51:15.708570866 +0900
+ Birth: 2026-03-16 14:36:54.815014657 +0900
+ubuntu@ubuntu:~/03.file$ touch -d "1 hour ago" app.log
+ubuntu@ubuntu:~/03.file$ stat app.log
+  File: app.log
+  Size: 0               Blocks: 0          IO Block: 4096   regular empty file
+Device: 252,0   Inode: 454127      Links: 1
+Access: (0664/-rw-rw-r--)  Uid: ( 1000/  ubuntu)   Gid: ( 1000/  ubuntu)
+Access: 2026-03-16 13:51:40.329677291 +0900
+Modify: 2026-03-16 13:51:40.329677291 +0900
+Change: 2026-03-16 14:51:40.328408123 +0900
+ Birth: 2026-03-16 14:36:54.815014657 +0900
+
+---
+  258  ls
+  259  cp app.log app.log.bak
+  260  tree
+  261  cp workspace workspace_backup
+  262  cp -r workspace workspace_backup
+  263  tree
+  264  cp app.log app.log.bak
+  265  cp -i app.log app.log.bak
+  266  clear
+  267  tree
+  268  cp -a app.log app.log.bak.$(date +%Y%m%d)
+  269  tree
+  270  clear
+  271  history
+ubuntu@ubuntu:~/03.file$ tree
+.
+├── app.log
+├── app.log.bak
+├── file1.txt
+├── file2.txt
+├── file3.txt
+├── workspace
+│   └── management
+└── workspace_backup
+    └── management
+
+5 directories, 5 files
+ubuntu@ubuntu:~/03.file$ cp -a app.log app.log.bak.$(date +%Y%m%d)
+ubuntu@ubuntu:~/03.file$ tree
+.
+├── app.log
+├── app.log.bak
+├── app.log.bak.20260316
+├── file1.txt
+├── file2.txt
+├── file3.txt
+├── workspace
+│   └── management
+└── workspace_backup
+    └── management
+
+5 directories, 6 files
+
+---
+  273  touch deploy.sh
+  274  tree
+  275  mv deploy.sh workspace/management/
+  276  tree
+  277  clear
+  278  mkdir count
+  279  tree
+  280  mv count/ workspace/
+  281  tree
+  282  clear
+  283  tree
+  284  mv file1.txt test1.txt
+  285  tree
+  286  cleat
+  287  clear
+  288  tree
+  289  mv test1.txt file2.txt file3.txt  workspace/count/
+  290  tree
+  291  rm -i app.log.bak
+  292  tree
+  293  rmdir workspace_backup/
+  294  rm -ri workspace_backup/
+  295  tree
+  296  clear
+  297  ls
+  298  pwd
+  299  clear
+  300  pwd
+  301  mkdir -p app/{config,logs,deploy,backup}
+  302  mkdir -p app/{app,error,access}
+  303  tree
+  304  clear
+  305  touch app/config/application.yml
+  306  touch app/config/application-prod.yml
+  307  touch app/deploy/deploy.sh
+  308  touch app/logs/app/app.log
+  309  tree
+  310  mkdir -p app/logs/{app,error,access}
+  311  tree
+  312  clear
+  313  touch app/logs/app/app.log
+  314  tree app/
+  315  clear
+  316  tree app/
+  317  cat > app/config/application.yml << 'EOF'
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db:3306/appdb
+EOF
+
+  318  cat app/config/application.yml 
+  319  cp -p app/config/application.yml app/backup/application.yml.bak.$(date +%Y%m%d)
+  320  tree app/
+  321  clear
+  322  tree
+  323  clear
+  324  tree app/
+  325  cat > /tmp/application_new.yml << 'EOF'
+server:
+  port: 9090
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db-v2:3306/appdb
+EOF
+
+  326  mv -i /tmp/application_new.yml app/config/application.yml 
+  327  cat app/config/application.yml 
+  328  clear
+  329  tree app/
+  330  cp -p app/backup/application.yml.bak.$(date +%Y%m%d) app/config/application.yml 
+  331  cat app/config/application.yml 
+  332  clear
+  333  cat
+  334  cat << EOF
+Hello
+World
+EOF
+
+  335  clear
+  336  tree app
+  337  cd /home/ubuntu/03.file/app/logs/app
+  338  pwd
+  339  ls -lt
+  340  mkdir archive
+  341  find . -name "*.log" -mtime +30 -type f
+  342  tree app
+  343  tree /home/ubuntu/03.file/app
+  344  find . -name "*.log" -mtime +30 -type f -exec mv {} archive/ \;
+  345  ls archive/
+  346  rm -rf archive/
+  347  tree
+  348  clear
+  349  cd
+  350  clear
+  351  pwd
+  352  history

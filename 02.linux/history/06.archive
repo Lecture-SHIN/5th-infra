@@ -1,0 +1,149 @@
+  216  clear
+  217  cd
+  218  mkdir -p /home/ubuntu/06.archive
+  219  cd /home/ubuntu/06.archive
+  220  clear
+  221  pwd
+  222  # 예시용 디렉터리 구성
+  223  mkdir -p project/{config,src,deploy}
+  224  cat > project/config/application.yml << 'EOF'
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db:3306/appdb
+EOF
+
+  225  touch project/src/Main.java
+  226  touch project/src/Service.java
+  227  touch project/deploy/deploy.sh
+  228  touch project/logs/app.log 2>/dev/null || mkdir -p project/logs && touch project/logs/app.log
+  229  clear
+  230  tree
+  231  tar -cvf archive.tar project/
+  232  ls
+  233  tar -tvf archive.tar 
+  234  ls
+  235  mkdir -p extract
+  236  clear
+  237  tar -xvf archive.tar -C extract/
+  238  tree
+  239  history
+  240  clear
+  241  tree
+  242  clear
+  243  ll project/logs/
+  244  sudo cp /var/log/syslog project/logs/syslog
+  245  ll project/logs/
+  246  gzip -k project/logs/syslog 
+  247  sudo gzip -k project/logs/syslog 
+  248  ll project/logs/
+  249  gzip -l project/logs/syslog.gz 
+  250  sudo gzip -l project/logs/syslog.gz 
+  251  sudo rm project/logs/syslog
+  252  ll project/logs/
+  253  sudo gzip -d project/logs/syslog.gz
+  254  ll project/logs/
+  255  clear
+  256  tree
+  257  tar -czvf archive.tar.gz project/
+  258  sudo !
+  259* sudo 
+  260  tar -czvf archive.tar.gz project/
+  261  sudo tar -czvf archive.tar.gz project/
+  262  ls
+  263  mkdir -p archive_zip_extract
+  264  tree
+  265  tar -xzvf archive.tar.gz -C archive_zip_extract/
+  266  tree archive_zip_extract/
+  267  tree
+  268  clear
+  269  history
+    270  clear
+  271  mkdir -p release/{config,lib,logs}
+  272  cat > release/config/application.yml << 'EOF'
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db:3306/appdb
+EOF
+
+  273  touch release/lib/app.jar
+  274  touch release/logs/app.log
+  275  touch release/deploy.sh
+  276  clear
+  277  tree release/
+  278  tar -czvf release-$(date +%Y%m%d).tar.gz release/
+  279  tree release/
+  280  ls
+  281  tar -tvf release-$(date +%Y%m%d).tar.gz
+  282  ls -lh release-$(date +%Y%m%d).tar.gz
+  283  tree
+  284  clear
+  285  tree tmp
+  286  ls
+  287  tar -xzvf release-$(date +%Y%m%d).tar.gz -C /tmp/
+  288  tree tmp
+  289  tree
+  290  clear
+  291  tree /tmp/release/
+  292  tar -czvf release-nolog.tar.gz --exclude="*.log"
+  293  tar -cvzf release-nolog.tar.gz release/ --exclude="*.log"
+  294  clear
+  295  tar -tvf release-nolog.tar.gz 
+  296  rm release-nolog.tar.gz 
+  297  clear
+  298  ls
+  299  tar -cvzf release-nolog.tar.gz release/ --exclude="*.log"
+  300  tar -cvzf release-nolog.tar.gz --exclude="*.log" release/
+  301  clear
+  302  ls
+  303  tree release
+  304  tar -tvf release-nolog.tar.gz 
+  305  clear
+  306  historgy
+  307  history
+  308  clear
+  309  cd /home/ubuntu/06.archive
+  310  mkdir -p logs
+  311  for i in {1..5}; do   echo "2024-03-$(printf '%02d' $i) 로그 내용" > logs/app-2024030${i}.log; done
+  312  touch -d "35 days ago" logs/app-20240301.log
+  313  touch -d "32 days ago" logs/app-20240302.log
+  314  clear
+  315  tree logs/
+  316  clear
+  317  cd logs/
+  318  clear
+  319  tree
+  320  ls -lh
+  321  find . -name "*"
+  322  find . -name "*.log" -mtime +30
+  323  find . -name "*.log" -mtime +30 -exec gzip -k {} \;
+  324  tree
+  325  gzip -l *.gz
+  326  find . -name "*.log" -mtime +30 -delete
+  327  tree
+  328  ls -lh
+  329  clear
+  330  cd /home/ubuntu/06.archive
+  331  mkdir -p received
+  332  zip -r received/frontend-build.zip release/config/
+  333  sudo apt install zip
+  334  clear
+  335  zip -r received/frontend-build.zip release/config/
+  336  ls
+  337  tree received/
+  338  unzip -l received/frontend-build.zip 
+  339  mkdir -p deploy
+  340  clear
+  341  tree
+  342  clear
+  343  unzip received/frontend-build.zip -d deploy/
+  344  tree deploy/
+  345  tar -czvf deploy-backup-$(date +%Y%m%d).tar.gz deploy
+  346  ls
+  347  clear
+  348  history
+  349  clear
+  350  history

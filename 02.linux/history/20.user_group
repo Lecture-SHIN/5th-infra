@@ -1,0 +1,31 @@
+    6  sudo groupadd devteam
+    7  tail /etc/group
+    8  ll /
+    9  groups ubuntu
+   10  sudo usermod -aG devteam ubuntu
+   11  groups ubuntu
+   12  sudo usermod -G ubuntu adm cdrom sudo dip plugdev lxd ubuntu
+   13  sudo usermod -G ubuntu,adm,cdrom,sudo,dip,plugdev,lxd ubuntu
+   14  groups
+   15  man gpasswd
+   16  sudo gpasswd -d ubuntu devteam
+   17  clear
+   18  sudo groupadd deploy
+   19  sudo useradd -r -s /bin/false -g deploy serviceuser
+   20  id serviceuser
+   21  cd 20.user_group/
+   22  mkdir app
+   23  ls
+   24  ll app/
+   25  ll 
+   26  sudo chown serviceuser:deploy /home/ubuntu/20.user_group/app
+   27  ll
+   28  sudo userdel serviceuser
+   29  sudo groupdel deploy
+   30  clear
+   31  cd
+   32  clear
+   33  cat /etc/apt/sources.list
+   34  cat /etc/apt/sources.list.d/ubuntu.sources
+   35  apt search java
+   36  clear

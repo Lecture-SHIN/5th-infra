@@ -1,0 +1,69 @@
+   63  clear
+   64  ll
+   65  clear
+   66  mkdir 22.network
+   67  cd 22.network/
+   68  clear
+   69  ip
+   70  clear
+   71  ip addr
+   72  ip addr show
+   73  clear
+   74  ip addr
+   75  ip -4 addr
+   76  clear
+   77  ip route
+   78  clear
+   79  ip route get 8.8.8.8
+   80  ip link
+   81  clear
+   82  history
+   83  clear
+   84  ifconfig
+   85  clear
+   86  ping google.com
+   87  ping -4 google.com
+   88  clear
+   89  ping -c 4 google.com
+   90  clear
+   91  ip
+   92  clear
+   93  ip addr
+   94  clear
+   95  ping -c 1 -W 2 10.0.2.2
+   96  clear
+   97  traceroute
+   98  clear
+   99  sudo apt install -y traceroute
+  100  clear
+  101  traceroute google.com
+  102  clear
+  103  nslookup google.com
+  104  clear
+  105  sudo apt install -y dnsutils
+  106  clear
+  107  dig google.com
+  108  clear
+  109  nslookup google.com 8.8.8.8
+  110  nslookup google.com 8.8.4.1
+  111  nslookup google.com 8.8.4.4
+  112  nslookup google.com 1.1.1.1
+  113  clear
+  114  cat /etc/resolv.conf 
+  115  clear
+  116  hostname
+  117  hostname -I
+  118  ip addr
+  119  hostname -i
+  120  clear
+  121  cat /etc/resolv.conf 
+  122  hostname -f
+  123  clear
+  124  echo "=== 네트워크 현황 보고서: $(date) ===" > network_report.txt
+  125  ls
+  126  cat network_report.txt 
+  127  echo -e "\n[IP 주소]" >> network_report.txt 
+  128  ip -4 addr show >> network_report.txt 
+  129  cat network_report.txt 
+  130  clear
+  131  history

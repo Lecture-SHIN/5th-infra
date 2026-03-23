@@ -1,0 +1,62 @@
+  396  cat > application-prod.yml << 'EOF'
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db:3306/appdb
+    username: prod_user
+    password: prod_pass!@#
+logging:
+  level:
+    root: WARN
+    com.myapp: INFO
+EOF
+
+  397  clear
+  398  pwd
+  399  diff -y --width=80
+  400  diff -y --width=80 application-dev.yml application-prod.yml 
+  401  diff -u application-dev.yml application-prod.yml > config_diff.txt
+  402  cat config_diff.txt 
+  403  diff -q application-dev.yml application-prod.yml
+  404  diff <(grep "level" application-dev.yml) <(grep "level" application-prod.yml)
+  405  clear
+  406  cd ..
+  407  cat > server1_packages.txt << 'EOF'
+curl
+git
+htop
+java-17-openjdk
+jq
+net-tools
+nginx
+tree
+unzip
+vim
+wget
+EOF
+
+  408  cat > server2_packages.txt << 'EOF'
+curl
+docker
+git
+java-17-openjdk
+jq
+net-tools
+tree
+unzip
+vim
+wget
+EOF
+
+  409  clear
+  410  ls
+  411  comm -23 server1_packages.txt server2_packages.txt 
+  412  comm -13 server1_packages.txt server2_packages.txt 
+  413  comm -12 server1_packages.txt server2_packages.txt 
+  414  diff server1_packages.txt server2_packages.txt
+  415  clear
+  416  comm -23 server1_packages.txt server2_packages.txt 
+  417  comm -13 server1_packages.txt server2_packages.txt 
+  418  comm -12 server1_packages.txt server2_packages.txt 
+  419  diff server1_packages.txt server2_packages.txt
