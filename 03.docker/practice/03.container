@@ -1,0 +1,86 @@
+--- 컨테이너 -e(MySQL:8.0)
+# 실행 안됨 : -e 옵션 없음
+docker run -d --name mydb mysql:8.0 
+docker ps
+docker ps -a
+docker logs mydb
+docker rm mydb
+
+# 실행 성공 : -e 옵션 사용
+# 외부에서 접근 불가능 : -p 옵션 없음
+docker run -d --name mydb -e MYSQL_ROOT_PASSWORD=secret mysql:8.0
+docker ps
+docker rm -f $(docker ps -aq)
+docker ps
+docker ps -a
+
+# 실행 실패 : 우분투 사용했던 mysql 포트 충돌 때문
+# 외부에서 접근 가능 : -p 옵션 사용
+docker run -d --name mydb -e MYSQL_ROOT_PASSWORD=secret -p 3306:3306 mysql:8.0
+
+# 우분투 mysql 중지 : -p 3306:3306 옵션 충돌 방지
+sudo systemctl status mysql
+sudo systemctl stop mysql
+sudo systemctl status mysql
+
+# docker ps -a에 같은 이름이 있기 때문에 실행 실패
+docker run -d --name mydb -e MYSQL_ROOT_PASSWORD=secret -p 3306:3306 mysql:8.0
+
+# 최종 정상 실행
+docker restart mydb
+clear
+docker ps 
+docker logs mydb
+
+
+--- 컨테이너 cp
+ubuntu@ubuntu:~/docker/03.container$ docker exec web bash -c 'ls /tmp'
+ubuntu@ubuntu:~/docker/03.container$ touch from-host.txt
+ubuntu@ubuntu:~/docker/03.container$ ls
+from-host.txt
+ubuntu@ubuntu:~/docker/03.container$ docker cp ./from-host.txt web:/tmp/from-host.txt
+Successfully copied 1.54kB to web:/tmp/from-host.txt
+ubuntu@ubuntu:~/docker/03.container$ docker exec web bash -c 'ls /tmp'
+from-host.txt
+ubuntu@ubuntu:~/docker/03.container$ docker exec web bash -c 'touch /tmp/from-container.txt'
+ubuntu@ubuntu:~/docker/03.container$ docker exec web bash -c 'ls /tmp'
+from-container.txt
+from-host.txt
+ubuntu@ubuntu:~/docker/03.container$ docker cp web:/tmp/from-container.txt ./from-container.txt
+Successfully copied 1.54kB to /home/ubuntu/docker/03.container/from-container.txt
+ubuntu@ubuntu:~/docker/03.container$ ls
+from-container.txt  from-host.txt
+
+--- 
+2. 컨테이너 파일 복사 실습
+cd /home/ubuntu/docker/03.container
+
+cat > index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Docker Container Test</title>
+</head>
+<body>
+    <h1>Docker cp 실습 - 컨테이너 파일 교체 성공</h1>
+    <p>호스트에서 컨테이너로 복사된 파일입니다.</p>
+</body>
+</html>
+EOF
+
+---
+# 현재 위치: /home/ubuntu/docker/03.container
+
+# 1. nginx 컨테이너 실행 (이름: nginx-cp, 포트 8888:80)
+docker run -d --name nginx-cp -p 8888:80 nginx
+
+# 2. 기본 index.html 내용 확인
+#    docker exec nginx-cp cat /usr/share/nginx/html/index.html
+# 3. 위에서 만든 index.html 을 컨테이너에 복사
+#    docker cp index.html nginx-cp:/usr/share/nginx/html/index.html
+# 4. 교체 후 내용 확인 (docker exec 또는 curl localhost:8888)
+# 5. 컨테이너 내부에서 파일 생성 후 호스트로 복사
+#    docker exec nginx-cp sh -c "echo 'container file' > /tmp/from_container.txt"
+#    docker cp nginx-cp:/tmp/from_container.txt .
+#    cat from_container.txt
