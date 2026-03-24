@@ -1,0 +1,90 @@
+--- 
+2. 레이어 재사용 확인
+
+# 1. docker pull tomcat:9.0 다운로드 — 다운로드 로그에서 "Already exists" 확인
+# 2. docker images 로 두 이미지 SIZE 확인
+# 3. docker history tomcat:9.0 출력 후 공통 레이어 식별
+# 4. docker system df 로 전체 이미지 실제 점유 용량 확인
+
+---
+3. 이미지 저장 및 이전 (오프라인 환경 시나리오)
+
+# 현재 위치: /home/ubuntu/docker/02.image
+
+# 1. docker save -o nginx_alpine.tar nginx:alpine 으로 이미지 파일 저장
+# 2. ls -lh nginx_alpine.tar 로 파일 크기 확인
+# 3. docker rmi nginx:alpine 으로 로컬 이미지 삭제
+# 4. docker images 로 삭제 확인
+# 5. docker load -i nginx_alpine.tar 로 이미지 복원
+# 6. docker images 로 복원 확인
+ubuntu@ubuntu:~/docker/02.image$ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+tomcat       10.1      90d98ea834ee   9 hours ago   417MB
+tomcat       9.0       5e559dbceea4   3 days ago    418MB
+mysql        8.0       a123df39bc7c   4 days ago    786MB
+nginx        latest    1a1e63136420   7 days ago    161MB
+ubuntu       22.04     2a8380840c2f   3 weeks ago   77.9MB
+ubuntu@ubuntu:~/docker/02.image$ docker pull nginx:alpine
+alpine: Pulling from library/nginx
+589002ba0eae: Pull complete 
+d2a46166eee6: Pull complete 
+593488f95c35: Pull complete 
+e19aff8f2cce: Pull complete 
+1549d7aec962: Pull complete 
+1f25242adbdb: Pull complete 
+c32126d2b96c: Pull complete 
+c24026275c33: Pull complete 
+Digest: sha256:f46cb72c7df02710e693e863a983ac42f6a9579058a59a35f1ae36c9958e4ce0
+Status: Downloaded newer image for nginx:alpine
+docker.io/library/nginx:alpine
+ubuntu@ubuntu:~/docker/02.image$ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+tomcat       10.1      90d98ea834ee   9 hours ago   417MB
+tomcat       9.0       5e559dbceea4   3 days ago    418MB
+mysql        8.0       a123df39bc7c   4 days ago    786MB
+nginx        latest    1a1e63136420   7 days ago    161MB
+nginx        alpine    d0c780774910   13 days ago   62.2MB
+ubuntu       22.04     2a8380840c2f   3 weeks ago   77.9MB
+ubuntu@ubuntu:~/docker/02.image$ ls
+ubuntu@ubuntu:~/docker/02.image$ docker save -o nginx_alpine.tar nginx:alpine
+ubuntu@ubuntu:~/docker/02.image$ ls
+nginx_alpine.tar
+ubuntu@ubuntu:~/docker/02.image$ ls -lh nginx_alpine.tar 
+-rw------- 1 ubuntu ubuntu 61M Mar 24 15:41 nginx_alpine.tar
+ubuntu@ubuntu:~/docker/02.image$ docker rmi nginx:alpine
+Untagged: nginx:alpine
+Untagged: nginx@sha256:f46cb72c7df02710e693e863a983ac42f6a9579058a59a35f1ae36c9958e4ce0
+Deleted: sha256:d0c7807749103be4b1fcd09378f16ed4146c79e76e97ad26d0545004cc67474c
+Deleted: sha256:345e66d14213d67d04bdb6d6fc09645194b8b2e3c62e6cfaf2a783055ffbd5ac
+Deleted: sha256:751c1109ab2cd972faded8a2966b0dded60a4998fd0065b1be33ac67201c542f
+Deleted: sha256:4ce16c8c226039b5132e4993f94f43cfc21d5533a295cfd45f97f5330be1f580
+Deleted: sha256:9164b06ddda16d768068fb1a05725cc2c56b1e2be8593734c08715eeb33b008a
+Deleted: sha256:bb73c08d8156a904880d32ae399d9f62536f7f302ebff2fb18f369bc8e8071f9
+Deleted: sha256:d20a6d0758a7788a033abd88637f788557364cf3b7e25c1d047c44572c9b9ae2
+Deleted: sha256:80c20484a97d1ff26fa851a0e63140ebc8a393dda43d17d524f891952b12ab78
+Deleted: sha256:989e799e634906e94dc9a5ee2ee26fc92ad260522990f26e707861a5f52bf64e
+ubuntu@ubuntu:~/docker/02.image$ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+tomcat       10.1      90d98ea834ee   9 hours ago   417MB
+tomcat       9.0       5e559dbceea4   3 days ago    418MB
+mysql        8.0       a123df39bc7c   4 days ago    786MB
+nginx        latest    1a1e63136420   7 days ago    161MB
+ubuntu       22.04     2a8380840c2f   3 weeks ago   77.9MB
+ubuntu@ubuntu:~/docker/02.image$ docker load -i nginx_alpine.tar
+989e799e6349: Loading layer  8.724MB/8.724MB
+5bb518009c83: Loading layer  4.733MB/4.733MB
+ea6528e53783: Loading layer  3.584kB/3.584kB
+09c3b60a3926: Loading layer  4.608kB/4.608kB
+e0fe744d26d4: Loading layer   2.56kB/2.56kB
+04297a721e7f: Loading layer   5.12kB/5.12kB
+5693fac86db4: Loading layer  7.168kB/7.168kB
+d408059e7553: Loading layer  50.09MB/50.09MB
+Loaded image: nginx:alpine
+ubuntu@ubuntu:~/docker/02.image$ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+tomcat       10.1      90d98ea834ee   9 hours ago   417MB
+tomcat       9.0       5e559dbceea4   3 days ago    418MB
+mysql        8.0       a123df39bc7c   4 days ago    786MB
+nginx        latest    1a1e63136420   7 days ago    161MB
+nginx        alpine    d0c780774910   13 days ago   62.2MB
+ubuntu       22.04     2a8380840c2f   3 weeks ago   77.9MB
