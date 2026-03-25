@@ -74,4 +74,92 @@ ubuntu@ubuntu:~/webroot$ docker exec webserver touch /usr/share/nginx/html/test.
 ubuntu@ubuntu:~/webroot$ ls
 index.html  test.txt
 
+---
+ubuntu@ubuntu:~/docker/05.volume$ docker volume create nginx-volume
+nginx-volume
+ubuntu@ubuntu:~/docker/05.volume$ docker volume ls
+DRIVER    VOLUME NAME
+local     nginx-volume
+local     portainer_data
+ubuntu@ubuntu:~/docker/05.volume$ docker volume inspect nginx-volume
+[
+    {
+        "CreatedAt": "2026-03-25T14:26:12+09:00",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/nginx-volume/_data",
+        "Name": "nginx-volume",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+ubuntu@ubuntu:~/docker/05.volume$ sudo ls /var/lib/docker/volumes/nginx-volume/_data
 
+ubuntu@ubuntu:~/docker/05.volume$ sudo ls /var/lib/docker/volumes/nginx-volume/_data
+ubuntu@ubuntu:~/docker/05.volume$ docker run --name webserver -v nginx-volume:/usr/share/nginx/html \
+> -p 8080:80 \
+> -d nginx
+91ee033abc6ca55db3f8e6ca08da31f221ce0e22143872d1cb1a92fa9c5a9c71
+ubuntu@ubuntu:~/docker/05.volume$ docker ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS                                     NAMES
+91ee033abc6c   nginx     "/docker-entrypoint.…"   11 seconds ago   Up 10 seconds   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   webserver
+ubuntu@ubuntu:~/docker/05.volume$ curl localhost:8080
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, nginx is successfully installed and working.
+Further configuration is required for the web server, reverse proxy, 
+API gateway, load balancer, content cache, or other features.</p>
+
+<p>For online documentation and support please refer to
+<a href="https://nginx.org/">nginx.org</a>.<br/>
+To engage with the community please visit
+<a href="https://community.nginx.org/">community.nginx.org</a>.<br/>
+For enterprise grade support, professional services, additional 
+security features and capabilities please refer to
+<a href="https://f5.com/nginx">f5.com/nginx</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+ubuntu@ubuntu:~/docker/05.volume$ sudo ls /var/lib/docker/volumes/nginx-volume/_data
+50x.html  index.html
+ubuntu@ubuntu:~/docker/05.volume$ sudo vi /var/lib/docker/volumes/nginx-volume
+/_data/index.html
+ubuntu@ubuntu:~/docker/05.volume$ curl localhost:8080
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to Docker Voulme!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to Docker Volume!</h1>
+<p>If you see this page, nginx is successfully installed and working.
+Further configuration is required for the web server, reverse proxy, 
+API gateway, load balancer, content cache, or other features.</p>
+
+<p>For online documentation and support please refer to
+<a href="https://nginx.org/">nginx.org</a>.<br/>
+To engage with the community please visit
+<a href="https://community.nginx.org/">community.nginx.org</a>.<br/>
+For enterprise grade support, professional services, additional 
+security features and capabilities please refer to
+<a href="https://f5.com/nginx">f5.com/nginx</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
