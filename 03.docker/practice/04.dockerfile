@@ -211,3 +211,311 @@ NGINX_PORT=80
 
 ubuntu@ubuntu:~/docker/04.dockerfile$ docker image inspect env-test:2.0 | grep "80/tcp"
                 "80/tcp": {}
+
+
+--- CMD, ENTRYPOINT
+--- CMD
+  1 FROM nginx:alpine
+  2 
+  3 ARG ARG_VERSION=1.0.0
+  4 ARG ARG_NAME=100
+  5 
+  6 ENV NGINX_PORT=80
+  7 ENV VERSION=${ARG_VERSION}
+  8 
+  9 WORKDIR /usr/share/nginx/html
+ 10 COPY index.html .
+ 11 ADD archive.tar.gz .
+ 12 
+ 13 EXPOSE ${NGINX_PORT}
+ 14 CMD ["nginx", "-g", "daemon off;"]
+
+
+ ubuntu@ubuntu:~/docker/04.dockerfile$ docker build -t cmd-test .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  5.632kB
+Step 10/10 : CMD ["nginx", "-g", "daemon off;"]
+ ---> Running in 321f9b83ee56
+ ---> Removed intermediate container 321f9b83ee56
+ ---> d4226d14d095
+Successfully built d4226d14d095
+Successfully tagged cmd-test:latest
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker images
+REPOSITORY     TAG       IMAGE ID       CREATED          SIZE
+cmd-test       latest    d4226d14d095   18 seconds ago   62.2MB
+env-test       2.0       886c36085194   16 hours ago     62.2MB
+env-test       1.0       2194d6144fe6   16 hours ago     62.2MB
+add-test       1.0       7a9d1a815790   16 hours ago     62.2MB
+workdir-test   1.0       b89e956dbf4f   17 hours ago     62.2MB
+from-test      1.0       d0c780774910   2 weeks ago      62.2MB
+nginx          alpine    d0c780774910   2 weeks ago      62.2MB
+
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker run --rm cmd-test
+/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker run --rm cmd-test echo hello
+hello
+
+
+--- ENTRYPOINT
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker build -t ep-test .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  5.632kB
+Step 10/10 : ENTRYPOINT ["nginx"]
+ ---> Running in d4446cff70fe
+ ---> Removed intermediate container d4446cff70fe
+ ---> 158a89bb31ac
+Successfully built 158a89bb31ac
+Successfully tagged ep-test:latest
+
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker run --rm ep-test -g "daemon off;"
+2026/03/25 00:30:47 [notice] 1#1: using the "epoll" event method
+2026/03/25 00:30:47 [notice] 1#1: nginx/1.29.6
+2026/03/25 00:30:47 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0) 
+2026/03/25 00:30:47 [notice] 1#1: OS: Linux 6.8.0-106-generic
+2026/03/25 00:30:47 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2026/03/25 00:30:47 [notice] 1#1: start worker processes
+2026/03/25 00:30:47 [notice] 1#1: start worker process 7
+
+--- 실무 : CMD + ENTRYPOINT 
+  1 FROM nginx:alpine
+  2 
+  3 ARG ARG_VERSION=1.0.0
+  4 ARG ARG_NAME=100
+  5 
+  6 ENV NGINX_PORT=80
+  7 ENV VERSION=${ARG_VERSION}
+  8 
+  9 WORKDIR /usr/share/nginx/html
+ 10 COPY index.html .
+ 11 ADD archive.tar.gz .
+ 12 
+ 13 EXPOSE ${NGINX_PORT}
+ 14 ENTRYPOINT ["nginx"]
+ 15 CMD ["-g", "daemon off;"]
+
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker build -t cmd-ep-test .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  5.632kB
+Step 10/11 : ENTRYPOINT ["nginx"]
+ ---> Using cache
+ ---> 158a89bb31ac
+Step 11/11 : CMD ["-g", "daemon off;"]
+ ---> Running in 73e91b988e5c
+ ---> Removed intermediate container 73e91b988e5c
+ ---> d574d7172dd7
+Successfully built d574d7172dd7
+Successfully tagged cmd-ep-test:latest
+
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker run --rm cmd-ep-test 
+2026/03/25 00:35:49 [notice] 1#1: using the "epoll" event method
+2026/03/25 00:35:49 [notice] 1#1: nginx/1.29.6
+2026/03/25 00:35:49 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0) 
+2026/03/25 00:35:49 [notice] 1#1: OS: Linux 6.8.0-106-generic
+2026/03/25 00:35:49 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2026/03/25 00:35:49 [notice] 1#1: start worker processes
+2026/03/25 00:35:49 [notice] 1#1: start worker process 7
+
+--- USER
+
+--- 백업 후 진행
+ubuntu@ubuntu:~/docker/04.dockerfile$ cp Dockerfile Dockerfile.bak
+ubuntu@ubuntu:~/docker/04.dockerfile$ ls
+addtest  archive.tar.gz  Dockerfile  Dockerfile.bak  index.html
+
+--- Dockerfile
+  1 FROM nginx:alpine
+  2 
+  3 # 전용 사용자 생성
+  4 # ubuntu : groupadd --system
+  5 RUN addgroup -S appgroup && \
+  6     adduser -S appuser -G appgroup
+  7 
+  8 # 파일 소유권 변경
+  9 # COPY index.html /usr/share/nginx/html/
+ 10 # RUN chwon appuser:appgroup /usr/share/nginx/html/index.html
+ 11 COPY --chown=appuser:appgroup index.html /usr/share/nginx/html/
+ 12 
+ 13 USER appuser
+ 14 
+ 15 EXPOSE 80
+
+--- 결과 확인
+
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker build -t secure-test .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  6.656kB
+Step 1/5 : FROM nginx:alpine
+ ---> d0c780774910
+Step 2/5 : RUN addgroup -S appgroup &&     adduser -S appuser -G appgroup
+ ---> Running in b6468beb4bd4
+ ---> Removed intermediate container b6468beb4bd4
+ ---> f4355100f083
+Step 3/5 : COPY --chown=appuser:appgroup index.html /usr/share/nginx/html/
+ ---> a6af47ddf62b
+Step 4/5 : USER appuser
+ ---> Running in 19b35dec9ea6
+ ---> Removed intermediate container 19b35dec9ea6
+ ---> cbcf7b5f3818
+Step 5/5 : EXPOSE 80
+ ---> Running in f5ebf45c1fc1
+ ---> Removed intermediate container f5ebf45c1fc1
+ ---> 74cbda97a3a0
+Successfully built 74cbda97a3a0
+Successfully tagged secure-test:latest
+
+---
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker inspect secure-test:latest | grep -i user
+            "User": "appuser",
+
+--- 실행 확인
+
+--- 멀티 빌더
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx build --platform=linux/amd64,linux/arm64 -t dockerlecture/infra-basic:latest --push .
+[+] Building 0.0s (0/0)                                           docker:default
+ERROR: Multi-platform build is not supported for the docker driver.
+Switch to a different driver, or turn on the containerd image store, and try again.
+Learn more at https://docs.docker.com/go/build-multi-platform/
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx ls
+NAME/NODE     DRIVER/ENDPOINT   STATUS    BUILDKIT   PLATFORMS
+default*      docker                                 
+ \_ default    \_ default       running   v0.22.0    linux/amd64 (+3), linux/386
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx create --name multibuilder --use
+multibuilder
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx ls
+NAME/NODE           DRIVER/ENDPOINT                   STATUS     BUILDKIT   PLATFORMS
+multibuilder*       docker-container                                        
+ \_ multibuilder0    \_ unix:///var/run/docker.sock   inactive              
+default             docker                                                  
+ \_ default          \_ default                       running    v0.22.0    linux/amd64 (+3), linux/386
+
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx inspect --builder multibuilder --bootstrap
+[+] Building 24.1s (1/1) FINISHED                                                                                                                                            
+ => [internal] booting buildkit                                                                                                                                        24.0s
+ => => pulling image moby/buildkit:buildx-stable-1                                                                                                                     22.0s
+ => => creating container buildx_buildkit_multibuilder0                                                                                                                 2.0s
+Name:          multibuilder
+Driver:        docker-container
+Last Activity: 2026-03-25 02:21:24 +0000 UTC
+
+Nodes:
+Name:     multibuilder0
+Endpoint: unix:///var/run/docker.sock
+Error:    Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.48/containers/buildx_buildkit_multibuilder0/json": context deadline exceeded
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx ls
+NAME/NODE           DRIVER/ENDPOINT                   STATUS    BUILDKIT   PLATFORMS
+multibuilder*       docker-container                                       
+ \_ multibuilder0    \_ unix:///var/run/docker.sock   running   v0.28.0    linux/amd64 (+3), linux/386
+
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx build --platform=linux/amd64,linux/arm64 -t dockerlecture/infra-basic:latest --push .
+
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx imagetools inspect dockerlecture/infra-basic:latest
+
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx ls
+NAME/NODE           DRIVER/ENDPOINT                   STATUS    BUILDKIT   PLATFORMS
+multibuilder*       docker-container                                       
+ \_ multibuilder0    \_ unix:///var/run/docker.sock   running   v0.28.0    linux/amd64 (+3), linux/386
+default             docker                                                 
+ \_ default          \_ default                       running   v0.22.0    linux/amd64 (+3), linux/386
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx use default
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx ls
+NAME/NODE           DRIVER/ENDPOINT                   STATUS    BUILDKIT   PLATFORMS
+multibuilder        docker-container                                       
+ \_ multibuilder0    \_ unix:///var/run/docker.sock   running   v0.28.0    linux/amd64 (+3), linux/386
+default*            docker                                                 
+ \_ default          \_ default                       running   v0.22.0    linux/amd64 (+3), linux/386
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx stop multibuilder
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx ls
+NAME/NODE           DRIVER/ENDPOINT                   STATUS    BUILDKIT   PLATFORMS
+multibuilder        docker-container                                       
+ \_ multibuilder0    \_ unix:///var/run/docker.sock   stopped              
+default*            docker                                                 
+ \_ default          \_ default                       running   v0.22.0    linux/amd64 (+3), linux/386
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx rm  multibuilder
+multibuilder removed
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx ls
+NAME/NODE     DRIVER/ENDPOINT   STATUS    BUILDKIT   PLATFORMS
+default*      docker                                 
+ \_ default    \_ default       running   v0.22.0    linux/amd64 (+3), linux/386
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx du
+Reclaimable:    0B
+Total:          0B
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx prune
+
+---
+2. .dockerignore 효과 확인
+# 현재 위치: /home/ubuntu/docker/04.dockerfile/nginx
+
+# 1. .dockerignore 없이 빌드 → 빌드 컨텍스트 전송 크기 확인
+docker build -t nginx-test:1.0 .
+# "Sending build context to Docker daemon" 크기 확인
+
+# 2. .dockerignore 생성
+echo "fake_target/" > .dockerignore
+
+# 3. .dockerignore 적용 후 재빌드 → 컨텍스트 크기 비교
+docker build -t nginx-test:2.0 .
+
+# 4. 두 이미지 크기 비교 (docker images)
+# → 빌드 컨텍스트가 달라도 최종 이미지 크기는 동일 (COPY한 파일만 포함)
+# → 빌드 속도 차이 확인
+
+# 5. docker rm -f 및 이미지 정리
+docker rmi nginx-test:1.0 nginx-test:2.0
+
+
+---
+  ubuntu@ubuntu:~/docker/04.dockerfile/nginx$ tree
+.
+├── Dockerfile
+├── fake_target
+│   └── dummy.jar
+└── index.html
+
+2 directories, 3 files
+
+ubuntu@ubuntu:~/docker/04.dockerfile/nginx$ docker build -t nginx-test:1.0 .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  10.49MB
+Step 1/3 : FROM nginx:alpine
+ ---> d5030d429039
+Step 2/3 : COPY index.html /usr/share/nginx/html/index.html
+ ---> be7399075c8d
+Step 3/3 : EXPOSE 80
+ ---> Running in 1fca9945e4e0
+ ---> Removed intermediate container 1fca9945e4e0
+ ---> 3a8676c56915
+Successfully built 3a8676c56915
+Successfully tagged nginx-test:1.0
+ubuntu@ubuntu:~/docker/04.dockerfile/nginx$ echo "fake_target/" > .dockerignore
+ubuntu@ubuntu:~/docker/04.dockerfile/nginx$ docker build -t nginx-test:2.0 .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  4.096kB
+Step 1/3 : FROM nginx:alpine
+ ---> d5030d429039
+Step 2/3 : COPY index.html /usr/share/nginx/html/index.html
+ ---> Using cache
+ ---> be7399075c8d
+Step 3/3 : EXPOSE 80
+ ---> Using cache
+ ---> 3a8676c56915
+Successfully built 3a8676c56915
+Successfully tagged nginx-test:2.0
