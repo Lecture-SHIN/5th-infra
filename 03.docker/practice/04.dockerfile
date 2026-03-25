@@ -333,21 +333,36 @@ ubuntu@ubuntu:~/docker/04.dockerfile$ ls
 addtest  archive.tar.gz  Dockerfile  Dockerfile.bak  index.html
 
 --- Dockerfile
-  1 FROM nginx:alpine
-  2 
-  3 # 전용 사용자 생성
-  4 # ubuntu : groupadd --system
-  5 RUN addgroup -S appgroup && \
-  6     adduser -S appuser -G appgroup
-  7 
-  8 # 파일 소유권 변경
-  9 # COPY index.html /usr/share/nginx/html/
- 10 # RUN chwon appuser:appgroup /usr/share/nginx/html/index.html
- 11 COPY --chown=appuser:appgroup index.html /usr/share/nginx/html/
- 12 
- 13 USER appuser
- 14 
- 15 EXPOSE 80
+FROM nginx:alpine
+
+# 전용 사용자 생성
+# ubuntu : groupadd --system
+RUN addgroup -S appgroup && \
+    adduser -S appuser -G appgroup
+
+# nginx가 필요한 디렉토리 권한 미리 설정
+RUN mkdir -p /var/cache/nginx/client_temp \
+             /var/cache/nginx/proxy_temp \
+             /var/cache/nginx/fastcgi_temp \
+             /var/cache/nginx/uwsgi_temp \
+             /var/cache/nginx/scgi_temp \
+    && chown -R appuser:appgroup /var/cache/nginx \
+    && chown -R appuser:appgroup /var/log/nginx \
+    && chown -R appuser:appgroup /etc/nginx/conf.d \
+    && touch /var/run/nginx.pid \
+    && chown appuser:appgroup /var/run/nginx.pid
+
+# nginx.conf에서 user 지시어 제거 (비root 실행 시 불필요)
+RUN sed -i '/^user/d' /etc/nginx/nginx.conf
+
+# 파일 소유권 변경
+# COPY index.html /usr/share/nginx/html/
+# RUN chwon appuser:appgroup /usr/share/nginx/html/index.html
+COPY --chown=appuser:appgroup index.html /usr/share/nginx/html/
+
+USER appuser
+
+EXPOSE 80
 
 --- 결과 확인
 
