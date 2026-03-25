@@ -366,38 +366,24 @@ EXPOSE 80
 
 --- 결과 확인
 
-ubuntu@ubuntu:~/docker/04.dockerfile$ docker build -t secure-test .
-DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
-            Install the buildx component to build images with BuildKit:
-            https://docs.docker.com/go/buildx/
-
-Sending build context to Docker daemon  6.656kB
-Step 1/5 : FROM nginx:alpine
- ---> d0c780774910
-Step 2/5 : RUN addgroup -S appgroup &&     adduser -S appuser -G appgroup
- ---> Running in b6468beb4bd4
- ---> Removed intermediate container b6468beb4bd4
- ---> f4355100f083
-Step 3/5 : COPY --chown=appuser:appgroup index.html /usr/share/nginx/html/
- ---> a6af47ddf62b
-Step 4/5 : USER appuser
- ---> Running in 19b35dec9ea6
- ---> Removed intermediate container 19b35dec9ea6
- ---> cbcf7b5f3818
-Step 5/5 : EXPOSE 80
- ---> Running in f5ebf45c1fc1
- ---> Removed intermediate container f5ebf45c1fc1
- ---> 74cbda97a3a0
-Successfully built 74cbda97a3a0
-Successfully tagged secure-test:latest
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker images | grep secure-
+secure-test   latest    4d2d89349173   About an hour ago   62.2MB
 
 ---
 ubuntu@ubuntu:~/docker/04.dockerfile$ docker inspect secure-test:latest | grep -i user
             "User": "appuser",
 
 --- 실행 확인
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker run -d --name mynginx s
+ecure-test
 
---- 멀티 빌더
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker logs mynginx 
+/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+
+ubuntu@ubuntu:~/docker/04.dockerfile$ docker exec mynginx whoami
+appuser
+
+--- 멀티 플랫폼 빌더
 ubuntu@ubuntu:~/docker/04.dockerfile$ docker buildx build --platform=linux/amd64,linux/arm64 -t dockerlecture/infra-basic:latest --push .
 [+] Building 0.0s (0/0)                                           docker:default
 ERROR: Multi-platform build is not supported for the docker driver.
@@ -502,35 +488,48 @@ docker rmi nginx-test:1.0 nginx-test:2.0
 2 directories, 3 files
 
 ubuntu@ubuntu:~/docker/04.dockerfile/nginx$ docker build -t nginx-test:1.0 .
-DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
-            Install the buildx component to build images with BuildKit:
-            https://docs.docker.com/go/buildx/
+[+] Building 2.9s (8/8) FINISHED                     docker:default
+ => [internal] load build definition from Dockerfile           0.0s
+ => => transferring dockerfile: 74B                            0.0s
+ => [internal] load metadata for docker.io/library/nginx:alpi  1.4s
+ => [auth] library/nginx:pull token for registry-1.docker.io   0.0s
+ => [internal] load .dockerignore                              0.1s
+ => => transferring context: 2B                                0.0s
+ => [internal] load build context                              0.4s
+ => => transferring context: 10.49MB                           0.4s
+ => CACHED [1/2] FROM docker.io/library/nginx:alpine@sha256:e  0.2s
+ => => resolve docker.io/library/nginx:alpine@sha256:e7257f1e  0.2s
+ => [2/2] COPY . .                                             0.3s
+ => exporting to image                                         0.2s
+ => => exporting layers                                        0.1s
+ => => writing image sha256:b62fe328f95cd3ab79cc0db8c92cd0a61  0.0s
+ => => naming to docker.io/library/nginx-test:1.0              0.0s
 
-Sending build context to Docker daemon  10.49MB
-Step 1/3 : FROM nginx:alpine
- ---> d5030d429039
-Step 2/3 : COPY index.html /usr/share/nginx/html/index.html
- ---> be7399075c8d
-Step 3/3 : EXPOSE 80
- ---> Running in 1fca9945e4e0
- ---> Removed intermediate container 1fca9945e4e0
- ---> 3a8676c56915
-Successfully built 3a8676c56915
-Successfully tagged nginx-test:1.0
+
+ubuntu@ubuntu:~/docker/04.dockerfile/nginx$ ll
+total 20
+drwxrwxr-x 3 ubuntu ubuntu 4096 Mar 25 17:26 ./
+drwxrwxr-x 7 ubuntu ubuntu 4096 Mar 25 17:16 ../
+-rw-rw-r-- 1 ubuntu ubuntu   37 Mar 25 13:24 Dockerfile
+-rw-rw-r-- 1 ubuntu ubuntu    0 Mar 25 13:22 .env
+drwxrwxr-x 2 ubuntu ubuntu 4096 Mar 25 13:03 fake_target/
+-rw-rw-r-- 1 ubuntu ubuntu  151 Mar 25 13:03 index.html
+ubuntu@ubuntu:~/docker/04.dockerfile/nginx$ vi Dockerfile 
 ubuntu@ubuntu:~/docker/04.dockerfile/nginx$ echo "fake_target/" > .dockerignore
+ubuntu@ubuntu:~/docker/04.dockerfile/nginx$ echo ".env" >> .dockerignore
 ubuntu@ubuntu:~/docker/04.dockerfile/nginx$ docker build -t nginx-test:2.0 .
-DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
-            Install the buildx component to build images with BuildKit:
-            https://docs.docker.com/go/buildx/
-
-Sending build context to Docker daemon  4.096kB
-Step 1/3 : FROM nginx:alpine
- ---> d5030d429039
-Step 2/3 : COPY index.html /usr/share/nginx/html/index.html
- ---> Using cache
- ---> be7399075c8d
-Step 3/3 : EXPOSE 80
- ---> Using cache
- ---> 3a8676c56915
-Successfully built 3a8676c56915
-Successfully tagged nginx-test:2.0
+[+] Building 2.0s (7/7) FINISHED                                 docker:default
+ => [internal] load build definition from Dockerfile                       0.1s
+ => => transferring dockerfile: 74B                                        0.0s
+ => [internal] load metadata for docker.io/library/nginx:alpine            0.8s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 58B                                           0.0s
+ => [internal] load build context                                          0.1s
+ => => transferring context: 117B                                          0.0s
+ => CACHED [1/2] FROM docker.io/library/nginx:alpine@sha256:e7257f1ef28ba  0.1s
+ => => resolve docker.io/library/nginx:alpine@sha256:e7257f1ef28ba17cf7c2  0.1s
+ => [2/2] COPY . .                                                         0.3s
+ => exporting to image                                                     0.3s
+ => => exporting layers                                                    0.1s
+ => => writing image sha256:2005d72aef3ffaf5cd075cdf5324ef8f8bb1772561daf  0.0s
+ => => naming to docker.io/library/nginx-test:2.0    
