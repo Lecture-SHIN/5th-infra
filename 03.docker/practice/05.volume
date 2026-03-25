@@ -1,0 +1,77 @@
+---
+ubuntu@ubuntu:~/docker/05.volume$ docker run -d --name nginx-test nginx
+Unable to find image 'nginx:latest' locally
+latest: Pulling from library/nginx
+ec781dee3f47: Already exists 
+bb3d0aa29654: Pull complete 
+510ddf6557d6: Pull complete 
+cde7a05ae428: Pull complete 
+587e3d84dbb5: Pull complete 
+3189680c601f: Pull complete 
+5e815e07e569: Pull complete 
+Digest: sha256:7150b3a39203cb5bee612ff4a9d18774f8c7caf6399d6e8985e97e28eb751c18
+Status: Downloaded newer image for nginx:latest
+10e0f38f15a053f18bb79cea172434fba164f1d896971b9e8443b85c963aed04
+ubuntu@ubuntu:~/docker/05.volume$ docker exec nginx-test ls /
+bin
+boot
+dev
+docker-entrypoint.d
+docker-entrypoint.sh
+etc
+home
+lib
+lib64
+media
+mnt
+opt
+proc
+root
+run
+sbin
+srv
+sys
+tmp
+usr
+var
+ubuntu@ubuntu:~/docker/05.volume$ docker exec nginx-test ls /tmp
+ubuntu@ubuntu:~/docker/05.volume$ docker exec nginx-test touch /tmp/test.txt
+ubuntu@ubuntu:~/docker/05.volume$ docker exec nginx-test ls /tmp
+test.txt
+ubuntu@ubuntu:~/docker/05.volume$ docker stop nginx-test 
+nginx-test
+ubuntu@ubuntu:~/docker/05.volume$ docker rm nginx-test 
+nginx-test
+ubuntu@ubuntu:~/docker/05.volume$ docker ps -a
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+ubuntu@ubuntu:~/docker/05.volume$ docker run -d --name nginx-test nginx
+aca3d2e8f8dd2f46e441c190bef30e7159c9390e4c67143d082d5116ff077d44
+ubuntu@ubuntu:~/docker/05.volume$ docker exec nginx-test ls /tmp
+
+--- Bind Mount
+ubuntu@ubuntu:~/webroot$ docker ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS                                     NAMES
+34831af27275   nginx     "/docker-entrypoint.…"   16 minutes ago   Up 16 minutes   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   webserver
+ubuntu@ubuntu:~/webroot$ echo "<h1>Updated</h1>" > /home/ubuntu/webroot/index.html
+-bash: /home/ubuntu/webroot/index.html: Permission denied
+ubuntu@ubuntu:~/webroot$ ls -al /home/ubuntu/
+ubuntu@ubuntu:~/webroot$ ls -al /home/ubuntu/webroot/
+total 8
+drwxr-xr-x  2 root   root   4096 Mar 25 13:49 .
+drwxr-x--- 39 ubuntu ubuntu 4096 Mar 25 13:49 ..
+ubuntu@ubuntu:~/webroot$ sudo echo "<h1>Updated</h1>" > /home/ubuntu/webroot/index.html
+-bash: /home/ubuntu/webroot/index.html: Permission denied
+ubuntu@ubuntu:~/webroot$ sudo chown -R ubuntu:ubuntu /home/ubuntu/webroot/
+[sudo] password for ubuntu: 
+Sorry, try again.
+[sudo] password for ubuntu: 
+ubuntu@ubuntu:~/webroot$ echo "<h1>Updated</h1>" > /home/ubuntu/webroot/index.html
+ubuntu@ubuntu:~/webroot$ docker exec webserver ls /usr/share/nginx/html/
+index.html
+ubuntu@ubuntu:~/webroot$ curl localhost:8080
+<h1>Updated</h1>
+ubuntu@ubuntu:~/webroot$ docker exec webserver touch /usr/share/nginx/html/test.txt
+ubuntu@ubuntu:~/webroot$ ls
+index.html  test.txt
+
+
