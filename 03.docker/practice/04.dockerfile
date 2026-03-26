@@ -533,3 +533,31 @@ ubuntu@ubuntu:~/docker/04.dockerfile/nginx$ docker build -t nginx-test:2.0 .
  => => exporting layers                                                    0.1s
  => => writing image sha256:2005d72aef3ffaf5cd075cdf5324ef8f8bb1772561daf  0.0s
  => => naming to docker.io/library/nginx-test:2.0    
+
+ ---
+3. 멀티스테이지 빌드 실습
+
+--- Dockerfile
+  1 FROM eclipse-temurin:17-jdk-alpine
+  2 WORKDIR /app
+  3 COPY app.jar .
+  4 EXPOSE 8080
+  5 ENTRYPOINT ["java", "-jar", "app.jar"]
+
+--- Image
+ubuntu@ubuntu:~/docker/04.dockerfile/springboot$ docker build -t backed:test .
+
+
+
+
+---
+# 현재 위치: /home/ubuntu/docker/04.dockerfile/multistage
+# (실제 jar 파일이 있다고 가정)
+
+# 1. 단일 스테이지 이미지 빌드
+# 2. 멀티스테이지 이미지 빌드
+# 3. 이미지 크기 비교
+# 4. 멀티스테이지 이미지 실행 확인
+# 5. 정리
+docker rm -f backend-multi
+docker rmi backend:single backend:multi
