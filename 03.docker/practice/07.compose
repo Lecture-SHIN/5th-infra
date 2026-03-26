@@ -100,3 +100,226 @@ local     syntax_nginx-html
 ubuntu@ubuntu:~/docker/07.compose/syntax$ docker-compose -f docker-compose-03.yml down -v
 [+] Running 1/1
  ✔ Volume syntax_nginx-html  Removed           0.0s
+
+
+
+--- 04.yml
+
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker-compose -f docker-compose-04.yml config
+name: syntax
+services:
+  app:
+    command:
+      - sh
+      - -c
+      - env && sleep 3600
+    container_name: env-test
+    environment:
+      APP_NAME: my-spring-app
+      APP_PORT: "8080"
+      DB_HOST: localhost
+      DB_PASSWORD: super_secret_password
+      SPRING_PROFILES_ACTIVE: dev
+    image: alpine
+    networks:
+      default: null
+networks:
+  default:
+    name: syntax_default
+
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker-compose -f docker-compose-04.yml up -d
+[+] Running 2/2
+ ✔ app Pulled                                                                                                                                4.0s 
+   ✔ 589002ba0eae Already exists                                                                                                             0.0s 
+[+] Running 2/2
+ ✔ Network syntax_default  Created                                                                                                           0.3s 
+ ✔ Container env-test      Started                                                                                                           1.0s 
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker exec env-test env
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOSTNAME=885a8308bdf9
+DB_PASSWORD=super_secret_password
+SPRING_PROFILES_ACTIVE=dev
+APP_NAME=my-spring-app
+APP_PORT=8080
+DB_HOST=localhost
+HOME=/root
+
+--- 5.yml
+
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker-compose -f docker-compose-05.yml up -d
+[+] Running 5/5
+ ✔ Network syntax_other-network  Created                0.4s 
+ ✔ Network syntax_my-network     Created                0.4s 
+ ✔ Container server-b            Started                2.6s 
+ ✔ Container server-isolated     Started                2.4s 
+ ✔ Container server-a            Started                2.7s 
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker ps
+CONTAINER ID   IMAGE     COMMAND                CREATED          STATUS          PORTS     NAMES
+f5e96f92aa25   alpine    "sh -c 'sleep 3600'"   21 seconds ago   Up 20 seconds             server-isolated
+bcb5e5a3f2c5   alpine    "sh -c 'sleep 3600'"   21 seconds ago   Up 20 seconds             server-b
+b64670504607   alpine    "sh -c 'sleep 3600'"   21 seconds ago   Up 20 seconds             server-a
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker exec server-a ping -c 3 server-b
+PING server-b (172.20.0.2): 56 data bytes
+64 bytes from 172.20.0.2: seq=0 ttl=64 time=0.164 ms
+64 bytes from 172.20.0.2: seq=1 ttl=64 time=0.109 ms
+64 bytes from 172.20.0.2: seq=2 ttl=64 time=0.078 ms
+
+--- server-b ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 0.078/0.117/0.164 ms
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker exec server-a ping -c 3 server-isolated 
+ping: bad address 'server-isolated'
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker network ls
+NETWORK ID     NAME                   DRIVER    SCOPE
+4132241f0c4b   app-network            bridge    local
+c744cf845943   bridge                 bridge    local
+1c4a0bd10027   host                   host      local
+34357768e8df   none                   null      local
+d7f8a0391b39   syntax_my-network      bridge    local
+6f7ea4725ac2   syntax_other-network   bridge    local
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker-compose -f docker-compose-05.yml down
+[+] Running 5/5
+ ✔ Container server-b            Removed                                                                                                    11.4s 
+ ✔ Container server-isolated     Removed                                                                                                    11.6s 
+ ✔ Container server-a            Removed                                                                                                    11.6s 
+ ✔ Network syntax_my-network     Removed                                                                                                     0.6s 
+ ✔ Network syntax_other-network  Removed      
+
+
+--- 06.yml
+
+다른 터미널에서
+watch -n 2 " docker-compose -f docker-compose-06.yml ps"
+
+--- 07.yml
+
+다른 터미널에서
+watch -n 2 " docker-compose -f docker-compose-07.yml ps"
+
+
+
+---
+2. .env 파일 분리 실습
+
+cd /home/ubuntu/docker/07.compose/compose02
+
+cat > .env << 'EOF'
+MYSQL_ROOT_PASSWORD=root_secret_123
+MYSQL_DATABASE=appdb
+MYSQL_USER=appuser
+MYSQL_PASSWORD=user_secret_456
+EOF
+
+cat > .env.example << 'EOF'
+MYSQL_ROOT_PASSWORD=
+MYSQL_DATABASE=
+MYSQL_USER=
+MYSQL_PASSWORD=
+EOF
+
+echo ".env" > .gitignore
+
+# 현재 위치: /home/ubuntu/docker/07.compose/compose02
+
+# 1. docker-compose.yml 작성
+docker-compose.yml
+├── services
+│   └── 서비스명
+│       ├── container_name
+│       ├── image
+│       ├── ports
+│       ├── environment
+│       ├── volumes
+│       └── healthcheck
+│           ├── test
+│           ├── interval
+│           ├── timeout
+│           └── retries
+└── volumes
+
+## 항목별 작성 요령
+ 
+### services / 서비스명
+- 서비스 이름은 임의 지정
+- 같은 Compose 내 컨테이너끼리 통신 시 호스트명으로 사용
+ 
+### container_name / image
+- `container_name` : `docker ps` 에서 보이는 컨테이너 이름
+- `image` : `이미지명:태그` 형식으로 작성
+ 
+### ports
+- `"호스트포트:컨테이너포트"` 형식
+ 
+### environment
+- `KEY: value` 형식으로 직접 작성
+- `.env` 파일 연동 시 `KEY: ${변수명}` 형식으로 작성
+ 
+### volumes (서비스 내부)
+- `볼륨명:컨테이너내부경로` 형식
+- 컨테이너 삭제 후에도 데이터 유지
+ 
+### healthcheck
+- `test` : 상태 확인 명령어
+- `interval` : 체크 간격
+- `timeout` : 응답 대기 시간
+- `retries` : 재시도 횟수
+- `$$` : Compose 내에서 `$` 한 개로 해석되는 이스케이프 문자
+ 
+### volumes (최하단)
+- services 내부에서 사용한 볼륨명 반드시 선언
+
+services:
+  db:
+    container_name: mysql-server
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER} 
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 -u root -p $${MYSQL_ROOT_PASSWORD}']
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql-data:
+
+
+# 2. .env 변수 치환 결과 확인
+#    → MYSQL_ROOT_PASSWORD 등이 실제 값으로 치환된 것 확인
+# 3. docker-compose up -d 로 서비스 시작
+# 4. docker-compose ps 로 상태 확인
+# 5. DB 접속하여 환경변수 적용 확인
+# 6. .env 파일과 .gitignore 관계 확인
+# 7. docker-compose down -v 로 정리
+
+
+---
+3. MySQL + Adminer 구성 (레퍼런스)
+# 현재 위치: /home/ubuntu/docker/07.compose/compose03
+
+# 1. docker-compose up -d 로 서비스 시작
+# 2. docker-compose ps 로 db, adminer 상태 확인
+# 3. docker-compose logs -f db 로 MySQL 기동 로그 확인
+# 4. 브라우저 localhost:8888 접속 → root/root 로그인
+# 5. docker-compose down 후 docker volume ls 로 볼륨 잔존 확인
+# 6. docker-compose down -v 로 볼륨까지 삭제
+
+
+
+
+
+
+
+
+
+
+
+
+
