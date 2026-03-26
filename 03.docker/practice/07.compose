@@ -1,0 +1,102 @@
+--- 기본 문법
+
+ubuntu@ubuntu:~/docker/07.compose/syntax$ pwd
+/home/ubuntu/docker/07.compose/syntax
+
+--- 01.yml
+docker-compose -f docker-compose-01.yml up -d
+
+
+--- 02.yml
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker-compose -f docker-compose-02.yml up -d
+[+] Running 3/3
+ ✔ Network syntax_default  Created             0.4s 
+ ✔ Container nginx-8080    Started             2.0s 
+ ✔ Container nginx-8081    Started             2.3s
+
+
+docker-compose -f docker-compose-02.yml ps
+
+ubuntu@ubuntu:~/docker/07.compose/syntax$ vi docker-compose-02.yml 
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker-compose -f docker-compose-02.yml up -d
+[+] Running 3/3
+ ✔ Network syntax_default  Created             0.4s 
+ ✔ Container nginx-8080    Started             2.0s 
+ ✔ Container nginx-8081    Started             2.3s 
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker-compose -f docker-compose-02.yml ps
+NAME         IMAGE          COMMAND                  SERVICE   CREATED          STATUS          PORTS
+nginx-8080   nginx:alpine   "/docker-entrypoint.…"   web1      36 seconds ago   Up 35 seconds   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+nginx-8081   nginx:alpine   "/docker-entrypoint.…"   web2      36 seconds ago   Up 35 seconds   0.0.0.0:8081->80/tcp, [::]:8081->80/tcp
+ubuntu@ubuntu:~/docker/07.compose/syntax$ vi docker-compose-02.yml 
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker-compose -f docker-compose-02.yml ps
+NAME         IMAGE          COMMAND                  SERVICE   CREATED         STATUS         PORTS
+nginx-8080   nginx:alpine   "/docker-entrypoint.…"   web1      2 minutes ago   Up 2 minutes   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+nginx-8081   nginx:alpine   "/docker-entrypoint.…"   web2      2 minutes ago   Up 2 minutes   0.0.0.0:8081->80/tcp, [::]:8081->80/tcp
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker-compose -f docker-compose-02.yml up -d --build
+[+] Running 1/2
+ ✔ Container nginx-8080  Running                                                                                          0.0s 
+ ⠋ Container nginx-8081  Starting                                                                                         1.9s 
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint nginx-8081 (49f989bab78dbd0fcda3c5256c2af4b9203be81bf4649f6c6a753eb135d77abd): Bind for 0.0.0.0:8080 failed: port is already allocated
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker-compose -f docker-compose-02.yml down
+[+] Running 3/3
+ ✔ Container nginx-8081    Removed                                                                                        0.0s 
+ ✔ Container nginx-8080    Removed                                                                                        0.6s 
+ ✔ Network syntax_default  Removed     
+
+--- 03.yml
+
+ubuntu@ubuntu:~/docker/07.compose/syntax$ ls
+docker-compose-01.yml  docker-compose-02.yml
+ubuntu@ubuntu:~/docker/07.compose/syntax$ ls /var/lib/docker/volumes
+ls: cannot access '/var/lib/docker/volumes': Permission denied
+ubuntu@ubuntu:~/docker/07.compose/syntax$ sudo ls /v
+ar/lib/docker/volumes
+[sudo] password for ubuntu: 
+metadata.db
+nginx-volume
+portainer_data
+
+
+ubuntu@ubuntu:~/docker/07.compose/syntax$ vi docker-compose-03.yml
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker-compose -f docker-compose-03.yml up -d
+[+] Running 4/4
+ ✔ Network syntax_default    Created           0.4s 
+ ✔ Volume syntax_nginx-html  Created           0.0s 
+ ✔ Container nginx-named     Started           1.8s 
+ ✔ Container nginx-bind      Started           2.0s 
+ubuntu@ubuntu:~/docker/07.compose/syntax$ ls
+docker-compose-01.yml  docker-compose-03.yml
+docker-compose-02.yml  html
+ubuntu@ubuntu:~/docker/07.compose/syntax$ ll html/
+total 8
+drwxr-xr-x 2 root   root   4096 Mar 26 11:42 ./
+drwxrwxr-x 3 ubuntu ubuntu 4096 Mar 26 11:42 ../
+ubuntu@ubuntu:~/docker/07.compose/syntax$ ls /var/lib/docker/volumes
+ls: cannot access '/var/lib/docker/volumes': Permission denied
+ubuntu@ubuntu:~/docker/07.compose/syntax$ sudo ls /v
+ar/lib/docker/volumes
+backingFsBlockDev
+metadata.db
+nginx-volume
+portainer_data
+syntax_nginx-html
+
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker-compose -f docker-compose-03.yml down
+[+] Running 3/3
+ ✔ Container nginx-named   Removed             1.1s 
+ ✔ Container nginx-bind    Removed             0.9s 
+ ✔ Network syntax_default  Removed             0.3s
+
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker-compose -f docker-compose-03.yml down
+[+] Running 3/3
+ ✔ Container nginx-named   Removed             1.1s 
+ ✔ Container nginx-bind    Removed             0.9s 
+ ✔ Network syntax_default  Removed             0.3s 
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker volume ls
+DRIVER    VOLUME NAME
+local     nginx-volume
+local     portainer_data
+local     syntax_nginx-html
+ubuntu@ubuntu:~/docker/07.compose/syntax$ docker-compose -f docker-compose-03.yml down -v
+[+] Running 1/1
+ ✔ Volume syntax_nginx-html  Removed           0.0s
