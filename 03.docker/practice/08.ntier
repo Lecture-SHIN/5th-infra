@@ -138,3 +138,19 @@ backend-api
 # 5. docker-compose down 으로 정리
 
 
+--- 전체 흐름 정리1
+
+1. 로컬 개발 환경 (프로젝트), Github 연동 세팅
+2. 운영 파일 세팅 (mysql - app.sql,... backend - application.properties, Dockerfile)
+3. yml 생성 (변수, url, ... 매핑)
+4. (compose 내부)빌드*
+5. 컨테이너 동작 및 확인
+
+
+--- 전체 흐름 정리2
+
+1. 로컬 개발 환경 (프로젝트), Github 연동 세팅
+2. 운영 파일 세팅 (mysql - app.sql,... backend - application.properties, Dockerfile)
+3. (compose 외부) 별도 빌드* -> hub의 repository push
+4. yml 생성 (변수, ... build 제외하고 대신 3번 만든 image 참조*)
+5. 컨테이너 동작 및 확인
