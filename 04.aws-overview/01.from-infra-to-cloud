@@ -1,0 +1,35 @@
+| 카테고리 | 우분투 / 도커 | AWS (아키텍처) | 역할 |
+
+| **호스트 서버** | VirtualBox Ubuntu VM | EC2 | 애플리케이션이 실행되는 서버 |
+| **호스트 IP** | 10.0.2.15 (VirtualBox NAT) | EC2 private ip(10.0.11.xx) | 서버의 내부 IP 주소 |
+
+| **가상 네트워크** | Docker bridge (172.18.0.0/16) | VPC(10.0.0.0/16) | 격리된 내부 네트워크 |
+| **네트워크 게이트웨이** | docker0 (172.18.0.1) | VPC 라우터 + 인터넷 게이트웨이 | 내부 ↔ 외부 트래픽 출입구 |
+| **앱 서버 IP** | 172.18.0.2 (SpringBoot 컨테이너) | EC2 private ip(10.0.11.xx) | SpringBoot가 할당받는 IP |
+| **DB 서버 IP** | 172.18.0.3 (MySQL 컨테이너) | EC2 private ip(10.0.21.xx) | MySQL이 할당받는 IP |
+| **앱 서버** | backend-server 컨테이너 (Spring Boot) | EC2 -> ECS | Spring Boot :8080 실행 |
+| **DB 서버** | mysql-server 컨테이너 (MySQL 8.0) | RDS for MySQL | 데이터베이스 |
+| **DB 연결** | 컨테이너 이름으로 통신 (mysql:3306) | RDS 엔드포인트 DNS | JDBC 접속 대상 |
+| **DB 볼륨** | Volume mount (/var/lib/mysql) | RDS 내장 EBS | DB 데이터 영구 저장 |
+| **포트 외부 노출** | -p 8080:8080 (포트 포워딩) | ALB | 외부 트래픽 내부로 전달 |
+
+| **내부 망 격리** | docker network (app-network) | Private Subnet | 외부에서 직접 접근 차단 |
+| **방화벽 — 앱** | ufw allow 8080/tcp | App-SG(:ALB-SG) | 허용된 소스만 접근 가능 |
+| **방화벽 — DB** | ufw allow 3306 (내부만) | DB-SG:App-SG | EC2에서만 DB 접근 허용 |
+| **방화벽 — 외부** | ufw allow 80/443 | ALB-SG | 인터넷 → ALB 허용 |
+
+| **라우팅** | ip route show (172.18.0.0/16 dev docker0) | VPC 라우팅 테이블 | 내부 트래픽 경로 설정 |
+| **외부 인터넷 연결** | VirtualBox NAT (10.0.2.2 게이트웨이) | 인터넷 게이트웨이(IGW) | VPC ↔ 인터넷 출입구 |
+
+| **OS 최고 권한 계정** | root | AWS root 계정 | 모든 권한 · 일상 사용 금지 |
+| **일반 사용자 계정** | ubuntu (sudo 권한) | IAM User | 콘솔/CLI 접근 계정 |
+| **서비스 전용 계정** | mysql OS 유저 (mysqld 실행) | IAM Role | 프로세스가 AWS API 호출 시 사용 |
+| **권한 제한** | /etc/sudoers | IAM Policy | 허용 명령/액션 범위 지정 |
+| **계정 그룹** | /etc/group | IAM Group | 사용자 묶음 단위 권한 관리 |
+
+| **파일 권한** | chmod 600 (키 파일) | IAM 최소 권한 원칙 | 필요한 것만 허용 |
+| **SSH 인증** | ~/.ssh/authorized_keys | EC2 키페어(.pem) | 서버 접속 인증 수단 |
+| **DB 사용자** | MySQL root / app_user | RDS 계정 | DB 레벨 계정 (변경 없음) |
+| **DB 권한** | GRANT SELECT ON mydb.* TO app_user | RDS 계정 | 테이블 단위 접근 제어 |
+| **로그 확인** | docker logs / journalctl | CloudWatch Logs | 애플리케이션 로그 수집 |
+| **리소스 모니터링** | docker stats / top | CloudWatch Metrics | CPU · 메모리 · 네트워크 지표 |
